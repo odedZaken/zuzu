@@ -1,0 +1,315 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".RegisterActivity"
+    android:fillViewport="true"
+    >
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/textRegisterTop"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Register Now!"
+            android:layout_marginTop="30dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <EditText
+            android:id="@+id/editTextFirstName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:ems="10"
+            android:hint="First Name"
+            android:inputType="textPersonName"
+            app:layout_constraintEnd_toEndOf="@+id/textRegisterTop"
+            app:layout_constraintStart_toStartOf="@+id/textRegisterTop"
+            app:layout_constraintTop_toBottomOf="@+id/textRegisterTop" />
+
+        <EditText
+            android:id="@+id/editTextLastName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:ems="10"
+            android:hint="Last Name"
+            android:inputType="textPersonName"
+            app:layout_constraintEnd_toEndOf="@+id/editTextFirstName"
+            app:layout_constraintStart_toStartOf="@+id/editTextFirstName"
+            app:layout_constraintTop_toBottomOf="@+id/editTextFirstName" />
+
+
+        <EditText
+            android:id="@+id/editDate"
+            android:layout_width="145dp"
+            android:layout_height="50dp"
+            android:layout_marginTop="20dp"
+            android:ems="10"
+            android:hint="Date of Birth"
+            android:inputType="date"
+            app:layout_constraintEnd_toStartOf="@+id/setDateButton"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@+id/editTextLastName"
+            app:layout_constraintTop_toBottomOf="@+id/editTextLastName" />
+
+        <Button
+            android:id="@+id/setDateButton"
+            android:layout_width="70dp"
+            android:layout_height="47dp"
+            android:layout_marginEnd="88dp"
+            android:text="Set"
+            app:layout_constraintBottom_toBottomOf="@+id/editDate"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintLeft_toRightOf="@id/editDate"
+            app:layout_constraintTop_toTopOf="@+id/editDate"
+            app:layout_constraintVertical_bias="1.0" />
+
+        <RadioGroup
+            android:id="@+id/radioGroup2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/editDate">
+
+            <TextView
+                android:id="@+id/textGender"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Gender:"
+                android:textSize="18dp" />
+
+            <RadioButton
+                android:id="@+id/radioButtonMale"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:text="Male" />
+
+            <RadioButton
+                android:id="@+id/radioButtonFemale"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:text="Female" />
+
+            <RadioButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/radioButtonOther"
+                android:text="Other"
+                android:layout_marginStart="10dp"/>
+
+
+        </RadioGroup>
+
+        <EditText
+            android:id="@+id/editTextEmail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="Email"
+            android:inputType="textEmailAddress"
+            android:layout_marginTop="20dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/radioGroup2" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/editTextPasswordLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            app:layout_constraintEnd_toEndOf="@+id/editTextEmail"
+            app:layout_constraintStart_toStartOf="@+id/editTextEmail"
+            app:layout_constraintTop_toBottomOf="@+id/editTextEmail"
+            app:passwordToggleEnabled = "true">
+
+            <EditText
+                android:id="@+id/editTextPassword"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:hint="Password"
+                android:inputType="textPassword" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/editTextConfirmPasswordLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            app:layout_constraintEnd_toEndOf="@+id/editTextPasswordLayout"
+            app:layout_constraintStart_toStartOf="@+id/editTextPasswordLayout"
+            app:layout_constraintTop_toBottomOf="@+id/editTextPasswordLayout"
+            app:passwordToggleEnabled = "true"
+            >
+
+            <EditText
+                android:id="@+id/editTextConfirmPassword"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:inputType="textPassword"
+                android:hint="Confirm Password"
+                 />
+
+        </com.google.android.material.textfield.TextInputLayout>
+        <EditText
+            android:id="@+id/editTextPhone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:ems="10"
+            android:hint="Phone Number"
+            android:inputType="phone"
+            app:layout_constraintEnd_toEndOf="@+id/editTextConfirmPasswordLayout"
+            app:layout_constraintStart_toStartOf="@+id/editTextConfirmPasswordLayout"
+            app:layout_constraintTop_toBottomOf="@+id/editTextConfirmPasswordLayout" />
+
+        <TextView
+            android:id="@+id/editTextFirstNameWarning"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="You Must Enter a Valid First Name"
+            android:textColor="@color/red"
+            android:textStyle="italic"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="@+id/editTextFirstName"
+            app:layout_constraintStart_toStartOf="@+id/editTextFirstName"
+            app:layout_constraintTop_toBottomOf="@+id/editTextFirstName" />
+
+        <TextView
+            android:id="@+id/editTextLastNameWarning"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="You Must Enter a Valid Last Name"
+            app:layout_constraintEnd_toEndOf="@+id/editTextLastName"
+            app:layout_constraintStart_toStartOf="@+id/editTextLastName"
+            app:layout_constraintTop_toBottomOf="@+id/editTextLastName"
+            android:visibility="gone"
+            android:textColor="@color/red"
+            android:textStyle="italic"/>
+
+        <TextView
+            android:id="@+id/editDateWarning"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="1dp"
+            android:text="You Must Enter a Date of Birth"
+            android:textColor="@color/red"
+            android:textStyle="italic"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="@+id/setDateButton"
+            app:layout_constraintStart_toStartOf="@+id/editDate"
+            app:layout_constraintTop_toBottomOf="@+id/editDate" />
+
+        <TextView
+            android:id="@+id/genderWarning"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="You Must Select a Gender"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="@+id/radioGroup2"
+            app:layout_constraintStart_toStartOf="@+id/radioGroup2"
+            app:layout_constraintTop_toBottomOf="@+id/radioGroup2"
+            android:textColor="@color/red"
+            android:textStyle="italic"/>
+
+        <TextView
+            android:id="@+id/editTextEmailWarning"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:text="You Must Enter a Valid Email"
+            app:layout_constraintEnd_toEndOf="@+id/editTextEmail"
+            app:layout_constraintStart_toStartOf="@+id/editTextEmail"
+            app:layout_constraintTop_toBottomOf="@+id/editTextEmail"
+            android:textColor="@color/red"
+            android:textStyle="italic"/>
+
+        <TextView
+            android:id="@+id/editTextPasswordWarning"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:text="You Must Choose a Password (At least 5 Characters)"
+            app:layout_constraintEnd_toEndOf="@+id/editTextPasswordLayout"
+            app:layout_constraintStart_toStartOf="@+id/editTextPasswordLayout"
+            app:layout_constraintTop_toBottomOf="@+id/editTextPasswordLayout"
+            android:textColor="@color/red"
+            android:textStyle="italic"/>
+
+        <TextView
+            android:id="@+id/editTextConfirmPasswordWarning"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:text="The Password has to be Identical"
+            app:layout_constraintEnd_toEndOf="@+id/editTextConfirmPasswordLayout"
+            app:layout_constraintStart_toStartOf="@+id/editTextConfirmPasswordLayout"
+            app:layout_constraintTop_toBottomOf="@+id/editTextConfirmPasswordLayout"
+            android:textColor="@color/red"
+            android:textStyle="italic"/>
+
+        <TextView
+            android:id="@+id/editTextPhoneWarning"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:text="You Must Enter a Phone Number"
+            app:layout_constraintEnd_toEndOf="@+id/editTextPhone"
+            app:layout_constraintStart_toStartOf="@+id/editTextPhone"
+            app:layout_constraintTop_toBottomOf="@+id/editTextPhone"
+            android:textColor="@color/red"
+            android:textStyle="italic"/>
+
+        <Button
+            android:id="@+id/registerButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Create Account!"
+            android:layout_marginTop="30dp"
+            app:layout_constraintEnd_toEndOf="@+id/imageViewUser"
+            app:layout_constraintHorizontal_bias="0.51"
+            app:layout_constraintStart_toStartOf="@+id/imageViewUser"
+            app:layout_constraintTop_toBottomOf="@+id/imageViewUser" />
+
+        <ImageView
+            android:id="@+id/imageViewUser"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:layout_marginTop="40dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/editTextPhoneWarning"
+            app:srcCompat="@drawable/ic_baseline_add_photo_alternate_24" />
+
+        <TextView
+            android:id="@+id/dummyTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="40dp"
+            android:text="TextView"
+            android:visibility="invisible"
+            app:layout_constraintEnd_toEndOf="@+id/registerButton"
+            app:layout_constraintStart_toStartOf="@+id/registerButton"
+            app:layout_constraintTop_toBottomOf="@+id/registerButton" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</ScrollView>

@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".EditProfileActivity"
+    android:fillViewport="true"
+    >
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/imageViewProfileImage"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:layout_marginTop="50dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_baseline_add_photo_alternate_24" />
+
+        <TextView
+            android:id="@+id/textViewFullName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="TextView"
+            android:layout_marginTop="20dp"
+            android:textSize="20sp"
+            app:layout_constraintEnd_toEndOf="@+id/imageViewProfileImage"
+            app:layout_constraintStart_toStartOf="@+id/imageViewProfileImage"
+            app:layout_constraintTop_toBottomOf="@+id/imageViewProfileImage" />
+
+        <EditText
+            android:id="@+id/editTextFirstName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="textPersonName"
+            android:text="Name"
+            android:layout_marginTop="30dp"
+            app:layout_constraintEnd_toEndOf="@+id/textViewFullName"
+            app:layout_constraintStart_toStartOf="@+id/textViewFullName"
+            app:layout_constraintTop_toBottomOf="@+id/textViewFullName" />
+
+        <EditText
+            android:id="@+id/editTextLastName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:layout_marginTop="20dp"
+            android:inputType="textPersonName"
+            android:text="Name"
+            app:layout_constraintEnd_toEndOf="@+id/editTextFirstName"
+            app:layout_constraintStart_toStartOf="@+id/editTextFirstName"
+            app:layout_constraintTop_toBottomOf="@+id/editTextFirstName" />
+
+        <EditText
+            android:id="@+id/editTextEmailAddress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:layout_marginTop="20dp"
+            android:inputType="textEmailAddress"
+            app:layout_constraintEnd_toEndOf="@+id/editTextLastName"
+            app:layout_constraintStart_toStartOf="@+id/editTextLastName"
+            app:layout_constraintTop_toBottomOf="@+id/editTextLastName" />
+
+        <EditText
+            android:id="@+id/editTextPhone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:ems="10"
+            android:inputType="phone"
+            app:layout_constraintEnd_toEndOf="@+id/editTextEmailAddress"
+            app:layout_constraintStart_toStartOf="@+id/editTextEmailAddress"
+            app:layout_constraintTop_toBottomOf="@+id/editTextEmailAddress" />
+
+        <TextView
+            android:id="@+id/interestsText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:text="Choose Your Events:"
+            app:layout_constraintEnd_toEndOf="@+id/editTextPhone"
+            app:layout_constraintStart_toStartOf="@+id/editTextPhone"
+            app:layout_constraintTop_toBottomOf="@+id/editTextPhone" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</ScrollView>
