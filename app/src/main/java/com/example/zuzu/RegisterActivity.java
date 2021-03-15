@@ -66,7 +66,8 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
 
     @Override
     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-        editDate.setText(dayOfMonth + "/" + (month + 1) + "/" + year);
+        String dateStr = dayOfMonth + "/" + (month + 1) + "/" + year;
+        editDate.setText(dateStr);
         dayOfBirth = editDate.getText().toString();
     }
 
@@ -272,7 +273,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                     reference = rootNode.getReference("users");
                     String firstName = editTextFirstName.getText().toString();
                     String lastName = editTextLastName.getText().toString();
-                    String email = editTextEmail.getText().toString();
+                    String email = editTextEmail.getText().toString().toLowerCase();
                     String phoneNo = editTextPhone.getText().toString();
                     String password = editTextPassword.getText().toString();
                     UserModel newUser = new UserModel(firstName, lastName, email, phoneNo, password, dayOfBirth, gender.toString());
@@ -283,7 +284,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
             }
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                Toast.makeText(RegisterActivity.this, "Unknown Error Occurred", Toast.LENGTH_SHORT).show();
+                Toast.makeText(RegisterActivity.this, "Read from DB failed", Toast.LENGTH_LONG).show();
             }
         });
     }

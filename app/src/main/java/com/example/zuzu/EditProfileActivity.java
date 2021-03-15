@@ -17,8 +17,12 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.StorageTask;
@@ -46,7 +50,7 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_profile);
         initializeEditProfileForm();
-
+        retrieveUserData();
     }
 
     @Override
@@ -71,6 +75,17 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
         imageViewProfileImage = findViewById(R.id.imageViewProfileImage);
         imageViewProfileImage.setOnClickListener(this);
         imageViewProfileImage.setVisibility(View.VISIBLE);
+    }
+
+    private void retrieveUserData() {
+        UserModel currUser = LoginActivity.getCurrentUser();
+        String fullName = currUser.getFirstName() + ' ' + currUser.getLastName();
+        textViewFullName.setText(fullName);
+        editTextFirstName.setText(currUser.getFirstName());
+        editTextLastName.setText(currUser.getLastName());
+        editTextEmail.setText(currUser.getEmail());
+        Toast.makeText(this, "email: " + currUser.getEmail(), Toast.LENGTH_LONG).show();
+        editTextPhone.setText(currUser.getPhoneNo());
     }
 
 

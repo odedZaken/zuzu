@@ -48,7 +48,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 onLoginButtonClick();
                 break;
         }
-
     }
 
 
@@ -59,7 +58,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         passwordWarning = findViewById(R.id.passwordWarning);
         loginButton = findViewById(R.id.loginButton);
         loginButton.setOnClickListener(this);
-        registerButtonLogin = findViewById(R.id.registerButton);
+        registerButtonLogin = findViewById(R.id.registerButtonLogin);
         registerButtonLogin.setOnClickListener(this);
         progressBarLogin = findViewById(R.id.progressBarLogin);
 
@@ -105,7 +104,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     //Check if the user input match the user in the database, if true, opens the edit profile activity else it will show an error
     private void isUserExist() {
-        final String enteredEmail = textUsername.getText().toString().trim();
+        final String enteredEmail = textUsername.getText().toString().trim().toLowerCase();
         final String enteredPassword = textPassword.getText().toString().trim();
 
         FirebaseDatabase rootDB = FirebaseDatabase.getInstance();
@@ -120,10 +119,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     if(passwordFromDB!= null && passwordFromDB.equals(enteredPassword)) {
                         String firstNameFromDB = dataSnapshot.child(enteredEmail).child("firstName").getValue(String.class);
                         String lastNameFromDB = dataSnapshot.child(enteredEmail).child("lastName").getValue(String.class);
-                        String emailFromDB = dataSnapshot.child("email").getValue(String.class);
-                        String phoneNoFromDB = dataSnapshot.child("phoneNo").getValue(String.class);
-                        String dobFromDB = dataSnapshot.child("dob").getValue(String.class);
-                        String genderFromDB = dataSnapshot.child("gender").getValue(String.class);
+                        String emailFromDB = dataSnapshot.child(enteredEmail).child("email").getValue(String.class);
+                        String phoneNoFromDB = dataSnapshot.child(enteredEmail).child("phoneNo").getValue(String.class);
+                        String dobFromDB = dataSnapshot.child(enteredEmail).child("dob").getValue(String.class);
+                        String genderFromDB = dataSnapshot.child(enteredEmail).child("gender").getValue(String.class);
 
                         currentUser = new UserModel(firstNameFromDB,lastNameFromDB,emailFromDB, phoneNoFromDB, passwordFromDB, dobFromDB, genderFromDB);
 

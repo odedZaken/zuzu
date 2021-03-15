@@ -11,8 +11,6 @@ public class UserModel {
     }
 
     private String firstName, lastName, email, phoneNo, password, dob, gender;
-    private DatabaseReference reference;
-
 
 
     public UserModel(String firstName, String lastName, String email, String phoneNo, String password, String dob, String gender) {
@@ -41,9 +39,6 @@ public class UserModel {
         this.gender = gender;
     }
 
-    public UserModel() {
-
-    }
 
     public String getFirstName() {
         return firstName;
