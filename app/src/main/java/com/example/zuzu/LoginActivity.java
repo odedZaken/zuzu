@@ -20,14 +20,15 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
-public class LoginActivity extends AppCompatActivity {
+//This is the default page when opening the app
+public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
 
     private static UserModel currentUser;
     private EditText textUsername;
     private EditText textPassword;
     private TextView usernameWarning, passwordWarning;
-    private Button buttonLogin;         //todo: switch to listener button clicking
-    private Button buttonRegister;
+    private Button loginButton;
+    private Button registerButtonLogin;
     private ProgressBar progressBarLogin;
 
     @Override
@@ -37,18 +38,35 @@ public class LoginActivity extends AppCompatActivity {
         initializeLoginForm();
     }
 
+    @Override
+    public void onClick(View v) {
+        switch(v.getId()) {
+            case R.id.registerButtonLogin:
+                onRegisterButtonClick();
+                break;
+            case R.id.loginButton:
+                onLoginButtonClick();
+                break;
+        }
+
+    }
+
+
     private void initializeLoginForm() {
         textUsername = findViewById(R.id.username);
         textPassword = findViewById(R.id.password);
         usernameWarning = findViewById(R.id.usernameWarning);
         passwordWarning = findViewById(R.id.passwordWarning);
-        buttonLogin = findViewById(R.id.login);
-        buttonRegister = findViewById(R.id.register);
+        loginButton = findViewById(R.id.loginButton);
+        loginButton.setOnClickListener(this);
+        registerButtonLogin = findViewById(R.id.registerButton);
+        registerButtonLogin.setOnClickListener(this);
         progressBarLogin = findViewById(R.id.progressBarLogin);
+
         currentUser = null;
     }
 
-    public void onLoginButtonClick(View view) {
+    public void onLoginButtonClick() {
         if (isValidLogin()) {
             progressBarLogin.setVisibility(View.VISIBLE);
             isUserExist();
@@ -58,7 +76,7 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    public void onRegisterButtonClick(View view) {
+    public void onRegisterButtonClick() {
         Intent registerIntent = new Intent(LoginActivity.this, RegisterActivity.class);
         startActivity(registerIntent);
     }
@@ -85,13 +103,14 @@ public class LoginActivity extends AppCompatActivity {
         passwordWarning.setVisibility(View.GONE);
     }
 
+    //Check if the user input match the user in the database, if true, opens the edit profile activity else it will show an error
     private void isUserExist() {
         final String enteredEmail = textUsername.getText().toString().trim();
         final String enteredPassword = textPassword.getText().toString().trim();
 
         FirebaseDatabase rootDB = FirebaseDatabase.getInstance();
         DatabaseReference usersRef = rootDB.getReference("users");
-        Query checkUserExist = usersRef.orderByChild("email").equalTo(enteredEmail);
+        Query checkUserExist = usersRef.orderByChild("email").equalTo(enteredEmail);    //Create new query of the user
 
         checkUserExist.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override

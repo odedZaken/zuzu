@@ -192,6 +192,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         }
     }
 
+    //initialize 'gender' attribute according to user input
     private void checkGender() {
         switch (genderRadioGroup.getCheckedRadioButtonId()) {
             case R.id.radioButtonMale:

@@ -45,8 +45,8 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_profile);
-
         initializeEditProfileForm();
+
     }
 
     @Override
@@ -119,18 +119,18 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
         }
     }
 
-    private void uploadProfileImage() {
-        final StorageReference fileReference = storageProfilePicsReference.child(LoginActivity.getCurrentUser().getEmail() +".jpg");        //todo: change to .png
-        uploadTask = fileReference.putFile(imageUri);
-
-        uploadTask.continueWithTask(new Continuation() {
-            @Override
-            public Object then(@NonNull Task task) throws Exception {
-                if (!task.isSuccessful()) {
-                    throw task.getException();
-                }
-                return fileReference;
-            }
-        });
-    }
+//    private void uploadProfileImage() {
+//        final StorageReference fileReference = storageProfilePicsReference.child(LoginActivity.getCurrentUser().getEmail() +".jpg");        //todo: change to .png
+//        uploadTask = fileReference.putFile(imageUri);
+//
+//        uploadTask.continueWithTask(new Continuation() {
+//            @Override
+//            public Object then(@NonNull Task task) throws Exception {
+//                if (!task.isSuccessful()) {
+//                    throw task.getException();
+//                }
+//                return fileReference;
+//            }
+//        });
+//    }
 }
