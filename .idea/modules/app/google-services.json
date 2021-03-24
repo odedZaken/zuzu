@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "293131115619",
+    "firebase_url": "https://zuzu-9e903.firebaseio.com",
+    "project_id": "zuzu-9e903",
+    "storage_bucket": "zuzu-9e903.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:293131115619:android:61503f3b39c4c62bd62c56",
+        "android_client_info": {
+          "package_name": "com.example.zuzu"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "293131115619-v9sk6lkn00m95f3mb11pndbfntaphrvt.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.zuzu",
+            "certificate_hash": "4614fc09ec1e2059b70608e9a7de8102b38b316d"
+          }
+        },
+        {
+          "client_id": "293131115619-0io8vv2s7dlsihltmnfk8k296hbdcj9q.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCjLNw6i3sqpHJE1x8ec0K6YG-k3domx3s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "293131115619-0io8vv2s7dlsihltmnfk8k296hbdcj9q.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
