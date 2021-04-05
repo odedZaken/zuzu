@@ -1,5 +1,7 @@
 package com.example.zuzu;
 
+import android.net.Uri;
+
 import com.google.firebase.database.DatabaseReference;
 
 import java.util.Date;
@@ -11,6 +13,7 @@ public class UserModel {
     }
 
     private String firstName, lastName, email, phoneNo, password, dob, gender;
+    private Uri profilePicUri;
 
 
     public UserModel(String firstName, String lastName, String email, String phoneNo, String password, String dob, String gender) {
@@ -22,6 +25,9 @@ public class UserModel {
         this.dob = dob;
         this.gender = gender;
     }
+    public void setProfilePicUri(Uri profilePicUri) {this.profilePicUri = profilePicUri; }
+
+    public Uri getProfilePicUri() { return profilePicUri;}
 
     public String getDob() {
         return dob;

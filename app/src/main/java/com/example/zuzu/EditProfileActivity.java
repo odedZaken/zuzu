@@ -7,6 +7,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
@@ -15,7 +17,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.Continuation;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -23,25 +28,30 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.StorageTask;
+import com.google.firebase.storage.UploadTask;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.URI;
 
 public class EditProfileActivity extends AppCompatActivity implements View.OnClickListener {
 
     private static final int IMAGE_PICK_CODE = 1000;
     private static final int PERMISSION_CODE = 1001;
+    final long MAX_SIZE = 1024 * 1024 * 10;     //Set to 10 Megabytes
 
     private TextView textViewFullName;
     private EditText editTextFirstName, editTextLastName, editTextEmail, editTextPhone;
     private ImageView imageViewProfileImage;
 
     private DatabaseReference databaseReference;
-
+    private StorageReference storageProfilePicsRef;
     private Uri imageUri;
-    private String myUri = "";
-    private StorageTask uploadTask;
-    private StorageReference storageProfilePicsReference;
+    private UserModel currUser;
 
 
 
@@ -49,8 +59,10 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_profile);
+        currUser = LoginActivity.getCurrentUser();
         initializeEditProfileForm();
         retrieveUserData();
+        retrieveProfilePic();
     }
 
     @Override
@@ -65,8 +77,8 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
     }
 
     private void initializeEditProfileForm() {
+        storageProfilePicsRef = FirebaseStorage.getInstance().getReference().child("profile_pics");
         databaseReference = FirebaseDatabase.getInstance().getReference().child("users");
-        storageProfilePicsReference = FirebaseStorage.getInstance().getReference().child("profile_pics");
         textViewFullName = findViewById(R.id.textViewFullName);
         editTextFirstName = findViewById(R.id.editTextFirstName);
         editTextLastName = findViewById(R.id.editTextLastName);
@@ -77,15 +89,32 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
         imageViewProfileImage.setVisibility(View.VISIBLE);
     }
 
+    //Retrieve user data from current user (local memory)
     private void retrieveUserData() {
-        UserModel currUser = LoginActivity.getCurrentUser();
         String fullName = currUser.getFirstName() + ' ' + currUser.getLastName();
         textViewFullName.setText(fullName);
         editTextFirstName.setText(currUser.getFirstName());
         editTextLastName.setText(currUser.getLastName());
         editTextEmail.setText(currUser.getEmail());
-        Toast.makeText(this, "email: " + currUser.getEmail(), Toast.LENGTH_LONG).show();
         editTextPhone.setText(currUser.getPhoneNo());
+    }
+
+    //Retrieve user profile picture from database and show in ImageView using Glide
+    private void retrieveProfilePic() {
+
+        StorageReference userProfilePic = storageProfilePicsRef.child(currUser.getEmail());
+        userProfilePic.getBytes(MAX_SIZE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+            @Override
+            public void onSuccess(byte[] bytes) {
+                Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                imageViewProfileImage.setImageBitmap(bitmap);
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(EditProfileActivity.this, "Failed to fetch!", Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
 
@@ -131,21 +160,22 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
             //set image to image view
             imageUri = data.getData();
             imageViewProfileImage.setImageURI(imageUri);
+            uploadProfilePic(imageUri,currUser.getEmail());
         }
     }
 
-//    private void uploadProfileImage() {
-//        final StorageReference fileReference = storageProfilePicsReference.child(LoginActivity.getCurrentUser().getEmail() +".jpg");        //todo: change to .png
-//        uploadTask = fileReference.putFile(imageUri);
-//
-//        uploadTask.continueWithTask(new Continuation() {
-//            @Override
-//            public Object then(@NonNull Task task) throws Exception {
-//                if (!task.isSuccessful()) {
-//                    throw task.getException();
-//                }
-//                return fileReference;
-//            }
-//        });
-//    }
+    private void uploadProfilePic(Uri imageUri, String email) {
+        UploadTask uploadProfilePicTask = storageProfilePicsRef.child(email).putFile(imageUri);
+        uploadProfilePicTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                Toast.makeText(EditProfileActivity.this, "pic upload successful!", Toast.LENGTH_SHORT).show();
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(EditProfileActivity.this, "pic upload failed!", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
 }

@@ -24,14 +24,18 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.StorageTask;
+import com.google.firebase.storage.UploadTask;
 
 import java.time.LocalDate;
 import java.util.Calendar;
@@ -57,8 +61,6 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     private RadioGroup genderRadioGroup;
 
     private Uri imageUri;
-    private StorageTask uploadTask;
-
     private FirebaseDatabase rootNode;
     private DatabaseReference reference;
     private StorageReference storageProfilePics;
@@ -77,6 +79,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         overridePendingTransition(R.anim.fadein, R.anim.fadeout);
         setContentView(R.layout.activity_register);
         rootNode = FirebaseDatabase.getInstance();
+        storageProfilePics = FirebaseStorage.getInstance().getReference("profile_pics");
         initializeRegistrationForm();
     }
 
@@ -248,13 +251,15 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         super.onActivityResult(requestCode,resultCode, data);
         if (resultCode == RESULT_OK && requestCode == IMAGE_PICK_CODE) {
             //set image to image view
-            imageViewUser.setImageURI(data.getData());
+            if (data != null && data.getData() != null) {
+                imageUri = data.getData();
+                imageViewUser.setImageURI(imageUri);
+            }
         }
     }
 
     private void isUserExist() {
         final String enteredEmail = editTextEmail.getText().toString().trim();
-        final String enteredPhone = editTextPhone.getText().toString().trim();
 
         DatabaseReference newReference = rootNode.getReference("users");
         Query checkUser = newReference.orderByChild("email").equalTo(enteredEmail);
@@ -269,7 +274,6 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                 else
                 {
                     //Create a new User:
-                    Toast.makeText(RegisterActivity.this, "No such Email found, will create User!", Toast.LENGTH_SHORT).show();
                     reference = rootNode.getReference("users");
                     String firstName = editTextFirstName.getText().toString();
                     String lastName = editTextLastName.getText().toString();
@@ -278,6 +282,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                     String password = editTextPassword.getText().toString();
                     UserModel newUser = new UserModel(firstName, lastName, email, phoneNo, password, dayOfBirth, gender.toString());
                     reference.child(email).setValue(newUser);
+                    uploadProfilePic(imageUri,email);
                     LoginActivity.setCurrentUser(newUser);
                     finishRegistration();
                 }
@@ -289,7 +294,23 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         });
     }
 
+    private void uploadProfilePic(Uri imageUri, String email) {
+        UploadTask uploadProfilePicTask = storageProfilePics.child(email).putFile(imageUri);
+        uploadProfilePicTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                Toast.makeText(RegisterActivity.this, "pic upload successful!", Toast.LENGTH_SHORT).show();
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(RegisterActivity.this, "pic upload failed!", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
     private void finishRegistration() {
+        Toast.makeText(RegisterActivity.this, "User created Successfully!", Toast.LENGTH_SHORT).show();
         Intent intentUserProfile = new Intent(RegisterActivity.this, EditProfileActivity.class);
         startActivity(intentUserProfile);
     }
