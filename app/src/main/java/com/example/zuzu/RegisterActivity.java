@@ -6,9 +6,11 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.media.Image;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -60,7 +62,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     private TextView editDateWarning, genderWarning, editTextConfirmPasswordWarning, editTextPhoneWarning;
     private RadioGroup genderRadioGroup;
 
-    private Uri imageUri;
+    private Uri profileImageUri;
     private FirebaseDatabase rootNode;
     private DatabaseReference reference;
     private StorageReference storageProfilePics;
@@ -250,17 +252,16 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode,resultCode, data);
         if (resultCode == RESULT_OK && requestCode == IMAGE_PICK_CODE) {
-            //set image to image view
+            //set image in imageView
             if (data != null && data.getData() != null) {
-                imageUri = data.getData();
-                imageViewUser.setImageURI(imageUri);
+                profileImageUri = data.getData();
+                imageViewUser.setImageURI(profileImageUri);
             }
         }
     }
 
     private void isUserExist() {
         final String enteredEmail = editTextEmail.getText().toString().trim();
-
         DatabaseReference newReference = rootNode.getReference("users");
         Query checkUser = newReference.orderByChild("email").equalTo(enteredEmail);
 
@@ -271,19 +272,9 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                     //Check if user already exist in system
                     Toast.makeText(RegisterActivity.this, "This Email is Already Registered", Toast.LENGTH_LONG).show();
                 }
-                else
-                {
-                    //Create a new User:
-                    reference = rootNode.getReference("users");
-                    String firstName = editTextFirstName.getText().toString();
-                    String lastName = editTextLastName.getText().toString();
-                    String email = editTextEmail.getText().toString().toLowerCase();
-                    String phoneNo = editTextPhone.getText().toString();
-                    String password = editTextPassword.getText().toString();
-                    UserModel newUser = new UserModel(firstName, lastName, email, phoneNo, password, dayOfBirth, gender.toString());
-                    reference.child(email).setValue(newUser);
-                    uploadProfilePic(imageUri,email);
-                    LoginActivity.setCurrentUser(newUser);
+                else {
+                    //Create a new User and continue:
+                    createNewUser();
                     finishRegistration();
                 }
             }
@@ -294,17 +285,34 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         });
     }
 
+    private void createNewUser() {
+        reference = rootNode.getReference("users");
+        String firstName = editTextFirstName.getText().toString();
+        String lastName = editTextLastName.getText().toString();
+        String email = editTextEmail.getText().toString().toLowerCase();
+        String phoneNo = editTextPhone.getText().toString();
+        String password = editTextPassword.getText().toString();
+        UserModel newUser = new UserModel(firstName, lastName, email, phoneNo, password, dayOfBirth, gender.toString());
+
+        reference.child(email).setValue(newUser);
+        if(profileImageUri != null) {
+            newUser.setProfilePicUri(profileImageUri);
+            uploadProfilePic(profileImageUri, email);
+        }
+        LoginActivity.setCurrentUser(newUser);
+    }
+
     private void uploadProfilePic(Uri imageUri, String email) {
         UploadTask uploadProfilePicTask = storageProfilePics.child(email).putFile(imageUri);
         uploadProfilePicTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                Toast.makeText(RegisterActivity.this, "pic upload successful!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(RegisterActivity.this, "Picture change successful!", Toast.LENGTH_SHORT).show();
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
-                Toast.makeText(RegisterActivity.this, "pic upload failed!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(RegisterActivity.this, "Picture change failed!", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -312,6 +320,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     private void finishRegistration() {
         Toast.makeText(RegisterActivity.this, "User created Successfully!", Toast.LENGTH_SHORT).show();
         Intent intentUserProfile = new Intent(RegisterActivity.this, EditProfileActivity.class);
+        this.finish();
         startActivity(intentUserProfile);
     }
 }

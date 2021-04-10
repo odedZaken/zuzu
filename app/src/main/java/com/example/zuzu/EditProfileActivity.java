@@ -9,9 +9,11 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -37,6 +39,8 @@ import com.google.firebase.storage.UploadTask;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.util.HashMap;
+import java.util.List;
 
 public class EditProfileActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -47,6 +51,7 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
     private TextView textViewFullName;
     private EditText editTextFirstName, editTextLastName, editTextEmail, editTextPhone;
     private ImageView imageViewProfileImage;
+    private Button soccerButton, basketballButton, volleyballButton, runningButton, tennisButton, exerciseButton;
 
     private DatabaseReference databaseReference;
     private StorageReference storageProfilePicsRef;
@@ -71,6 +76,11 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
             case R.id.imageViewProfileImage:
                 createImageView();
                 break;
+            case R.id.soccerButton:
+                soccerButton.setBackgroundColor(Color.parseColor("#008577"));
+                soccerButton.setTextColor(Color.parseColor("#FFFFFF"));
+
+                break;
             default:
                 break;
         }
@@ -87,6 +97,12 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
         imageViewProfileImage = findViewById(R.id.imageViewProfileImage);
         imageViewProfileImage.setOnClickListener(this);
         imageViewProfileImage.setVisibility(View.VISIBLE);
+        soccerButton = findViewById(R.id.soccerButton);
+        soccerButton.setOnClickListener(this);
+        basketballButton = findViewById(R.id.basketballButton);
+        volleyballButton = findViewById(R.id.volleyballButton);
+        runningButton = findViewById(R.id.runningButton);
+        exerciseButton = findViewById(R.id.exerciseButton);
     }
 
     //Retrieve user data from current user (local memory)
@@ -99,22 +115,31 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
         editTextPhone.setText(currUser.getPhoneNo());
     }
 
-    //Retrieve user profile picture from database and show in ImageView using Glide
+    //Retrieve user profile picture from database and show in ImageView
     private void retrieveProfilePic() {
-
-        StorageReference userProfilePic = storageProfilePicsRef.child(currUser.getEmail());
-        userProfilePic.getBytes(MAX_SIZE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
-            @Override
-            public void onSuccess(byte[] bytes) {
-                Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                imageViewProfileImage.setImageBitmap(bitmap);
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Toast.makeText(EditProfileActivity.this, "Failed to fetch!", Toast.LENGTH_LONG).show();
-            }
-        });
+        if (currUser.getProfilePicUri() != null) {
+            imageViewProfileImage.setImageURI(currUser.getProfilePicUri());
+        }
+        else {
+            storageProfilePicsRef.child(currUser.getEmail()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                @Override
+                public void onSuccess(Uri uri) {
+                    StorageReference userProfilePic = storageProfilePicsRef.child(currUser.getEmail());
+                    userProfilePic.getBytes(MAX_SIZE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                        @Override
+                        public void onSuccess(byte[] bytes) {
+                            Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                            imageViewProfileImage.setImageBitmap(bitmap);
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Toast.makeText(EditProfileActivity.this, "Failed to fetch profile pic!", Toast.LENGTH_LONG).show();
+                        }
+                    });
+                }
+            });
+        }
     }
 
 

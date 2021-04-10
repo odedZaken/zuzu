@@ -52,7 +52,7 @@
 
         <EditText
             android:id="@+id/editDate"
-            android:layout_width="145dp"
+            android:layout_width="140dp"
             android:layout_height="50dp"
             android:layout_marginTop="20dp"
             android:ems="10"
@@ -130,17 +130,17 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/editTextPasswordLayout"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="209dp"
+            android:layout_height="70dp"
             android:layout_marginTop="10dp"
             app:layout_constraintEnd_toEndOf="@+id/editTextEmail"
             app:layout_constraintStart_toStartOf="@+id/editTextEmail"
             app:layout_constraintTop_toBottomOf="@+id/editTextEmail"
-            app:passwordToggleEnabled = "true">
+            app:passwordToggleEnabled="true">
 
             <EditText
                 android:id="@+id/editTextPassword"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
                 android:hint="Password"
@@ -150,14 +150,13 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/editTextConfirmPasswordLayout"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="209dp"
+            android:layout_height="70dp"
             android:layout_marginTop="10dp"
             app:layout_constraintEnd_toEndOf="@+id/editTextPasswordLayout"
             app:layout_constraintStart_toStartOf="@+id/editTextPasswordLayout"
             app:layout_constraintTop_toBottomOf="@+id/editTextPasswordLayout"
-            app:passwordToggleEnabled = "true"
-            >
+            app:passwordToggleEnabled="true">
 
             <EditText
                 android:id="@+id/editTextConfirmPassword"

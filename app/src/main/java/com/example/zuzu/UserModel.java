@@ -13,7 +13,9 @@ public class UserModel {
     }
 
     private String firstName, lastName, email, phoneNo, password, dob, gender;
+    private Boolean isPrefSoccer, isPrefBasketball, isPrefVolleyball, isPrefRunning, isPrefTennis, isPrefExercise;
     private Uri profilePicUri;
+
 
 
     public UserModel(String firstName, String lastName, String email, String phoneNo, String password, String dob, String gender) {
@@ -24,10 +26,22 @@ public class UserModel {
         this.password = password;
         this.dob = dob;
         this.gender = gender;
+        this.isPrefSoccer = Boolean.FALSE;
+        this.isPrefBasketball = Boolean.FALSE;
+        this.isPrefVolleyball = Boolean.FALSE;
+        this.isPrefRunning = Boolean.FALSE;
+        this.isPrefTennis = Boolean.FALSE;
+        this.isPrefExercise = Boolean.FALSE;
+        this.profilePicUri = null;
     }
-    public void setProfilePicUri(Uri profilePicUri) {this.profilePicUri = profilePicUri; }
 
-    public Uri getProfilePicUri() { return profilePicUri;}
+    public Uri getProfilePicUri() {return this.profilePicUri; }
+
+    public void setProfilePicUri(Uri uri) {this.profilePicUri = uri; }
+
+    public Boolean getIsPrefSoccer() {return this.isPrefSoccer;}
+
+    public void setIsPrefSoccer(Boolean pref) {this.isPrefSoccer = pref;}
 
     public String getDob() {
         return dob;
