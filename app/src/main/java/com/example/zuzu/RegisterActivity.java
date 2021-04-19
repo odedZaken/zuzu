@@ -138,10 +138,10 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     }
 
     private boolean isRegistrationFormValid() {
-        boolean isError = false;
+        boolean isError;
         editTextPasswordWarning.setText("You Must Choose a Password (At least 5 Characters)");
         editTextPhoneWarning.setText("You Must Enter a Phone Number");
-        isError |= validateEditText((EditText) editDate, editDateWarning);
+        isError = validateEditText((EditText) editDate, editDateWarning);
         isError |= validateEditText(editTextFirstName, editTextFirstNameWarning);
         isError |= validateEditText(editTextLastName, editTextLastNameWarning);
         isError |= validateEditText(editTextEmail, editTextEmailWarning);
@@ -179,7 +179,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         }
     }
 
-    private boolean validateEditText(EditText editText, TextView warning) {
+    public static boolean validateEditText(EditText editText, TextView warning) {
         if (editText.getText().length() < 2) {
             warning.setVisibility(View.VISIBLE);
             editText.requestFocus();
@@ -292,9 +292,9 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         String email = editTextEmail.getText().toString().toLowerCase();
         String phoneNo = editTextPhone.getText().toString();
         String password = editTextPassword.getText().toString();
-        UserModel newUser = new UserModel(firstName, lastName, email, phoneNo, password, dayOfBirth, gender.toString());
-
+        UserModel newUser = new UserModel(firstName, lastName, email, phoneNo, password, dayOfBirth, gender.toString(), new UserPreferences());
         reference.child(email).setValue(newUser);
+
         if(profileImageUri != null) {
             newUser.setProfilePicUri(profileImageUri);
             uploadProfilePic(profileImageUri, email);

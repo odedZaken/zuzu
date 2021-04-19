@@ -123,8 +123,15 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         String phoneNoFromDB = dataSnapshot.child(enteredEmail).child("phoneNo").getValue(String.class);
                         String dobFromDB = dataSnapshot.child(enteredEmail).child("dob").getValue(String.class);
                         String genderFromDB = dataSnapshot.child(enteredEmail).child("gender").getValue(String.class);
+                        Boolean isPrefSoccer = dataSnapshot.child(enteredEmail).child("userPreferences").child("prefSoccer").getValue(boolean.class);
+                        Boolean isPrefVolleyball = dataSnapshot.child(enteredEmail).child("userPreferences").child("prefVolleyball").getValue(boolean.class);
+                        Boolean isPrefBasketball = dataSnapshot.child(enteredEmail).child("userPreferences").child("prefBasketball").getValue(boolean.class);
+                        Boolean isPrefRunning = dataSnapshot.child(enteredEmail).child("userPreferences").child("prefRunning").getValue(boolean.class);
+                        Boolean isPrefTennis = dataSnapshot.child(enteredEmail).child("userPreferences").child("prefTennis").getValue(boolean.class);
+                        Boolean isPrefExercise = dataSnapshot.child(enteredEmail).child("userPreferences").child("prefExercise").getValue(boolean.class);
 
-                        currentUser = new UserModel(firstNameFromDB,lastNameFromDB,emailFromDB, phoneNoFromDB, passwordFromDB, dobFromDB, genderFromDB);
+                        UserPreferences userPreferences = new UserPreferences(isPrefSoccer, isPrefBasketball, isPrefVolleyball, isPrefRunning, isPrefTennis, isPrefExercise);
+                        currentUser = new UserModel(firstNameFromDB,lastNameFromDB,emailFromDB, phoneNoFromDB, passwordFromDB, dobFromDB, genderFromDB, userPreferences);
 
                         Toast.makeText(LoginActivity.this, "Welcome Back " + firstNameFromDB +" " + lastNameFromDB + ", Login Successful!", Toast.LENGTH_SHORT).show();
 

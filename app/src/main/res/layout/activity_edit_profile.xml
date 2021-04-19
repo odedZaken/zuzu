@@ -61,18 +61,6 @@
             app:layout_constraintStart_toStartOf="@+id/editTextFirstName"
             app:layout_constraintTop_toBottomOf="@+id/editTextFirstName" />
 
-        <EditText
-            android:id="@+id/editTextEmail"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:hint="Email"
-            android:enabled="false"
-            android:layout_marginTop="20dp"
-            android:inputType="textEmailAddress"
-            app:layout_constraintEnd_toEndOf="@+id/editTextLastName"
-            app:layout_constraintStart_toStartOf="@+id/editTextLastName"
-            app:layout_constraintTop_toBottomOf="@+id/editTextLastName" />
 
         <EditText
             android:id="@+id/editTextPhone"
@@ -83,9 +71,9 @@
             android:hint="Phone"
             android:enabled="false"
             android:inputType="phone"
-            app:layout_constraintEnd_toEndOf="@+id/editTextEmail"
-            app:layout_constraintStart_toStartOf="@+id/editTextEmail"
-            app:layout_constraintTop_toBottomOf="@+id/editTextEmail" />
+            app:layout_constraintEnd_toEndOf="@+id/editTextLastName"
+            app:layout_constraintStart_toStartOf="@+id/editTextLastName"
+            app:layout_constraintTop_toBottomOf="@+id/editTextLastName" />
 
         <TextView
             android:id="@+id/interestsText"
@@ -120,16 +108,6 @@
             app:layout_constraintStart_toStartOf="@+id/editTextLastName"
             app:layout_constraintTop_toBottomOf="@+id/editTextLastName" />
 
-        <TextView
-            android:id="@+id/textViewEmailWarning"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="This field can't be empty"
-            android:textColor="@color/red"
-            android:visibility="gone"
-            app:layout_constraintEnd_toEndOf="@+id/editTextEmail"
-            app:layout_constraintStart_toStartOf="@+id/editTextEmail"
-            app:layout_constraintTop_toBottomOf="@+id/editTextEmail" />
 
         <TextView
             android:id="@+id/textViewPhoneWarning"
@@ -161,71 +139,69 @@
             app:layout_constraintTop_toTopOf="@+id/editTextFirstName"
             app:srcCompat="@drawable/ic_action_edit" />
 
-        <Button
-            android:id="@+id/soccerButton"
-            android:layout_width="173dp"
-            android:layout_height="44dp"
+
+        <com.google.android.material.button.MaterialButtonToggleGroup
+            android:id="@+id/toggleGroupInterests"
+            android:layout_width="250dp"
+            android:layout_height="300dp"
             android:layout_marginTop="40dp"
-            android:text="Soccer"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
+            android:orientation="vertical"
+            android:gravity="center_horizontal"
             app:layout_constraintEnd_toEndOf="@+id/interestsText"
             app:layout_constraintStart_toStartOf="@+id/interestsText"
-            app:layout_constraintTop_toBottomOf="@+id/interestsText" />
+            app:layout_constraintTop_toBottomOf="@+id/interestsText">
 
-        <Button
-            android:id="@+id/basketballButton"
-            android:layout_width="173dp"
-            android:layout_height="44dp"
-            android:layout_marginTop="10dp"
-            android:text="BasketBall"
-            app:backgroundTint="@color/colorPrimaryDark"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
-            app:layout_constraintEnd_toEndOf="@+id/soccerButton"
-            app:layout_constraintStart_toStartOf="@+id/soccerButton"
-            app:layout_constraintTop_toBottomOf="@+id/soccerButton" />
-        <Button
-            android:id="@+id/volleyballButton"
-            android:layout_width="173dp"
-            android:layout_height="44dp"
-            android:layout_marginTop="10dp"
-            android:text="VolleyBall"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
-            app:layout_constraintEnd_toEndOf="@+id/basketballButton"
-            app:layout_constraintStart_toStartOf="@+id/basketballButton"
-            app:layout_constraintTop_toBottomOf="@+id/basketballButton" />
+            <Button
+                android:id="@+id/soccerButton"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
+                android:layout_width="195dp"
+                android:layout_height="50dp"
+                android:text="Soccer"
+                app:icon="@drawable/ic_baseline_sports_soccer_24" />
 
-        <Button
-            android:id="@+id/runningButton"
-            android:layout_width="173dp"
-            android:layout_height="44dp"
-            android:layout_marginTop="10dp"
-            android:text="Running"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
-            app:layout_constraintEnd_toEndOf="@+id/volleyballButton"
-            app:layout_constraintStart_toStartOf="@+id/volleyballButton"
-            app:layout_constraintTop_toBottomOf="@+id/volleyballButton" />
+            <Button
+                android:id="@+id/basketballButton"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
+                android:layout_width="195dp"
+                android:layout_height="50dp"
+                android:text="BasketBall"
+                app:icon="@drawable/ic_baseline_sports_basketball_24" />
 
-        <Button
-            android:id="@+id/tennisButton"
-            android:layout_width="173dp"
-            android:layout_height="44dp"
-            android:layout_marginTop="10dp"
-            android:text="Tennis"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
-            app:layout_constraintEnd_toEndOf="@+id/runningButton"
-            app:layout_constraintStart_toStartOf="@+id/runningButton"
-            app:layout_constraintTop_toBottomOf="@+id/runningButton" />
+            <Button
+                android:id="@+id/runningButton"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
+                android:layout_width="195dp"
+                android:layout_height="50dp"
+                android:text="Running"
+                app:icon="@drawable/ic_baseline_directions_run_24" />
 
-        <Button
-            android:id="@+id/exerciseButton"
-            android:layout_width="173dp"
-            android:layout_height="44dp"
-            android:layout_marginTop="10dp"
-            android:text="Exercise"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
-            app:layout_constraintEnd_toEndOf="@+id/tennisButton"
-            app:layout_constraintStart_toStartOf="@+id/tennisButton"
-            app:layout_constraintTop_toBottomOf="@+id/tennisButton" />
+            <Button
+                android:id="@+id/volleyballButton"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
+                android:layout_width="195dp"
+                android:layout_height="50dp"
+                android:text="volleyball"
+                app:icon="@drawable/ic_baseline_sports_volleyball_24" />
+
+            <Button
+                android:id="@+id/tennisButton"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
+                android:layout_width="195dp"
+                android:layout_height="50dp"
+                android:text="Tennis"
+                app:icon="@drawable/ic_baseline_sports_tennis_24" />
+
+            <Button
+                android:id="@+id/exerciseButton"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
+                android:layout_width="195dp"
+                android:layout_height="50dp"
+                android:text="Exercise"
+                app:icon="@drawable/ic_baseline_fitness_center_24" />
+
+        </com.google.android.material.button.MaterialButtonToggleGroup>
+
+
 
         <TextView
             android:id="@+id/dummyTextView"
@@ -234,9 +210,10 @@
             android:layout_marginTop="40dp"
             android:text="TextView"
             android:visibility="invisible"
-            app:layout_constraintEnd_toEndOf="@+id/exerciseButton"
-            app:layout_constraintStart_toStartOf="@+id/exerciseButton"
-            app:layout_constraintTop_toBottomOf="@+id/exerciseButton" />
+            app:layout_constraintEnd_toEndOf="@+id/toggleGroupInterests"
+            app:layout_constraintStart_toStartOf="@+id/toggleGroupInterests"
+            app:layout_constraintTop_toBottomOf="@+id/toggleGroupInterests"
+            />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -15,48 +15,39 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
-import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
+import com.google.android.material.button.MaterialButtonToggleGroup;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.StorageTask;
 import com.google.firebase.storage.UploadTask;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URI;
-import java.util.HashMap;
-import java.util.List;
-
-public class EditProfileActivity extends AppCompatActivity implements View.OnClickListener {
+public class EditProfileActivity extends AppCompatActivity implements View.OnClickListener, MaterialButtonToggleGroup.OnButtonCheckedListener {
 
     private static final int IMAGE_PICK_CODE = 1000;
     private static final int PERMISSION_CODE = 1001;
     final long MAX_SIZE = 1024 * 1024 * 10;     //Set to 10 Megabytes
 
-    private TextView textViewFullName;
-    private EditText editTextFirstName, editTextLastName, editTextEmail, editTextPhone;
+    private TextView textViewFullName, textViewFirstNameWarning, textViewLastNameWarning, textViewPhoneWarning;
+    private EditText editTextFirstName, editTextLastName, editTextPhone;
     private ImageView imageViewProfileImage;
     private Button soccerButton, basketballButton, volleyballButton, runningButton, tennisButton, exerciseButton;
+    private ImageButton editPropertiesButton;
+    private boolean isEditState;      //configures the state of 'editPropertiesButton'
+    private MaterialButtonToggleGroup toggleGroupInterests;
 
     private DatabaseReference databaseReference;
     private StorageReference storageProfilePicsRef;
     private Uri imageUri;
     private UserModel currUser;
+    private UserPreferences userPreferences;
 
 
 
@@ -65,9 +56,11 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_profile);
         currUser = LoginActivity.getCurrentUser();
+        userPreferences = currUser.getUserPreferences();
         initializeEditProfileForm();
         retrieveUserData();
         retrieveProfilePic();
+        retrieveUserPreferences();
     }
 
     @Override
@@ -76,11 +69,8 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
             case R.id.imageViewProfileImage:
                 createImageView();
                 break;
-            case R.id.soccerButton:
-                soccerButton.setBackgroundColor(Color.parseColor("#008577"));
-                soccerButton.setTextColor(Color.parseColor("#FFFFFF"));
-
-                break;
+            case R.id.imageButtonEditProperties:
+                editPropertiesHandler();
             default:
                 break;
         }
@@ -89,10 +79,11 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
     private void initializeEditProfileForm() {
         storageProfilePicsRef = FirebaseStorage.getInstance().getReference().child("profile_pics");
         databaseReference = FirebaseDatabase.getInstance().getReference().child("users");
+        toggleGroupInterests = findViewById(R.id.toggleGroupInterests);
+        toggleGroupInterests.addOnButtonCheckedListener(this);
         textViewFullName = findViewById(R.id.textViewFullName);
         editTextFirstName = findViewById(R.id.editTextFirstName);
         editTextLastName = findViewById(R.id.editTextLastName);
-        editTextEmail = findViewById(R.id.editTextEmail);
         editTextPhone = findViewById(R.id.editTextPhone);
         imageViewProfileImage = findViewById(R.id.imageViewProfileImage);
         imageViewProfileImage.setOnClickListener(this);
@@ -103,6 +94,12 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
         volleyballButton = findViewById(R.id.volleyballButton);
         runningButton = findViewById(R.id.runningButton);
         exerciseButton = findViewById(R.id.exerciseButton);
+        editPropertiesButton = findViewById(R.id.imageButtonEditProperties);
+        editPropertiesButton.setOnClickListener(this);
+        isEditState = false;
+        textViewFirstNameWarning = findViewById(R.id.textViewFirstNameWarning);
+        textViewLastNameWarning = findViewById(R.id.textViewLastNameWarning);
+        textViewPhoneWarning = findViewById(R.id.textViewPhoneWarning);
     }
 
     //Retrieve user data from current user (local memory)
@@ -111,8 +108,23 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
         textViewFullName.setText(fullName);
         editTextFirstName.setText(currUser.getFirstName());
         editTextLastName.setText(currUser.getLastName());
-        editTextEmail.setText(currUser.getEmail());
         editTextPhone.setText(currUser.getPhoneNo());
+    }
+
+    private void retrieveUserPreferences() {
+        userPreferences = currUser.getUserPreferences();
+        checkInterestButton(R.id.soccerButton, userPreferences.getPrefSoccer());
+        checkInterestButton(R.id.basketballButton, userPreferences.getPrefBasketball());
+        checkInterestButton(R.id.volleyballButton, userPreferences.getPrefVolleyball());
+        checkInterestButton(R.id.runningButton, userPreferences.getPrefRunning());
+        checkInterestButton(R.id.tennisButton, userPreferences.getPrefTennis());
+        checkInterestButton(R.id.exerciseButton, userPreferences.getPrefExercise());
+    }
+
+    private void checkInterestButton(int buttonId, boolean isPref) {
+        if(isPref) {
+            toggleGroupInterests.check(buttonId);
+        }
     }
 
     //Retrieve user profile picture from database and show in ImageView
@@ -120,7 +132,7 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
         if (currUser.getProfilePicUri() != null) {
             imageViewProfileImage.setImageURI(currUser.getProfilePicUri());
         }
-        else {
+        else {    //Get image from database (if available)
             storageProfilePicsRef.child(currUser.getEmail()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                 @Override
                 public void onSuccess(Uri uri) {
@@ -140,6 +152,58 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
                 }
             });
         }
+    }
+
+    //This method handles 'edit properties' button
+    private void editPropertiesHandler() {
+        editPropertiesButton.setEnabled(false);
+        if (!isEditState) {
+            editPropertiesToggle(true);
+            editPropertiesButton.setImageResource(R.drawable.ic_baseline_check_24);
+        }
+        else if (isValidPropertiesChange()) {
+            editPropertiesToggle(false);
+            dismissAllWarnings();
+            uploadNewProperties();
+            editPropertiesButton.setImageResource(R.drawable.ic_action_edit);
+            Toast.makeText(this, "Changes saved successfully!", Toast.LENGTH_SHORT).show();
+        }
+        editPropertiesButton.setEnabled(true);
+    }
+
+    //Upload new properties to database and save in 'currentUser'
+    private void uploadNewProperties() {
+        DatabaseReference userReference = databaseReference.child(currUser.getEmail());
+        userReference.child("firstName").setValue(editTextFirstName.getText().toString());
+        userReference.child("lastName").setValue(editTextLastName.getText().toString());
+        userReference.child("phoneNo").setValue(editTextPhone.getText().toString());
+        currUser.setFirstName(editTextFirstName.getText().toString());
+        currUser.setLastName(editTextLastName.getText().toString());
+        currUser.setPhoneNo(editTextPhone.getText().toString());
+    }
+
+    //Hide all warnings in form
+    private void dismissAllWarnings() {
+        textViewFirstNameWarning.setVisibility(View.GONE);
+        textViewLastNameWarning.setVisibility(View.GONE);
+        textViewPhoneWarning.setVisibility(View.GONE);
+    }
+
+    //Check if all editTexts are legal
+    private boolean isValidPropertiesChange() {
+        boolean isError;
+        isError = RegisterActivity.validateEditText(editTextFirstName, textViewFirstNameWarning);
+        isError |= RegisterActivity.validateEditText(editTextLastName, textViewLastNameWarning);
+        isError |= RegisterActivity.validateEditText(editTextPhone, textViewPhoneWarning);
+        return !isError;
+    }
+
+    //Change the state of the form (editable or not)
+    private void editPropertiesToggle(boolean newState) {
+        isEditState = newState;
+        editTextFirstName.setEnabled(newState);
+        editTextLastName.setEnabled(newState);
+        editTextPhone.setEnabled(newState);
     }
 
 
@@ -183,9 +247,11 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
         super.onActivityResult(requestCode,resultCode, data);
         if (resultCode == RESULT_OK && requestCode == IMAGE_PICK_CODE) {
             //set image to image view
-            imageUri = data.getData();
-            imageViewProfileImage.setImageURI(imageUri);
-            uploadProfilePic(imageUri,currUser.getEmail());
+            if (data != null) {
+                imageUri = data.getData();
+                imageViewProfileImage.setImageURI(imageUri);
+                uploadProfilePic(imageUri, currUser.getEmail());
+            }
         }
     }
 
@@ -194,13 +260,40 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
         uploadProfilePicTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                Toast.makeText(EditProfileActivity.this, "pic upload successful!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(EditProfileActivity.this, "New picture upload successful!", Toast.LENGTH_SHORT).show();
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
-                Toast.makeText(EditProfileActivity.this, "pic upload failed!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(EditProfileActivity.this, "Picture upload failed!", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    @Override
+    public void onButtonChecked(MaterialButtonToggleGroup group, int checkedId, boolean isChecked) {
+        switch (checkedId) {
+            case R.id.soccerButton:
+                userPreferences.setPrefSoccer(isChecked);
+                break;
+            case R.id.basketballButton:
+                userPreferences.setPrefBasketball(isChecked);
+                break;
+            case R.id.volleyballButton:
+                userPreferences.setPrefVolleyball(isChecked);
+                break;
+            case R.id.runningButton:
+                userPreferences.setPrefRunning(isChecked);
+                break;
+            case R.id.tennisButton:
+                userPreferences.setPrefTennis(isChecked);
+                break;
+            case R.id.exerciseButton:
+                userPreferences.setPrefExercise(isChecked);
+                break;
+            default:
+                break;
+        }
+        databaseReference.child(currUser.getEmail()).child("userPreferences").setValue(userPreferences);
     }
 }
