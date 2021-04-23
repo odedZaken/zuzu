@@ -10,5 +10,7 @@
     <string name="invalid_password">Password must be >5 characters</string>
     <string name="login_failed">"Login failed"</string>
     <string name="SignInButtonText">Sign in</string>
-    <string name="Registerbutton">Register</string>
+    <string name="registerButton">Register</string>
+    <string name="title_activity_main">MainActivity</string>
+
 </resources>

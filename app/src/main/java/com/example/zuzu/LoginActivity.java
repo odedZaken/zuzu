@@ -2,7 +2,6 @@ package com.example.zuzu;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.CountDownTimer;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -102,7 +101,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         passwordWarning.setVisibility(View.GONE);
     }
 
-    //Check if the user input match the user in the database, if true, opens the edit profile activity else it will show an error
+    //Check if the user input match the user in the database, if true, opens the main activity else it will show an error
     private void isUserExist() {
         final String enteredEmail = textUsername.getText().toString().trim().toLowerCase();
         final String enteredPassword = textPassword.getText().toString().trim();
@@ -135,7 +134,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
                         Toast.makeText(LoginActivity.this, "Welcome Back " + firstNameFromDB +" " + lastNameFromDB + ", Login Successful!", Toast.LENGTH_SHORT).show();
 
-                        Intent intent = new Intent(LoginActivity.this, EditProfileActivity.class);      //todo: Check if correct
+                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                         startActivity(intent);
                     }
                     else {
