@@ -11,9 +11,11 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.google.android.gms.location.LocationServices;
@@ -27,19 +29,23 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.Executor;
 
 
-public class MapActivity extends AppCompatActivity implements GoogleMap.OnMapClickListener {
+public class MapActivity extends AppCompatActivity implements GoogleMap.OnMapClickListener, View.OnClickListener {
 
 
     private GoogleMap googleMap;
     private Location lastKnownLocation;
     private FusedLocationProviderClient fusedLocationProviderClient;
     private boolean locationPermissionGranted;
+    private FloatingActionButton clearEventLocation;
+    private FloatingActionButton saveEventLocation;
+    private LatLng eventCurrentLocation;
 
     private static final int DEFAULT_ZOOM = 16;
     private static final int CLICK_MAP_ZOOM = 17;
@@ -65,6 +71,7 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.OnMapCli
         googleMap.clear();
         googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, CLICK_MAP_ZOOM));
         googleMap.addMarker(markerOptions);
+        eventCurrentLocation = latLng;
     }
 
     public MapActivity() {
@@ -76,8 +83,9 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.OnMapCli
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
         this.setTitle("Choose event location");
+        initializeMapForm();
         getLocationPermission();
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         //Initialize map fragment
         SupportMapFragment supportMapFragment = (SupportMapFragment)getSupportFragmentManager().findFragmentById(R.id.googleMap);
@@ -96,6 +104,31 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.OnMapCli
         });
     }
 
+    private void initializeMapForm() {
+        eventCurrentLocation = null;
+        clearEventLocation = findViewById(R.id.clearEventLocation);
+        clearEventLocation.setOnClickListener(this);
+        saveEventLocation = findViewById(R.id.saveEventLocation);
+        saveEventLocation.setOnClickListener(this);
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch(v.getId()) {
+            case R.id.saveEventLocation:
+                if(eventCurrentLocation != null) {
+                    CreateEventActivity.setEventLocation(eventCurrentLocation);
+                    Toast.makeText(this, "Location Saved!", Toast.LENGTH_SHORT).show();
+                    finish();
+                } else {
+                    Toast.makeText(this, "Choose a point on map first", Toast.LENGTH_SHORT).show();
+                }
+                break;
+            case R.id.clearEventLocation:
+                googleMap.clear();
+                break;
+        }
+    }
 
     @SuppressLint("MissingPermission")
     private void updateLocationUI() {
