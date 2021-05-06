@@ -14,7 +14,6 @@ public class UserModel {
 
     private String firstName, lastName, email, phoneNo, password, dob, gender;
     private UserPreferences userPreferences;
-    //private Boolean isPrefSoccer, isPrefBasketball, isPrefVolleyball, isPrefRunning, isPrefTennis, isPrefExercise;
     private Uri profilePicUri;
 
 

@@ -34,7 +34,15 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        initializeLoginForm();
+
+        //ToDO: Delete 2 lines after testing
+        Intent intent = new Intent(LoginActivity.this, CreateEventActivity.class);
+        startActivity(intent);
+
+
+//
+//        this.setTitle("Login");
+//        initializeLoginForm();
     }
 
     @Override
@@ -153,11 +161,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-
             }
         });
-
-
     }
 
     public static UserModel getCurrentUser() {
