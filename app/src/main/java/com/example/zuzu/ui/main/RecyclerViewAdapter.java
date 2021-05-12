@@ -65,7 +65,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         holder.eventName.setText(event.getTitle());
         holder.eventDate.setText(event.getDate());
         holder.eventTime.setText(event.getTime());
-        holder.eventDistance.setText(event.getDistance());
+        holder.eventDistance.setText(Integer.toString(event.getDistance()));
         //Create the string for current/max participants
         String participants = event.getCurrParticipants() + "/" + event.getMaxParticipants();
         holder.eventNumParticipants.setText(participants);

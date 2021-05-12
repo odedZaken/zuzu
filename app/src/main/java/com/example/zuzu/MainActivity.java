@@ -214,37 +214,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View view) {
         Intent intent = new Intent(this,CreateEventActivity.class);
         startActivity(intent);
+        finish();
     }
-
-
-//    private void getDeviceLocation() {
-//        try {
-//            //Get last known location
-//            fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
-//            if (locationPermissionGranted) {
-//                Task<Location> locationResult = fusedLocationProviderClient.getLastLocation();
-//                locationResult.addOnCompleteListener(this, new OnCompleteListener<Location>() {
-//                    @Override
-//                    public void onComplete(@NonNull Task<Location> task) {
-//                        if (task.isSuccessful()) {
-//                            lastKnownLocation = task.getResult();
-//                        }
-//                    }
-//                });
-//            }
-//        } catch(SecurityException e) {
-//            Log.e("Exception: %s", e.getMessage(), e);
-//        }
-//    }
-//
-//    private void getLocationPermission() {
-//
-//        if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_DENIED) {
-//            String[] permissions = {Manifest.permission.ACCESS_FINE_LOCATION};
-//            requestPermissions(permissions, PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
-//            locationPermissionGranted = false;
-//        } else {
-//            locationPermissionGranted = true;
-//        }
-//    }
 }
