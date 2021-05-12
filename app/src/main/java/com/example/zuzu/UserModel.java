@@ -5,6 +5,7 @@ import android.net.Uri;
 import com.google.firebase.database.DatabaseReference;
 
 import java.util.Date;
+import java.util.UUID;
 
 public class UserModel {
 
@@ -12,13 +13,14 @@ public class UserModel {
         MALE, FEMALE, OTHER
     }
 
-    private String firstName, lastName, email, phoneNo, password, dob, gender;
+    private String firstName, lastName, email, phoneNo, password, dob, gender, id;
     private UserPreferences userPreferences;
     private Uri profilePicUri;
 
 
 
     public UserModel(String firstName, String lastName, String email, String phoneNo, String password, String dob, String gender, UserPreferences userPreferences) {
+        this.id = UUID.randomUUID().toString();
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
@@ -28,6 +30,14 @@ public class UserModel {
         this.gender = gender;
         this.profilePicUri = null;
         this.userPreferences = userPreferences;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public UserPreferences getUserPreferences() { return userPreferences; }
@@ -94,5 +104,7 @@ public class UserModel {
     public String getPassword() {
         return password;
     }
+
+    public String getFullName() { return firstName + " " + lastName; }
 
 }

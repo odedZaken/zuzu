@@ -2,7 +2,9 @@ package com.example.zuzu;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.drawerlayout.widget.DrawerLayout;
 
 import android.Manifest;
 import android.content.Intent;
@@ -12,6 +14,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -22,23 +25,26 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.button.MaterialButtonToggleGroup;
+import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
-public class EditProfileActivity extends AppCompatActivity implements View.OnClickListener, MaterialButtonToggleGroup.OnButtonCheckedListener {
+public class EditProfileActivity extends AppCompatActivity implements View.OnClickListener, MaterialButtonToggleGroup.OnButtonCheckedListener,
+        NavigationView.OnNavigationItemSelectedListener {
 
     private static final int IMAGE_PICK_CODE = 1000;
     private static final int PERMISSION_CODE = 1001;
-    final long MAX_SIZE = 1024 * 1024 * 10;     //Set to 10 Megabytes
+    public static final long MAX_SIZE = 1024 * 1024 * 10;     //Set to 10 Megabytes
 
-    private TextView textViewFullName, textViewFirstNameWarning, textViewLastNameWarning, textViewPhoneWarning;
+    private TextView textViewFullName, textViewFirstNameWarning, textViewLastNameWarning, textViewPhoneWarning, navDrawerEmail, navDrawerFullName;
     private EditText editTextFirstName, editTextLastName, editTextPhone;
-    private ImageView imageViewProfileImage;
-    private Button soccerButton, basketballButton, volleyballButton, runningButton, tennisButton, exerciseButton;
+    private ImageView imageViewProfileImage, navDrawerProfilePic;
+    //private Button soccerButton, basketballButton, volleyballButton, runningButton, tennisButton, exerciseButton;
     private ImageButton editPropertiesButton;
     private boolean isEditState;      //configures the state of 'editPropertiesButton'
     private MaterialButtonToggleGroup toggleGroupInterests;
@@ -48,6 +54,9 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
     private Uri imageUri;
     private UserModel currUser;
     private UserPreferences userPreferences;
+    private DrawerLayout drawerLayout;
+    private NavigationView navigationView;
+    private MaterialToolbar toolbar;
 
 
 
@@ -56,12 +65,76 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_profile);
         currUser = LoginActivity.getCurrentUser();
-        userPreferences = currUser.getUserPreferences();
+        if (currUser != null) {
+            userPreferences = currUser.getUserPreferences();
+        }
         initializeEditProfileForm();
         retrieveUserData();
         retrieveProfilePic();
         retrieveUserPreferences();
+        initializeNavDrawer();
     }
+
+    private void initializeNavDrawer() {
+        drawerLayout = findViewById(R.id.drawerLayout);
+        navigationView = findViewById(R.id.nav_view);
+        toolbar = findViewById(R.id.toolbar);
+        navigationView.setNavigationItemSelectedListener(this);
+        navigationView.bringToFront();
+        navigationView.setCheckedItem(R.id.nav_preferences);
+        //Get header layout for the navigation drawer and initialize header views
+        View navHeaderLayout = navigationView.getHeaderView(0);
+        navDrawerFullName = navHeaderLayout.findViewById(R.id.navDrawerFullName);
+        navDrawerEmail = navHeaderLayout.findViewById(R.id.navDrawerEmail);
+        navDrawerProfilePic = navHeaderLayout.findViewById(R.id.navDrawerProfilePic);
+        //setSupportActionBar(toolbar);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar,R.string.navigation_drawer_open,R.string.navigation_drawer_closed);
+        drawerLayout.addDrawerListener(toggle);
+        toggle.syncState();
+        if (currUser != null) {
+            navDrawerFullName.setText(currUser.getFullName());
+            navDrawerEmail.setText(currUser.getEmail());
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(drawerLayout.isOpen()) {
+            drawerLayout.close();
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        Intent intent;
+        switch(item.getItemId()) {
+            case R.id.nav_home:
+                intent = new Intent(this, MainActivity.class);
+                startActivity(intent);
+                drawerLayout.close();
+                break;
+            case R.id.nav_preferences:
+                break;
+
+            case R.id.nav_logout:
+                intent = new Intent(this, LoginActivity.class);
+                startActivity(intent);
+                LoginActivity.setCurrentUser(null);
+                Toast.makeText(this, "User logged out..", Toast.LENGTH_SHORT).show();
+                finish();
+                break;
+            case R.id.nav_invite_friends:
+                Toast.makeText(this, "Coming soon..", Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.nav_about:
+                Toast.makeText(this, "Coming soon..", Toast.LENGTH_SHORT).show();
+                break;
+        }
+        return true;
+    }
+
 
     @Override
     public void onClick(View v) {
@@ -88,12 +161,12 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
         imageViewProfileImage = findViewById(R.id.imageViewProfileImage);
         imageViewProfileImage.setOnClickListener(this);
         imageViewProfileImage.setVisibility(View.VISIBLE);
-        soccerButton = findViewById(R.id.soccerButton);
-        soccerButton.setOnClickListener(this);
-        basketballButton = findViewById(R.id.basketballButton);
-        volleyballButton = findViewById(R.id.volleyballButton);
-        runningButton = findViewById(R.id.runningButton);
-        exerciseButton = findViewById(R.id.exerciseButton);
+//        soccerButton = findViewById(R.id.soccerButton);
+//        soccerButton.setOnClickListener(this);
+//        basketballButton = findViewById(R.id.basketballButton);
+//        volleyballButton = findViewById(R.id.volleyballButton);
+//        runningButton = findViewById(R.id.runningButton);
+//        exerciseButton = findViewById(R.id.exerciseButton);
         editPropertiesButton = findViewById(R.id.imageButtonEditProperties);
         editPropertiesButton.setOnClickListener(this);
         isEditState = false;
@@ -104,8 +177,7 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
 
     //Retrieve user data from current user (local memory)
     private void retrieveUserData() {
-        String fullName = currUser.getFirstName() + ' ' + currUser.getLastName();
-        textViewFullName.setText(fullName);
+        textViewFullName.setText(currUser.getFullName());
         editTextFirstName.setText(currUser.getFirstName());
         editTextLastName.setText(currUser.getLastName());
         editTextPhone.setText(currUser.getPhoneNo());
@@ -127,7 +199,7 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
         }
     }
 
-    //Retrieve user profile picture from database and show in ImageView
+    //Retrieve user profile picture from database and show in ImageView and in navigation drawer
     private void retrieveProfilePic() {
         if (currUser.getProfilePicUri() != null) {
             imageViewProfileImage.setImageURI(currUser.getProfilePicUri());
@@ -142,11 +214,12 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
                         public void onSuccess(byte[] bytes) {
                             Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
                             imageViewProfileImage.setImageBitmap(bitmap);
+                            navDrawerProfilePic.setImageBitmap(bitmap);
                         }
                     }).addOnFailureListener(new OnFailureListener() {
                         @Override
                         public void onFailure(@NonNull Exception e) {
-                            Toast.makeText(EditProfileActivity.this, "Failed to fetch profile pic!", Toast.LENGTH_LONG).show();
+                            Toast.makeText(EditProfileActivity.this, "Failed to fetch profile picture..", Toast.LENGTH_LONG).show();
                         }
                     });
                 }
@@ -173,7 +246,7 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
 
     //Upload new properties to database and save in 'currentUser'
     private void uploadNewProperties() {
-        DatabaseReference userReference = databaseReference.child(currUser.getEmail());
+        DatabaseReference userReference = databaseReference.child(currUser.getId());
         userReference.child("firstName").setValue(editTextFirstName.getText().toString());
         userReference.child("lastName").setValue(editTextLastName.getText().toString());
         userReference.child("phoneNo").setValue(editTextPhone.getText().toString());
@@ -294,6 +367,6 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
             default:
                 break;
         }
-        databaseReference.child(currUser.getEmail()).child("userPreferences").setValue(userPreferences);
+        databaseReference.child(currUser.getId()).child("userPreferences").setValue(userPreferences);
     }
 }

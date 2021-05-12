@@ -30,7 +30,7 @@
             android:label="@string/title_activity_main"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
-        <activity android:name=".EditProfileActivity" />
+        <activity android:name=".EditProfileActivity" android:parentActivityName=".MainActivity" android:theme="@style/AppTheme.NoActionBar"/>
         <activity android:name=".RegisterActivity" />
         <activity android:name=".MapActivity" android:parentActivityName=".CreateEventActivity"/>
         <activity android:name=".CreateEventActivity" android:parentActivityName=".MainActivity"/>

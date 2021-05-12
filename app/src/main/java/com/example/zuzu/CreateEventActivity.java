@@ -208,11 +208,17 @@ public class CreateEventActivity extends AppCompatActivity implements View.OnCli
         String eventTypeStr = eventType.getText().toString();
         String eventDateStr = eventDate.getText().toString();
         String eventTimeStr = eventTime.getText().toString();
-        String currUserEmail = LoginActivity.getCurrentUser().getEmail();
-        EventModel newEvent = new EventModel(eventNameStr,eventDescStr, eventTypeStr, eventTimeStr, eventDateStr, currUserEmail, numParticipantsInt, eventLocation);
+        String currUserId = LoginActivity.getCurrentUser().getId();
+        EventModel newEvent = new EventModel(eventNameStr,eventDescStr, eventTypeStr, eventTimeStr, eventDateStr, currUserId, numParticipantsInt, eventLocation);
         String newEventId = newEvent.getId();
         eventsReference.child(newEventId).setValue(newEvent);
         Toast.makeText(this, "Event Created Successfully", Toast.LENGTH_SHORT).show();
         finish();
+    }
+
+    @Override
+    public boolean onNavigateUp() {
+        Toast.makeText(this, "Back button was pressed!", Toast.LENGTH_SHORT).show();
+        return super.onNavigateUp();
     }
 }

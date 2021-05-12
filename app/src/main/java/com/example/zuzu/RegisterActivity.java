@@ -293,7 +293,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         String phoneNo = editTextPhone.getText().toString();
         String password = editTextPassword.getText().toString();
         UserModel newUser = new UserModel(firstName, lastName, email, phoneNo, password, dayOfBirth, gender.toString(), new UserPreferences());
-        reference.child(email).setValue(newUser);
+        reference.child(newUser.getId()).setValue(newUser);
 
         if(profileImageUri != null) {
             newUser.setProfilePicUri(profileImageUri);

@@ -2,27 +2,49 @@ package com.example.zuzu;
 
 import com.google.android.gms.maps.model.LatLng;
 
+import java.util.ArrayList;
 import java.util.UUID;
 
 public class EventModel {
 
-    private String id, title, description, type, time, creatorEmail, date;
-    private int maxParticipants;
+    private String id, title, description, type, time, creatorId, date;
+    private int maxParticipants, currParticipants, distance;
     private LatLng location;
+    private ArrayList<String> usersIDs;
 
     public EventModel() {
     }
 
-    public EventModel(String title, String description, String type, String time, String date, String creatorEmail, int maxParticipants, LatLng location) {
+    public EventModel(String title, String description, String type, String time, String date, String creatorId, int maxParticipants, LatLng location) {
         this.id = UUID.randomUUID().toString();         //Creates a unique Id for every new event
         this.title = title;
         this.date = date;
         this.description = description;
         this.type = type;
         this.time = time;
-        this.creatorEmail = creatorEmail;
+        this.creatorId = creatorId;
         this.maxParticipants = maxParticipants;
         this.location = location;
+        this.currParticipants = 1;
+        this.distance = 100;
+        usersIDs = new ArrayList<>();
+        usersIDs.add(this.creatorId);
+    }
+
+    public ArrayList<String> getUsersIDs() {
+        return usersIDs;
+    }
+
+    public void setUsersIDs(ArrayList<String> usersIDs) {
+        this.usersIDs = usersIDs;
+    }
+
+    public int getDistance() {
+        return distance;
+    }
+
+    public void setDistance(int distance) {
+        this.distance = distance;
     }
 
     public LatLng getLocation() {
@@ -69,12 +91,12 @@ public class EventModel {
         this.time = time;
     }
 
-    public String getCreatorEmail() {
-        return creatorEmail;
+    public String getCreatorId() {
+        return creatorId;
     }
 
-    public void setCreatorEmail(String creatorEmail) {
-        this.creatorEmail = creatorEmail;
+    public void setCreatorId(String creatorId) {
+        this.creatorId = creatorId;
     }
 
     public int getMaxParticipants() {
@@ -90,4 +112,12 @@ public class EventModel {
     public String getDate() { return date; }
 
     public void setDate(String date) { this.date = date; }
+
+    public int getCurrParticipants() {
+        return currParticipants;
+    }
+
+    public void setCurrParticipants(int currParticipants) {
+        this.currParticipants = currParticipants;
+    }
 }

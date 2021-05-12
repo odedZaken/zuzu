@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="200dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@drawable/ic_launcher_background"
+    android:gravity="bottom"
+    android:orientation="vertical"
+    android:padding="20dp">
+
+    <androidx.cardview.widget.CardView
+        app:cardElevation="15dp"
+        app:cardCornerRadius="250dp"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_marginBottom="10dp"
+        android:layout_gravity="center">
+
+        <androidx.cardview.widget.CardView
+            app:cardCornerRadius="250dp"
+            android:layout_width="75dp"
+            android:layout_height="75dp"
+            android:layout_gravity="center">
+
+            <ImageView
+                android:id="@+id/navDrawerProfilePic"
+                android:layout_width="75dp"
+                android:layout_height="75dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_baseline_account_circle_24" />
+
+
+            <!--    <ImageView-->
+            <!--        android:id="@+id/navDrawerProfilePic"-->
+            <!--        android:layout_width="75dp"-->
+            <!--        android:layout_height="75dp"-->
+            <!--        android:layout_gravity="center"-->
+            <!--        android:layout_marginBottom="10dp"-->
+            <!--        android:src="@drawable/ic_baseline_account_circle_24" />-->
+
+        </androidx.cardview.widget.CardView>
+
+    </androidx.cardview.widget.CardView>
+
+    <TextView
+        android:id="@+id/navDrawerFullName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Full Name"
+        android:textSize="24sp" />
+
+    <TextView
+        android:id="@+id/navDrawerEmail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Email" />
+
+
+</LinearLayout>

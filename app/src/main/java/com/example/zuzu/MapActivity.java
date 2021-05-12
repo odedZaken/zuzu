@@ -43,8 +43,7 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.OnMapCli
     private Location lastKnownLocation;
     private FusedLocationProviderClient fusedLocationProviderClient;
     private boolean locationPermissionGranted;
-    private FloatingActionButton clearEventLocation;
-    private FloatingActionButton saveEventLocation;
+    private FloatingActionButton clearEventLocation, saveEventLocation;
     private LatLng eventCurrentLocation;
 
     private static final int DEFAULT_ZOOM = 16;
@@ -62,7 +61,7 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.OnMapCli
         markerOptions.title("Event Location");
 
         if (lastKnownLocation != null) {
-            float[] result = new float[5];
+            float[] result = new float[3];
             Location.distanceBetween(lastKnownLocation.getLatitude(),lastKnownLocation.getLongitude(),latLng.latitude,latLng.longitude, result);
             markerOptions.snippet("Distance to marker: " + (int)result[0] + "m");
         }
@@ -85,7 +84,7 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.OnMapCli
         this.setTitle("Choose event location");
         initializeMapForm();
         getLocationPermission();
-        //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         //Initialize map fragment
         SupportMapFragment supportMapFragment = (SupportMapFragment)getSupportFragmentManager().findFragmentById(R.id.googleMap);
@@ -147,7 +146,12 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.OnMapCli
                 Log.e("Exception: %s", e.getMessage());
             }
         }
+    }
 
+    @Override
+    public boolean onNavigateUp() {
+        Toast.makeText(this, "Back button pressed!", Toast.LENGTH_SHORT).show();
+        return super.onNavigateUp();
     }
 
     private void getDeviceLocation() {
