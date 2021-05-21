@@ -63,15 +63,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private ImageView navDrawerProfilePic;
     private TextView navDrawerFullName, navDrawerEmail;
     private UserModel currUser;
-    private ArrayList<EventModel> eventList;
+//    private ArrayList<EventModel> eventList;
 
     private DatabaseReference databaseReference;
     private StorageReference storageProfilePicsRef;
-//    private Location lastKnownLocation;
-//    private boolean locationPermissionGranted;
-//    private FusedLocationProviderClient fusedLocationProviderClient;
-//
-//    private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
 
 
     @Override
@@ -88,14 +83,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
     private void initializeMainActivity() {
-//        lastKnownLocation = null;
-//        getLocationPermission();
-//        getDeviceLocation();
         ArrayList<String> tabText = new ArrayList<>();
         //Add tab names to array
         tabText.add("Discover");
         tabText.add("My Events");
-
+        tabText.add("Map");
 
         viewPager = findViewById(R.id.viewPager);
         tabLayout = findViewById(R.id.tabLayout);
@@ -161,7 +153,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onBackPressed() {
-
         if (drawerLayout.isOpen()) {
             drawerLayout.close();
         } else {
@@ -203,10 +194,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         for (int i=0; i < tabText.size(); i++) {
             Bundle bundle = new Bundle();       //This bundle contains parameters for the fragment
             bundle.putString("title",tabText.get(i));
-//            bundle.putParcelable("userLocation", lastKnownLocation);
             fragment.setArguments(bundle);
             sectionsPagerAdapter.addFragment(fragment, tabText.get(i));
-            fragment = new DiscoverFragment();      //Create a new fragment for 'My Events'
+            fragment = new DiscoverFragment();      //Create a new fragment for 'My Events' and 'Events Map'
         }
     }
 
@@ -214,6 +204,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View view) {
         Intent intent = new Intent(this,CreateEventActivity.class);
         startActivity(intent);
-        finish();
+//        finish();
     }
 }

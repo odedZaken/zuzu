@@ -25,6 +25,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -65,11 +66,17 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.OnMapCli
             Location.distanceBetween(lastKnownLocation.getLatitude(),lastKnownLocation.getLongitude(),latLng.latitude,latLng.longitude, result);
             markerOptions.snippet("Distance to marker: " + (int)result[0] + "m");
         }
-
         markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA));
         googleMap.clear();
         googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, CLICK_MAP_ZOOM));
         googleMap.addMarker(markerOptions);
+        googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(@NonNull Marker marker) {
+                Toast.makeText(MapActivity.this, "Marker selected! id: " + marker.getId() , Toast.LENGTH_LONG).show();
+                return false;
+            }
+        });
         eventCurrentLocation = latLng;
     }
 
@@ -198,5 +205,11 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.OnMapCli
                 }
                 break;
         }
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        finish();
+        return true;
     }
 }

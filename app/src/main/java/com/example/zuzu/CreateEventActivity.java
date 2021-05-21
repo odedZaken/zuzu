@@ -38,7 +38,6 @@ import java.util.Calendar;
 public class CreateEventActivity extends AppCompatActivity implements View.OnClickListener, DatePickerDialog.OnDateSetListener {
 
 
-//    private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
 
     private ArrayList<String> sports = new ArrayList<>();
     private ArrayAdapter sportsAdapter;
@@ -56,7 +55,6 @@ public class CreateEventActivity extends AppCompatActivity implements View.OnCli
     private static LatLng eventLocation;
     private DatabaseReference eventsReference;
 
-    //private FusedLocationProviderClient fusedLocationProviderClient;
 
 
     @Override
@@ -66,7 +64,6 @@ public class CreateEventActivity extends AppCompatActivity implements View.OnCli
         this.setTitle("New Event");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         initializeCreateEventForm();
-        //fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         sports.add("Soccer");
         sports.add("Basketball");
         sports.add("Tennis");
@@ -235,9 +232,15 @@ public class CreateEventActivity extends AppCompatActivity implements View.OnCli
         Toast.makeText(this, "Event Created Successfully", Toast.LENGTH_SHORT).show();
     }
 
-    @Override
-    public boolean onNavigateUp() {
-        Toast.makeText(this, "Back button was pressed!", Toast.LENGTH_SHORT).show();
-        return super.onNavigateUp();
-    }
+//    @Override
+//    public boolean onNavigateUp() {
+//        Toast.makeText(this, "Up button was pressed!", Toast.LENGTH_SHORT).show();
+//        return super.onNavigateUp();
+//    }
+//
+//    @Override
+//    public void onBackPressed() {
+//        Toast.makeText(this, "Back button was pressed!", Toast.LENGTH_SHORT).show();
+//        super.onBackPressed();
+//    }
 }

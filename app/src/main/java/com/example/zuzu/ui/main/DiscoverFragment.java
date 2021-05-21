@@ -4,10 +4,12 @@ import android.Manifest;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
+import android.preference.Preference;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -20,6 +22,7 @@ import com.example.zuzu.EventModel;
 import com.example.zuzu.LoginActivity;
 import com.example.zuzu.R;
 import com.example.zuzu.UserModel;
+import com.example.zuzu.UserPreferences;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
@@ -37,11 +40,7 @@ import java.util.List;
 
 public class DiscoverFragment extends Fragment {
 
-    //private static final String ARG_SECTION_NUMBER = "section_number";
-//    private static final String ARG_PARAM1 = "param1";
-//    private static final String ARG_PARAM2 = "param2";
-//    private String mParam1;
-//    private String mParam2;
+
     private ArrayList<EventModel> eventList;
     private ArrayList<EventModel> myEvents;
     private DatabaseReference databaseReference;
@@ -53,73 +52,55 @@ public class DiscoverFragment extends Fragment {
     private FusedLocationProviderClient fusedLocationProviderClient;
     private String tabTitle;
     private UserModel currUser;
+    private UserPreferences currUserPref;
+    private ProgressBar progressBarEventList;
 
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
 
 
-    //private PageViewModel pageViewModel;
     public DiscoverFragment() {
         //Empty constructor
     }
 
-//    public static DiscoverFragment newInstance(String param1, String param2) {
-////        DiscoverFragment fragment = new DiscoverFragment();
-////        Bundle bundle = new Bundle();
-////        bundle.putInt(ARG_SECTION_NUMBER, index);
-////        fragment.setArguments(bundle);
-////        return fragment;
-//        DiscoverFragment fragment = new DiscoverFragment();
-//        Bundle args = new Bundle();
-//        args.putString(ARG_PARAM1, param1);
-//        args.putString(ARG_PARAM1, param2);
-//        fragment.setArguments(args);
-//        return fragment;
-//    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         databaseReference = FirebaseDatabase.getInstance().getReference().child("events");
         currUser = LoginActivity.getCurrentUser();
+        currUserPref = currUser.getUserPreferences();
     }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-//        final TextView textView = root.findViewById(R.id.section_label);
-//        pageViewModel.getText().observe(this, new Observer<String>() {
-//            @Override
-//            public void onChanged(@Nullable String s) {
-//                textView.setText(s);
-//            }
-//        });
         //Initialize view and inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_discover, container, false);
+        View eventListView = inflater.inflate(R.layout.fragment_discover, container, false);
+        View eventMapView = inflater.inflate(R.layout.activity_map, container, false);
 
         //Initialize and assign variable
         getLocationPermission();
-        getDeviceLocation();
         eventList = new ArrayList<>();
         myEvents = new ArrayList<>();
-        TextView textView = view.findViewById(R.id.section_label);
-        recyclerView = view.findViewById(R.id.eventsRecycleView);
+        progressBarEventList = eventListView.findViewById(R.id.progressBarEventList);
+        progressBarEventList.setVisibility(View.VISIBLE);
+        recyclerView = eventListView.findViewById(R.id.eventsRecycleView);
         recyclerView.setHasFixedSize(true);
-        layoutManager = new LinearLayoutManager(getActivity());   //todo: This might not Work!
+        layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
 
+        //Get Device location and Initialize events List
+        getDeviceLocation();
 
-
-        //Get title
+        //Get tab title
         tabTitle = this.getArguments().getString("title");
 
-        //if(sTitle.equals("Discover")) {
-//        initializeEventList();
-        //}
-
-        //Set title on text view
-        textView.setText(tabTitle);
-
-        return view;
+        //Set layout by tab title
+        if(tabTitle.equals("Map")) {
+            return eventMapView;
+        } else {
+            return eventListView;
+        }
     }
 
     private void initializeEventList() {
@@ -128,30 +109,9 @@ public class DiscoverFragment extends Fragment {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot event : dataSnapshot.getChildren()) {
-                    ArrayList<String> usersIds = new ArrayList<>();
-                    String creatorEmail = event.child("creatorEmail").getValue(String.class);
-                    String date = event.child("date").getValue(String.class);
-                    String description = event.child("description").getValue(String.class);
-                    String id = event.child("id").getValue(String.class);
-                    int maxParticipants = event.child("maxParticipants").getValue(int.class);
-                    int currParticipants = event.child("currParticipants").getValue(int.class);
-                    double latitude = event.child("location").child("latitude").getValue(double.class);
-                    double longitude = event.child("location").child("longitude").getValue(double.class);
-                    usersIds = getEventIdList(event);
-                    LatLng location = new LatLng(latitude,longitude);
-                    String time = event.child("time").getValue(String.class);
-                    String title = event.child("title").getValue(String.class);
-                    String type = event.child("type").getValue(String.class);
-                    EventModel eventModel = new EventModel(title, description, type, time, date,creatorEmail, maxParticipants, location);
-                    eventModel.setId(id);
-                    eventModel.setCurrParticipants(currParticipants);
-                    eventModel.setUsersIDs(usersIds);
-                    if(lastKnownLocation != null) {
-                        int result = calculateDistanceMeters(latitude, longitude);
-                        eventModel.setDistance(result);
-                    }
-                    sortEventToList(eventModel);
+                    getEventFromDB(event);
                 }
+                progressBarEventList.setVisibility(View.INVISIBLE);
                 if(tabTitle.equals("Discover")) {
                     mAdapter = new RecyclerViewAdapter(eventList, getActivity());
                 }
@@ -165,6 +125,34 @@ public class DiscoverFragment extends Fragment {
             }
         });
     }
+
+    private void getEventFromDB(DataSnapshot event) {
+        ArrayList<String> usersIds = new ArrayList<>();
+        String creatorEmail = event.child("creatorEmail").getValue(String.class);
+        String date = event.child("date").getValue(String.class);
+        String description = event.child("description").getValue(String.class);
+        String id = event.child("id").getValue(String.class);
+        int maxParticipants = event.child("maxParticipants").getValue(int.class);
+        int currParticipants = event.child("currParticipants").getValue(int.class);
+        double latitude = event.child("location").child("latitude").getValue(double.class);
+        double longitude = event.child("location").child("longitude").getValue(double.class);
+        usersIds = getEventIdList(event);
+        LatLng location = new LatLng(latitude,longitude);
+        String time = event.child("time").getValue(String.class);
+        String title = event.child("title").getValue(String.class);
+        String type = event.child("type").getValue(String.class);
+        EventModel eventModel = new EventModel(title, description, type, time, date,creatorEmail, maxParticipants, location);
+        eventModel.setId(id);
+        eventModel.setCurrParticipants(currParticipants);
+        eventModel.setUsersIDs(usersIds);
+        if(lastKnownLocation != null) {
+            int result = calculateDistanceMeters(latitude, longitude);
+            eventModel.setDistance(result);
+        }
+        //Determine the list the event will be added to, and check by preferences
+        sortEventToList(eventModel);
+    }
+
 
     //Parse the list of users ids into an array
     private ArrayList<String> getEventIdList (DataSnapshot dataSnapshot) {
@@ -183,7 +171,10 @@ public class DiscoverFragment extends Fragment {
                 myEvents.add(event);
             }
         }
-        eventList.add(event);
+        //Add to general event list according to preference
+        if(currUserPref.isPrefByString(event.getType())) {
+            eventList.add(event);
+        }
     }
 
     private int calculateDistanceMeters(double latitude, double longitude) {
@@ -213,6 +204,9 @@ public class DiscoverFragment extends Fragment {
                     }
                 });
             }
+            else {
+                Toast.makeText(getActivity(), "Location Permission Denied", Toast.LENGTH_SHORT).show();
+            }
         } catch(SecurityException e) {
             Log.e("Exception: %s", e.getMessage(), e);
         }
@@ -227,6 +221,11 @@ public class DiscoverFragment extends Fragment {
         } else {
             locationPermissionGranted = true;
         }
+    }
+
+    private void showEventsMap() {
+        //recyclerView.setVisibility(View.GONE);
+        //Show all events on a google map
     }
 }
 

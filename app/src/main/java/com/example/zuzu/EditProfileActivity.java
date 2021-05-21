@@ -44,7 +44,6 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
     private TextView textViewFullName, textViewFirstNameWarning, textViewLastNameWarning, textViewPhoneWarning, navDrawerEmail, navDrawerFullName;
     private EditText editTextFirstName, editTextLastName, editTextPhone;
     private ImageView imageViewProfileImage, navDrawerProfilePic;
-    //private Button soccerButton, basketballButton, volleyballButton, runningButton, tennisButton, exerciseButton;
     private ImageButton editPropertiesButton;
     private boolean isEditState;      //configures the state of 'editPropertiesButton'
     private MaterialButtonToggleGroup toggleGroupInterests;
@@ -87,7 +86,6 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
         navDrawerFullName = navHeaderLayout.findViewById(R.id.navDrawerFullName);
         navDrawerEmail = navHeaderLayout.findViewById(R.id.navDrawerEmail);
         navDrawerProfilePic = navHeaderLayout.findViewById(R.id.navDrawerProfilePic);
-        //setSupportActionBar(toolbar);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar,R.string.navigation_drawer_open,R.string.navigation_drawer_closed);
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
@@ -161,12 +159,6 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
         imageViewProfileImage = findViewById(R.id.imageViewProfileImage);
         imageViewProfileImage.setOnClickListener(this);
         imageViewProfileImage.setVisibility(View.VISIBLE);
-//        soccerButton = findViewById(R.id.soccerButton);
-//        soccerButton.setOnClickListener(this);
-//        basketballButton = findViewById(R.id.basketballButton);
-//        volleyballButton = findViewById(R.id.volleyballButton);
-//        runningButton = findViewById(R.id.runningButton);
-//        exerciseButton = findViewById(R.id.exerciseButton);
         editPropertiesButton = findViewById(R.id.imageButtonEditProperties);
         editPropertiesButton.setOnClickListener(this);
         isEditState = false;

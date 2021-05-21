@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.main.EventFragment">
+
+    <RelativeLayout
+        android:id="@+id/detailsLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="30dp"
+        android:visibility="visible">
+
+
+<!--        <ImageView-->
+<!--            android:id="@+id/imageSportType"-->
+<!--            android:layout_width="50dp"-->
+<!--            android:layout_height="50dp"-->
+<!--            android:src="@drawable/ic_baseline_sports_soccer_24" />-->
+
+        <TextView
+            android:id="@+id/textEventName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
+            android:text="Event Name" />
+
+        <TextView
+            android:id="@+id/textEventType"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/textEventName"
+            android:text="Event Type" />
+
+        <TextView
+            android:id="@+id/textEventDescription"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/textEventType"
+            android:layout_marginTop="15dp"
+            android:text="Event Description" />
+
+        <View
+            android:id="@+id/divider"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_below="@+id/textEventDescription"
+            android:layout_marginTop="30dp"
+            android:background="?android:attr/listDivider" />
+
+
+        <RelativeLayout
+            android:id="@+id/iconDetailsLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/divider"
+            android:layout_marginTop="30dp"
+            android:gravity="center_horizontal">
+
+
+            <ImageView
+                android:id="@+id/imageCalendar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_baseline_calendar_today_24" />
+
+            <TextView
+                android:id="@+id/textEventDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="2dp"
+                android:layout_toEndOf="@+id/imageCalendar"
+                android:text="18/9/21" />
+
+
+            <ImageView
+                android:id="@+id/imagePerson"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/textEventDate"
+                android:layout_marginTop="30dp"
+                android:src="@drawable/ic_baseline_person_24" />
+
+            <TextView
+                android:id="@+id/textNumParticipants"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/textEventDate"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="32dp"
+
+                android:layout_toEndOf="@+id/imagePerson"
+                android:text="12/16" />
+
+            <View
+                android:id="@+id/border"
+                android:layout_width="1dp"
+                android:layout_height="65dp"
+                android:layout_toEndOf="@+id/textEventDate"
+                android:layout_marginStart="90dp"
+                android:visibility="invisible"
+                />
+
+            <ImageView
+                android:id="@+id/imageClock"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toEndOf="@+id/border"
+                android:src="@drawable/ic_baseline_access_time_24" />
+
+
+            <TextView
+                android:id="@+id/textEventTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="2dp"
+                android:layout_toEndOf="@+id/imageClock"
+                android:text="22:00" />
+
+
+
+            <ImageView
+                android:id="@+id/imageDistance"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/textEventDate"
+                android:layout_marginTop="30dp"
+                android:layout_toEndOf="@+id/border"
+                android:src="@drawable/ic_baseline_near_me_24" />
+
+
+            <TextView
+                android:id="@+id/textEventDistance"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/textEventDate"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="32dp"
+                android:layout_toEndOf="@+id/imageDistance"
+                android:text="1.7km" />
+
+        </RelativeLayout>
+
+        <View
+            android:id="@+id/divider2"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_below="@+id/iconDetailsLayout"
+            android:layout_marginTop="30dp"
+            android:background="?android:attr/listDivider" />
+
+        <ImageView
+            android:id="@+id/mapEvent"
+            android:layout_width="250dp"
+            android:layout_height="200dp"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@+id/divider2"
+            android:layout_marginTop="30dp"
+            android:src="@drawable/ic_baseline_map_24"/>
+
+    </RelativeLayout>
+
+
+</RelativeLayout>

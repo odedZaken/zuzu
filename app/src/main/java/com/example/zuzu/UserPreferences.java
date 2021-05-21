@@ -69,4 +69,9 @@ public class UserPreferences {
     public Boolean getPrefExercise() {
         return isPrefExercise;
     }
+
+    public boolean isPrefByString(String sport) {
+        return sport.equals("Soccer") && isPrefSoccer || sport.equals("Basketball") && isPrefBasketball || sport.equals("Running") && isPrefRunning ||
+                sport.equals("Tennis") && isPrefTennis || sport.equals("Volleyball") && isPrefVolleyball || sport.equals("Exercise") && isPrefExercise;
+    }
 }

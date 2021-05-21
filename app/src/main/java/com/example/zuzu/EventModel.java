@@ -2,10 +2,12 @@ package com.example.zuzu;
 
 import com.google.android.gms.maps.model.LatLng;
 
+import java.io.Serializable;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.UUID;
 
-public class EventModel {
+public class EventModel implements Serializable {
 
     private String id, title, description, type, time, creatorId, date;
     private int maxParticipants, currParticipants, distance;
@@ -119,5 +121,22 @@ public class EventModel {
 
     public void setCurrParticipants(int currParticipants) {
         this.currParticipants = currParticipants;
+    }
+
+    public String getParticipantsStr() {
+        return currParticipants + "/" + maxParticipants;
+    }
+
+    public String getDistanceStr() {
+        String result;
+        DecimalFormat df = new DecimalFormat("0.0");
+        if (distance >= 1000) {
+            //Distance to event is above 1000 meters
+            float f = distance / 1000f;
+            result = df.format(f) + "km";
+        } else {
+            result = distance + "m";
+        }
+        return result;
     }
 }

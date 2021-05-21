@@ -35,12 +35,15 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-//        //Todo: Delete after testing!
-//        Intent intent = new Intent(this, MainActivity.class);
-//        startActivity(intent);
+
 
         this.setTitle("Login");
         initializeLoginForm();
+
+
+        //Todo: Delete after testing!
+        textUsername.setText("odedza@gmail.com");
+        textPassword.setText("123");
     }
 
     @Override
@@ -126,24 +129,25 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     }
                     String passwordFromDB = dataSnapshot.child(userIdFromDB).child("password").getValue(String.class);
                     if(passwordFromDB!= null && passwordFromDB.equals(enteredPassword)) {
-                        String firstNameFromDB = dataSnapshot.child(userIdFromDB).child("firstName").getValue(String.class);
-                        String lastNameFromDB = dataSnapshot.child(userIdFromDB).child("lastName").getValue(String.class);
-                        String emailFromDB = dataSnapshot.child(userIdFromDB).child("email").getValue(String.class);
-                        String phoneNoFromDB = dataSnapshot.child(userIdFromDB).child("phoneNo").getValue(String.class);
-                        String dobFromDB = dataSnapshot.child(userIdFromDB).child("dob").getValue(String.class);
-                        String genderFromDB = dataSnapshot.child(userIdFromDB).child("gender").getValue(String.class);
-                        Boolean isPrefSoccer = dataSnapshot.child(userIdFromDB).child("userPreferences").child("prefSoccer").getValue(boolean.class);
-                        Boolean isPrefVolleyball = dataSnapshot.child(userIdFromDB).child("userPreferences").child("prefVolleyball").getValue(boolean.class);
-                        Boolean isPrefBasketball = dataSnapshot.child(userIdFromDB).child("userPreferences").child("prefBasketball").getValue(boolean.class);
-                        Boolean isPrefRunning = dataSnapshot.child(userIdFromDB).child("userPreferences").child("prefRunning").getValue(boolean.class);
-                        Boolean isPrefTennis = dataSnapshot.child(userIdFromDB).child("userPreferences").child("prefTennis").getValue(boolean.class);
-                        Boolean isPrefExercise = dataSnapshot.child(userIdFromDB).child("userPreferences").child("prefExercise").getValue(boolean.class);
-
-                        UserPreferences userPreferences = new UserPreferences(isPrefSoccer, isPrefBasketball, isPrefVolleyball, isPrefRunning, isPrefTennis, isPrefExercise);
-                        currentUser = new UserModel(firstNameFromDB,lastNameFromDB,emailFromDB, phoneNoFromDB, passwordFromDB, dobFromDB, genderFromDB, userPreferences);
-                        currentUser.setId(userIdFromDB);
-
-                        Toast.makeText(LoginActivity.this, "Welcome Back " + currentUser.getFullName() + ", Login Successful!", Toast.LENGTH_SHORT).show();
+                        getUserFromDB(dataSnapshot, userIdFromDB, passwordFromDB);
+//                        String firstNameFromDB = dataSnapshot.child(userIdFromDB).child("firstName").getValue(String.class);
+//                        String lastNameFromDB = dataSnapshot.child(userIdFromDB).child("lastName").getValue(String.class);
+//                        String emailFromDB = dataSnapshot.child(userIdFromDB).child("email").getValue(String.class);
+//                        String phoneNoFromDB = dataSnapshot.child(userIdFromDB).child("phoneNo").getValue(String.class);
+//                        String dobFromDB = dataSnapshot.child(userIdFromDB).child("dob").getValue(String.class);
+//                        String genderFromDB = dataSnapshot.child(userIdFromDB).child("gender").getValue(String.class);
+//                        Boolean isPrefSoccer = dataSnapshot.child(userIdFromDB).child("userPreferences").child("prefSoccer").getValue(boolean.class);
+//                        Boolean isPrefVolleyball = dataSnapshot.child(userIdFromDB).child("userPreferences").child("prefVolleyball").getValue(boolean.class);
+//                        Boolean isPrefBasketball = dataSnapshot.child(userIdFromDB).child("userPreferences").child("prefBasketball").getValue(boolean.class);
+//                        Boolean isPrefRunning = dataSnapshot.child(userIdFromDB).child("userPreferences").child("prefRunning").getValue(boolean.class);
+//                        Boolean isPrefTennis = dataSnapshot.child(userIdFromDB).child("userPreferences").child("prefTennis").getValue(boolean.class);
+//                        Boolean isPrefExercise = dataSnapshot.child(userIdFromDB).child("userPreferences").child("prefExercise").getValue(boolean.class);
+//
+//                        UserPreferences userPreferences = new UserPreferences(isPrefSoccer, isPrefBasketball, isPrefVolleyball, isPrefRunning, isPrefTennis, isPrefExercise);
+//                        currentUser = new UserModel(firstNameFromDB,lastNameFromDB,emailFromDB, phoneNoFromDB, passwordFromDB, dobFromDB, genderFromDB, userPreferences);
+//                        currentUser.setId(userIdFromDB);
+//
+//                        Toast.makeText(LoginActivity.this, "Welcome Back " + currentUser.getFullName() + ", Login Successful!", Toast.LENGTH_SHORT).show();
 
                         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                         startActivity(intent);
@@ -167,6 +171,27 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             public void onCancelled(@NonNull DatabaseError databaseError) {
             }
         });
+    }
+
+    private void getUserFromDB(DataSnapshot dataSnapshot, String userIdFromDB, String passwordFromDB) {
+        String firstNameFromDB = dataSnapshot.child(userIdFromDB).child("firstName").getValue(String.class);
+        String lastNameFromDB = dataSnapshot.child(userIdFromDB).child("lastName").getValue(String.class);
+        String emailFromDB = dataSnapshot.child(userIdFromDB).child("email").getValue(String.class);
+        String phoneNoFromDB = dataSnapshot.child(userIdFromDB).child("phoneNo").getValue(String.class);
+        String dobFromDB = dataSnapshot.child(userIdFromDB).child("dob").getValue(String.class);
+        String genderFromDB = dataSnapshot.child(userIdFromDB).child("gender").getValue(String.class);
+        Boolean isPrefSoccer = dataSnapshot.child(userIdFromDB).child("userPreferences").child("prefSoccer").getValue(boolean.class);
+        Boolean isPrefVolleyball = dataSnapshot.child(userIdFromDB).child("userPreferences").child("prefVolleyball").getValue(boolean.class);
+        Boolean isPrefBasketball = dataSnapshot.child(userIdFromDB).child("userPreferences").child("prefBasketball").getValue(boolean.class);
+        Boolean isPrefRunning = dataSnapshot.child(userIdFromDB).child("userPreferences").child("prefRunning").getValue(boolean.class);
+        Boolean isPrefTennis = dataSnapshot.child(userIdFromDB).child("userPreferences").child("prefTennis").getValue(boolean.class);
+        Boolean isPrefExercise = dataSnapshot.child(userIdFromDB).child("userPreferences").child("prefExercise").getValue(boolean.class);
+
+        UserPreferences userPreferences = new UserPreferences(isPrefSoccer, isPrefBasketball, isPrefVolleyball, isPrefRunning, isPrefTennis, isPrefExercise);
+        currentUser = new UserModel(firstNameFromDB,lastNameFromDB,emailFromDB, phoneNoFromDB, passwordFromDB, dobFromDB, genderFromDB, userPreferences);
+        currentUser.setId(userIdFromDB);
+
+        Toast.makeText(LoginActivity.this, "Welcome Back " + currentUser.getFullName() + ", Login Successful!", Toast.LENGTH_SHORT).show();
     }
 
     public static UserModel getCurrentUser() {

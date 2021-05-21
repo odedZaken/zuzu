@@ -19,15 +19,12 @@ import java.util.List;
  */
 public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
-//    @StringRes
-//    private static final int[] TAB_TITLES = new int[]{R.string.tab_text_1, R.string.tab_text_2};
-//    private final Context mContext;
+
     private ArrayList<String> arrayList = new ArrayList<>();
     private List<Fragment> fragmentList = new ArrayList<>();
 
     public SectionsPagerAdapter(FragmentManager fm) {
         super(fm);
-//        mContext = context;
     }
 
     public void addFragment(Fragment fragment, String title) {
@@ -38,7 +35,6 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
     @Override
     public Fragment getItem(int position) {
         // getItem is called to instantiate the fragment for the given page.
-        //return DiscoverFragment.newInstance(position + 1);
         return fragmentList.get(position);
     }
 
@@ -46,14 +42,12 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
     @Override
     public CharSequence getPageTitle(int position) {
         //Return array list position
-//        return mContext.getResources().getString(TAB_TITLES[position]);
         return arrayList.get(position);
     }
 
     @Override
     public int getCount() {
-        // Show 2 total pages.
-        //return 2;
+        // Show number of total pages.
         return fragmentList.size();
     }
 }

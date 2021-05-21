@@ -6,123 +6,31 @@
     android:layout_height="match_parent"
     tools:context=".ui.main.DiscoverFragment">
 
-    <TextView
-        android:id="@+id/section_label"
+    <ProgressBar
+        android:id="@+id/progressBarEventList"
+        style="?android:attr/progressBarStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
-        android:text="Discover Events"
-        android:visibility="gone"/>
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:visibility="invisible"
+        />
+
+<!--    <TextView-->
+<!--        android:id="@+id/section_label"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:gravity="center_horizontal"-->
+<!--        android:text="Discover Events"-->
+<!--        android:visibility="gone"/>-->
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/eventsRecycleView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-
-    <!--    <com.google.android.material.card.MaterialCardView-->
-<!--        android:id="@+id/eventCardView"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="100dp"-->
-<!--        android:layout_marginTop="5dp"-->
-<!--        android:layout_marginStart="5dp"-->
-<!--        android:layout_marginEnd="5dp"-->
-<!--        app:cardElevation="4dp">-->
-
-<!--        <LinearLayout-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="match_parent"-->
-<!--            android:orientation="horizontal"-->
-<!--            android:padding="10dp">-->
-
-<!--            <ImageView-->
-<!--                android:layout_width="70dp"-->
-<!--                android:layout_height="70dp"-->
-<!--                android:layout_marginTop="5dp"-->
-<!--                android:scaleType="centerCrop"-->
-<!--                app:srcCompat="@drawable/ic_baseline_sports_basketball_24"-->
-<!--                />-->
-
-<!--            <LinearLayout-->
-<!--                android:layout_width="170dp"-->
-<!--                android:layout_height="match_parent"-->
-<!--                android:orientation="vertical"-->
-<!--                android:gravity="center_vertical"-->
-<!--                android:layout_marginStart="10dp">-->
-
-<!--                <TextView-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:text="Event Long Name" />-->
-
-<!--                <TextView-->
-<!--                    android:layout_marginTop="5dp"-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:text="18/7/21 Sunday"/>-->
-
-<!--                <TextView-->
-<!--                    android:layout_marginTop="5dp"-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:text="22:30"/>-->
-
-<!--            </LinearLayout>-->
-
-<!--            <View-->
-<!--                android:layout_width="2dp"-->
-<!--                android:layout_height="match_parent"-->
-<!--                android:background="?android:attr/listDivider"-->
-<!--                android:layout_marginStart="10dp"-->
-<!--                />-->
-
-
-<!--            <LinearLayout-->
-<!--                android:layout_width="20dp"-->
-<!--                android:layout_height="match_parent"-->
-<!--                android:orientation="vertical"-->
-<!--                android:gravity="center_vertical"-->
-<!--                android:layout_marginStart="15dp"-->
-<!--                >-->
-
-<!--                <ImageView-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    app:srcCompat="@drawable/ic_baseline_near_me_24"/>-->
-
-<!--                <ImageView-->
-<!--                    android:layout_marginTop="5dp"-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    app:srcCompat="@drawable/ic_baseline_person_24"/>-->
-
-<!--            </LinearLayout>-->
-
-<!--            <LinearLayout-->
-<!--                android:layout_width="50dp"-->
-<!--                android:layout_height="match_parent"-->
-<!--                android:orientation="vertical"-->
-<!--                android:gravity="center_vertical"-->
-<!--                android:layout_marginStart="5dp">-->
-
-<!--                <TextView-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:text="1.7km"/>-->
-
-<!--                <TextView-->
-<!--                    android:layout_marginTop="10dp"-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:text="3/10"/>-->
-
-<!--            </LinearLayout>-->
-
-
-
-<!--        </LinearLayout>-->
-
-
-<!--    </com.google.android.material.card.MaterialCardView>-->
+        android:layout_height="match_parent"
+        android:paddingBottom="80dp"
+        android:clipToPadding="false"
+        android:scrollbarStyle="outsideOverlay"/>
 
 
 </RelativeLayout>
