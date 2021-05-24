@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/googleMapEvents"
-        android:name="com.google.android.gms.maps.SupportMapFragment"/>
+        android:name="com.google.android.gms.maps.SupportMapFragment" />
 
 
 <androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -23,7 +23,8 @@
             android:layout_gravity="center|bottom"
             android:layout_margin="25dp"
             app:icon="@drawable/ic_baseline_double_arrow_24"
-            android:text="Go To Event" />
+            android:text="Go To Event"
+            android:visibility="gone"/>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
 

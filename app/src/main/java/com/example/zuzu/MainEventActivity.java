@@ -32,6 +32,10 @@ public class MainEventActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_event);
         initializeEventPage();
+        //Get intent argument for event title (event name)
+        Intent intent = getIntent();
+        String title = intent.getStringExtra("title");
+        toolbar.setTitle(title);
         setSupportActionBar(toolbar);
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);  //Enable up button in the top toolbar
     }

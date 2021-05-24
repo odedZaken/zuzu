@@ -153,14 +153,23 @@
             android:layout_marginTop="30dp"
             android:background="?android:attr/listDivider" />
 
-        <ImageView
-            android:id="@+id/mapEvent"
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/mapEventCard"
             android:layout_width="250dp"
             android:layout_height="200dp"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="3dp"
             android:layout_centerHorizontal="true"
             android:layout_below="@+id/divider2"
-            android:layout_marginTop="30dp"
+            android:layout_marginTop="30dp">
+
+        <ImageView
+            android:id="@+id/mapEventImage"
+            android:layout_width="250dp"
+            android:layout_height="200dp"
             android:src="@drawable/ic_baseline_map_24"/>
+
+        </com.google.android.material.card.MaterialCardView>
 
     </RelativeLayout>
 

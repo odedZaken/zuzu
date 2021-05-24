@@ -1,16 +1,15 @@
 package com.example.zuzu.ui.main;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
-import android.preference.Preference;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -25,7 +24,12 @@ import com.example.zuzu.UserModel;
 import com.example.zuzu.UserPreferences;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
@@ -35,10 +39,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.List;
 
 
-public class DiscoverFragment extends Fragment {
+public class DiscoverFragment extends Fragment implements GoogleMap.OnMarkerClickListener {
 
 
     private ArrayList<EventModel> eventList;
@@ -54,8 +57,10 @@ public class DiscoverFragment extends Fragment {
     private UserModel currUser;
     private UserPreferences currUserPref;
     private ProgressBar progressBarEventList;
+    private GoogleMap googleMap;
 
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
+    private static final int DEFAULT_ZOOM = 16;
 
 
     public DiscoverFragment() {
@@ -76,7 +81,7 @@ public class DiscoverFragment extends Fragment {
 
         //Initialize view and inflate the layout for this fragment
         View eventListView = inflater.inflate(R.layout.fragment_discover, container, false);
-        View eventMapView = inflater.inflate(R.layout.activity_map, container, false);
+        View eventMapView = inflater.inflate(R.layout.fragment_map_events, container, false);
 
         //Initialize and assign variable
         getLocationPermission();
@@ -88,8 +93,9 @@ public class DiscoverFragment extends Fragment {
         recyclerView.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
-
-        //Get Device location and Initialize events List
+        //Initialize map fragment
+        InitializeMapFragment(eventMapView);
+                //Get Device location and Initialize events List
         getDeviceLocation();
 
         //Get tab title
@@ -100,6 +106,51 @@ public class DiscoverFragment extends Fragment {
             return eventMapView;
         } else {
             return eventListView;
+        }
+    }
+
+    private void InitializeMapFragment(View eventMapView) {
+
+        SupportMapFragment supportMapFragment = (SupportMapFragment)getChildFragmentManager().findFragmentById(R.id.googleMapEvents);
+        supportMapFragment.getMapAsync(new OnMapReadyCallback() {
+            @Override
+            public void onMapReady(@NonNull GoogleMap googleMap) {
+                //When map is loaded
+                googleMap.setOnMarkerClickListener(DiscoverFragment.this);
+                DiscoverFragment.this.googleMap = googleMap;
+                // Turn on the My Location layer and the related control on the map.
+                updateLocationUI();
+                //Set map camera on user location
+                if(lastKnownLocation != null) {
+                    googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude()), DEFAULT_ZOOM));
+                }
+            }
+        });
+
+
+    }
+
+    @Override
+    public boolean onMarkerClick(@NonNull Marker marker) {
+        return false;
+    }
+
+    @SuppressLint("MissingPermission")
+    private void updateLocationUI() {
+        if (googleMap != null) {
+            try {
+                if(locationPermissionGranted) {
+                    googleMap.setMyLocationEnabled(true);
+                    googleMap.getUiSettings().setMyLocationButtonEnabled(true);
+                    googleMap.getUiSettings().setZoomControlsEnabled(true);
+                } else {
+                    googleMap.setMyLocationEnabled(false);
+                    googleMap.getUiSettings().setMyLocationButtonEnabled(false);
+                    lastKnownLocation = null;
+                }
+            } catch (SecurityException e) {
+                Log.e("Exception: %s", e.getMessage());
+            }
         }
     }
 
