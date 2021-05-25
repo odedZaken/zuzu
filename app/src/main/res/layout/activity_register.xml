@@ -131,7 +131,7 @@
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/editTextPasswordLayout"
             android:layout_width="209dp"
-            android:layout_height="70dp"
+            android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             app:layout_constraintEnd_toEndOf="@+id/editTextEmail"
             app:layout_constraintStart_toStartOf="@+id/editTextEmail"
@@ -151,7 +151,7 @@
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/editTextConfirmPasswordLayout"
             android:layout_width="209dp"
-            android:layout_height="70dp"
+            android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             app:layout_constraintEnd_toEndOf="@+id/editTextPasswordLayout"
             app:layout_constraintStart_toStartOf="@+id/editTextPasswordLayout"

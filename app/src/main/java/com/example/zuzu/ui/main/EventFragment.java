@@ -6,12 +6,14 @@ import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.zuzu.EventModel;
@@ -76,7 +78,7 @@ public class EventFragment extends Fragment implements View.OnClickListener{
     private void initializeEventDetails(View view) {
         eventMapCard = view.findViewById(R.id.mapEventCard);
         eventMapImageView = view.findViewById(R.id.mapEventImage);
-        String staticMapUrl = "https://maps.googleapis.com/maps/api/staticmap?zoom=16&size=500x400&markers=red:blue%7C"+ event.getLocation().latitude+","+event.getLocation().longitude +"&key=" + R.string.google_maps_api_key;
+        String staticMapUrl = "https://maps.googleapis.com/maps/api/staticmap?zoom=16&size=500x400&markers=color:red%7C"+ event.getLocation().latitude+","+event.getLocation().longitude +"&key=" + getResources().getString(R.string.google_maps_api_key) ;
         Glide.with(this).load(staticMapUrl).into(eventMapImageView);
         eventMapCard.setOnClickListener(this);
         detailsLayout = view.findViewById(R.id.detailsLayout);

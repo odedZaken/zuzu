@@ -2,7 +2,12 @@ package com.example.zuzu.ui.main;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.ColorFilter;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
@@ -19,19 +24,26 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.zuzu.EventModel;
 import com.example.zuzu.LoginActivity;
+import com.example.zuzu.MainEventActivity;
 import com.example.zuzu.R;
 import com.example.zuzu.UserModel;
 import com.example.zuzu.UserPreferences;
+import com.google.android.gms.internal.maps.zzx;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -41,18 +53,21 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 
 
-public class DiscoverFragment extends Fragment implements GoogleMap.OnMarkerClickListener {
+public class DiscoverFragment extends Fragment implements GoogleMap.OnMarkerClickListener, View.OnClickListener {
 
 
     private ArrayList<EventModel> eventList;
     private ArrayList<EventModel> myEvents;
     private DatabaseReference databaseReference;
+    private EventModel markedEventOnMap;
     private RecyclerView recyclerView;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager layoutManager;
     private Location lastKnownLocation;
     private boolean locationPermissionGranted;
     private FusedLocationProviderClient fusedLocationProviderClient;
+//    private FloatingActionButton fabAddEvent;
+    private ExtendedFloatingActionButton gotoEventFab;
     private String tabTitle;
     private UserModel currUser;
     private UserPreferences currUserPref;
@@ -74,6 +89,7 @@ public class DiscoverFragment extends Fragment implements GoogleMap.OnMarkerClic
         databaseReference = FirebaseDatabase.getInstance().getReference().child("events");
         currUser = LoginActivity.getCurrentUser();
         currUserPref = currUser.getUserPreferences();
+//        fabAddEvent = getActivity().findViewById(R.id.addEventFab);
     }
 
     @Override
@@ -93,10 +109,13 @@ public class DiscoverFragment extends Fragment implements GoogleMap.OnMarkerClic
         recyclerView.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
+        gotoEventFab = eventMapView.findViewById(R.id.gotoEventFab);
+        gotoEventFab.setOnClickListener(DiscoverFragment.this);
+        //Get Device location and Initialize events List
+        getDeviceLocation();
         //Initialize map fragment
         InitializeMapFragment(eventMapView);
-                //Get Device location and Initialize events List
-        getDeviceLocation();
+
 
         //Get tab title
         tabTitle = this.getArguments().getString("title");
@@ -109,30 +128,31 @@ public class DiscoverFragment extends Fragment implements GoogleMap.OnMarkerClic
         }
     }
 
+
+
     private void InitializeMapFragment(View eventMapView) {
 
         SupportMapFragment supportMapFragment = (SupportMapFragment)getChildFragmentManager().findFragmentById(R.id.googleMapEvents);
         supportMapFragment.getMapAsync(new OnMapReadyCallback() {
             @Override
-            public void onMapReady(@NonNull GoogleMap googleMap) {
+            public void onMapReady(@NonNull GoogleMap map) {
                 //When map is loaded
-                googleMap.setOnMarkerClickListener(DiscoverFragment.this);
-                DiscoverFragment.this.googleMap = googleMap;
+//                googleMap.setOnMarkerClickListener(DiscoverFragment.this);
+                DiscoverFragment.this.googleMap = map;
                 // Turn on the My Location layer and the related control on the map.
                 updateLocationUI();
-                //Set map camera on user location
-                if(lastKnownLocation != null) {
-                    googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude()), DEFAULT_ZOOM));
-                }
+
+                googleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+                    @Override
+                    public void onMapClick(@NonNull LatLng latLng) {
+                        gotoEventFab.setVisibility(View.GONE);
+                    }
+                });
+                googleMap.setOnMarkerClickListener(DiscoverFragment.this);
             }
         });
 
 
-    }
-
-    @Override
-    public boolean onMarkerClick(@NonNull Marker marker) {
-        return false;
     }
 
     @SuppressLint("MissingPermission")
@@ -146,11 +166,30 @@ public class DiscoverFragment extends Fragment implements GoogleMap.OnMarkerClic
                 } else {
                     googleMap.setMyLocationEnabled(false);
                     googleMap.getUiSettings().setMyLocationButtonEnabled(false);
-                    lastKnownLocation = null;
+                    //lastKnownLocation = null;
                 }
             } catch (SecurityException e) {
                 Log.e("Exception: %s", e.getMessage());
             }
+        }
+    }
+
+    @Override
+    public boolean onMarkerClick(@NonNull Marker marker) {
+        gotoEventFab.setVisibility(View.VISIBLE);
+        markedEventOnMap = (EventModel)marker.getTag();
+        return false;
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.gotoEventFab:
+                Intent intent = new Intent(getActivity(), MainEventActivity.class);
+                intent.putExtra("title",markedEventOnMap.getTitle());
+                EventFragment.setEvent(markedEventOnMap);
+                startActivity(intent);
+                break;
         }
     }
 
@@ -200,8 +239,51 @@ public class DiscoverFragment extends Fragment implements GoogleMap.OnMarkerClic
             int result = calculateDistanceMeters(latitude, longitude);
             eventModel.setDistance(result);
         }
+        addEventMarkerOnMap(eventModel);
         //Determine the list the event will be added to, and check by preferences
         sortEventToList(eventModel);
+    }
+
+    private void addEventMarkerOnMap(EventModel event) {
+        //Convert vector image type to bitmap for sport type marker
+        Drawable sportDrawable = getDrawableByType(event.getType());
+        BitmapDescriptor iconMarker = getMarkerIconFromDrawable(sportDrawable);
+        MarkerOptions markerOptions = new MarkerOptions();
+        markerOptions.icon(iconMarker);
+        markerOptions.position(event.getLocation());
+        markerOptions.title(event.getTitle());
+        markerOptions.snippet("Date & Time: " + event.getDate() + " " + event.getTime());
+
+        if(googleMap != null) {
+            googleMap.addMarker(markerOptions).setTag(event);
+        }
+    }
+
+    @SuppressLint("UseCompatLoadingForDrawables")
+    private Drawable getDrawableByType(String type) {
+        switch (type) {
+            case "Basketball":
+                return getResources().getDrawable(R.drawable.ic_basketball_clip_art);
+            case "Tennis":
+                return getResources().getDrawable(R.drawable.ic_tennis_clip_art);
+            case "Volleyball":
+                return getResources().getDrawable(R.drawable.ic_volleyball_clip_art);
+            case "Running":
+                return getResources().getDrawable(R.drawable.ic_running_clip_art);
+            case "Exercise":
+                return getResources().getDrawable(R.drawable.ic_exercise_clip_art);
+            default:
+                return getResources().getDrawable(R.drawable.ic_soccer_clip_art);
+        }
+    }
+
+    private BitmapDescriptor getMarkerIconFromDrawable(Drawable drawable) {
+        Canvas canvas = new Canvas();
+        Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        canvas.setBitmap(bitmap);
+        drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
+        drawable.draw(canvas);
+        return BitmapDescriptorFactory.fromBitmap(bitmap);
     }
 
 
@@ -246,6 +328,10 @@ public class DiscoverFragment extends Fragment implements GoogleMap.OnMarkerClic
                     public void onComplete(@NonNull Task<Location> task) {
                         if (task.isSuccessful()) {
                             lastKnownLocation = task.getResult();
+                            if(lastKnownLocation != null) {
+                                //Set map camera on user location
+                                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude()), DEFAULT_ZOOM));
+                            }
                         }
                         else {
                             Toast.makeText(getActivity(), "Location Error", Toast.LENGTH_SHORT).show();

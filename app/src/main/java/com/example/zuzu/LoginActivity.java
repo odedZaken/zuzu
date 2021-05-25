@@ -12,6 +12,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -23,9 +24,8 @@ import com.google.firebase.database.ValueEventListener;
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
 
     private static UserModel currentUser;
-    private EditText textUsername;
-    private EditText textPassword;
-    private TextView usernameWarning, passwordWarning;
+    private EditText textUsername, textPassword;
+    private TextInputLayout usernameLayout, passwordLayout;
     private Button loginButton;
     private Button registerButtonLogin;
     private ProgressBar progressBarLogin;
@@ -34,8 +34,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-
-
 
         this.setTitle("Login");
         initializeLoginForm();
@@ -60,10 +58,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
 
     private void initializeLoginForm() {
+        usernameLayout = findViewById(R.id.usernameLayout);
+        passwordLayout = findViewById(R.id.passwordLayout);
         textUsername = findViewById(R.id.username);
         textPassword = findViewById(R.id.password);
-        usernameWarning = findViewById(R.id.usernameWarning);
-        passwordWarning = findViewById(R.id.passwordWarning);
         loginButton = findViewById(R.id.loginButton);
         loginButton.setOnClickListener(this);
         registerButtonLogin = findViewById(R.id.registerButtonLogin);
@@ -88,17 +86,16 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         startActivity(registerIntent);
     }
 
+
     private boolean isValidLogin() {
         boolean isValid = true;
         clearWarnings();
         if (textUsername.getText().length() < 1) {
-            usernameWarning.setText("You Must Enter an Email");
-            usernameWarning.setVisibility(View.VISIBLE);
+            usernameLayout.setError("You Must Enter an Email");
             isValid = false;
         }
         if (textPassword.getText().length() < 1) {
-            passwordWarning.setText("You Must Enter a Password");
-            passwordWarning.setVisibility(View.VISIBLE);
+            passwordLayout.setError("You Must Enter a Password");
             isValid = false;
         }
 
@@ -106,8 +103,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     }
 
     private void clearWarnings() {
-        usernameWarning.setVisibility(View.GONE);
-        passwordWarning.setVisibility(View.GONE);
+        usernameLayout.setErrorEnabled(false);
+        passwordLayout.setErrorEnabled(false);
     }
 
     //Check if the user input match the user in the database, if true, opens the main activity else it will show an error
@@ -130,43 +127,22 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     String passwordFromDB = dataSnapshot.child(userIdFromDB).child("password").getValue(String.class);
                     if(passwordFromDB!= null && passwordFromDB.equals(enteredPassword)) {
                         getUserFromDB(dataSnapshot, userIdFromDB, passwordFromDB);
-//                        String firstNameFromDB = dataSnapshot.child(userIdFromDB).child("firstName").getValue(String.class);
-//                        String lastNameFromDB = dataSnapshot.child(userIdFromDB).child("lastName").getValue(String.class);
-//                        String emailFromDB = dataSnapshot.child(userIdFromDB).child("email").getValue(String.class);
-//                        String phoneNoFromDB = dataSnapshot.child(userIdFromDB).child("phoneNo").getValue(String.class);
-//                        String dobFromDB = dataSnapshot.child(userIdFromDB).child("dob").getValue(String.class);
-//                        String genderFromDB = dataSnapshot.child(userIdFromDB).child("gender").getValue(String.class);
-//                        Boolean isPrefSoccer = dataSnapshot.child(userIdFromDB).child("userPreferences").child("prefSoccer").getValue(boolean.class);
-//                        Boolean isPrefVolleyball = dataSnapshot.child(userIdFromDB).child("userPreferences").child("prefVolleyball").getValue(boolean.class);
-//                        Boolean isPrefBasketball = dataSnapshot.child(userIdFromDB).child("userPreferences").child("prefBasketball").getValue(boolean.class);
-//                        Boolean isPrefRunning = dataSnapshot.child(userIdFromDB).child("userPreferences").child("prefRunning").getValue(boolean.class);
-//                        Boolean isPrefTennis = dataSnapshot.child(userIdFromDB).child("userPreferences").child("prefTennis").getValue(boolean.class);
-//                        Boolean isPrefExercise = dataSnapshot.child(userIdFromDB).child("userPreferences").child("prefExercise").getValue(boolean.class);
-//
-//                        UserPreferences userPreferences = new UserPreferences(isPrefSoccer, isPrefBasketball, isPrefVolleyball, isPrefRunning, isPrefTennis, isPrefExercise);
-//                        currentUser = new UserModel(firstNameFromDB,lastNameFromDB,emailFromDB, phoneNoFromDB, passwordFromDB, dobFromDB, genderFromDB, userPreferences);
-//                        currentUser.setId(userIdFromDB);
-//
-//                        Toast.makeText(LoginActivity.this, "Welcome Back " + currentUser.getFullName() + ", Login Successful!", Toast.LENGTH_SHORT).show();
 
                         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                         startActivity(intent);
                         finish();
                     }
                     else {
-                        passwordWarning.setText("Wrong Password");
-                        passwordWarning.setVisibility(View.VISIBLE);
+                        passwordLayout.setError("Wrong password");
                         textPassword.requestFocus();
                     }
                 }
                 else {
-                    usernameWarning.setText("No Such User Found");
-                    usernameWarning.setVisibility(View.VISIBLE);
+                    usernameLayout.setError("No user found with this address");
                     textUsername.requestFocus();
                 }
                 progressBarLogin.setVisibility(View.INVISIBLE);
             }
-
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
             }

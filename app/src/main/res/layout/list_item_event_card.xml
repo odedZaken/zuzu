@@ -24,6 +24,7 @@
             android:layout_marginTop="5dp"
             android:scaleType="centerCrop"
             app:srcCompat="@drawable/ic_baseline_sports_basketball_24"
+            app:tint="#5A958F"
             />
 
         <LinearLayout
@@ -74,13 +75,16 @@
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:srcCompat="@drawable/ic_baseline_near_me_24"/>
+                app:srcCompat="@drawable/ic_baseline_near_me_24"
+                app:tint="#E57373" />
 
             <ImageView
                 android:layout_marginTop="5dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:srcCompat="@drawable/ic_baseline_person_24"/>
+                app:srcCompat="@drawable/ic_baseline_person_24"
+                app:tint="#7986CB"
+ />
 
         </LinearLayout>
 

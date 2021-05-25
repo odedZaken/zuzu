@@ -147,7 +147,7 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.OnMapCli
                 } else {
                     googleMap.setMyLocationEnabled(false);
                     googleMap.getUiSettings().setMyLocationButtonEnabled(false);
-                    lastKnownLocation = null;
+                    //lastKnownLocation = null;
                 }
             } catch (SecurityException e) {
                 Log.e("Exception: %s", e.getMessage());

@@ -27,6 +27,7 @@
                 android:hint="Event Name"
                 app:counterEnabled="true"
                 app:counterMaxLength="30"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 app:endIconMode="clear_text"
                 >
 
@@ -47,6 +48,7 @@
                 android:hint="Event Description (optional)"
                 app:counterEnabled="true"
                 app:counterMaxLength="70"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 app:endIconMode="clear_text">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -64,6 +66,7 @@
                 android:layout_width="170dp"
                 android:layout_height="wrap_content"
                 android:hint="Date"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_below="@+id/eventDescriptionLayout"
                 android:layout_marginTop="10dp"
                 app:endIconMode="clear_text"
@@ -85,6 +88,7 @@
                 android:layout_marginTop="10dp"
                 android:layout_marginStart="30dp"
                 android:hint="Time"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_toEndOf="@+id/eventDateLayout"
                 android:layout_below="@+id/eventDescriptionLayout"
                 app:startIconDrawable="@drawable/ic_baseline_access_time_24"
@@ -104,7 +108,7 @@
                 android:hint="Choose your sport"
                 android:layout_marginTop="25dp"
                 android:elevation="40dp"
-                style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                 android:layout_below="@+id/eventDateLayout"
                 >
 
