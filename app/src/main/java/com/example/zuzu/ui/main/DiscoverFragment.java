@@ -18,6 +18,8 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -259,21 +261,20 @@ public class DiscoverFragment extends Fragment implements GoogleMap.OnMarkerClic
         }
     }
 
-    @SuppressLint("UseCompatLoadingForDrawables")
     private Drawable getDrawableByType(String type) {
         switch (type) {
             case "Basketball":
-                return getResources().getDrawable(R.drawable.ic_basketball_clip_art);
+                return ContextCompat.getDrawable(getActivity(),R.drawable.ic_basketball_clip_art);
             case "Tennis":
-                return getResources().getDrawable(R.drawable.ic_tennis_clip_art);
+                return ContextCompat.getDrawable(getActivity(),R.drawable.ic_tennis_clip_art);
             case "Volleyball":
-                return getResources().getDrawable(R.drawable.ic_volleyball_clip_art);
+                return ContextCompat.getDrawable(getActivity(),R.drawable.ic_volleyball_clip_art);
             case "Running":
-                return getResources().getDrawable(R.drawable.ic_running_clip_art);
+                return ContextCompat.getDrawable(getActivity(),R.drawable.ic_running_clip_art);
             case "Exercise":
-                return getResources().getDrawable(R.drawable.ic_exercise_clip_art);
+                return ContextCompat.getDrawable(getActivity(),R.drawable.ic_exercise_clip_art);
             default:
-                return getResources().getDrawable(R.drawable.ic_soccer_clip_art);
+                return ContextCompat.getDrawable(getActivity(),R.drawable.ic_soccer_clip_art);
         }
     }
 

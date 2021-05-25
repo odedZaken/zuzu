@@ -70,13 +70,6 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.OnMapCli
         googleMap.clear();
         googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, CLICK_MAP_ZOOM));
         googleMap.addMarker(markerOptions);
-        googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-            @Override
-            public boolean onMarkerClick(@NonNull Marker marker) {
-                Toast.makeText(MapActivity.this, "Marker selected! id: " + marker.getId() , Toast.LENGTH_LONG).show();
-                return false;
-            }
-        });
         eventCurrentLocation = latLng;
     }
 

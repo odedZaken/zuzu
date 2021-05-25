@@ -34,6 +34,7 @@ public class EventFragment extends Fragment implements View.OnClickListener{
     private ExtendedFloatingActionButton fabAction;
     private String tabTitle;
     private RelativeLayout detailsLayout;
+    private boolean isParticipate;
 
 
     public EventFragment() {
@@ -46,6 +47,13 @@ public class EventFragment extends Fragment implements View.OnClickListener{
         super.onCreate(savedInstanceState);
         currUser = LoginActivity.getCurrentUser();
         tabTitle = this.getArguments().getString("title");
+        isParticipate = false;
+        currUser = LoginActivity.getCurrentUser();
+        for(String id : event.getUsersIDs()) {
+            if(currUser.getId().equals(id)) {
+                isParticipate = true;
+            }
+        }
     }
 
     @Override
