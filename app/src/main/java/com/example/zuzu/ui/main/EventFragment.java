@@ -44,8 +44,6 @@ public class EventFragment extends Fragment implements View.OnClickListener{
         super.onCreate(savedInstanceState);
         currUser = LoginActivity.getCurrentUser();
         tabTitle = this.getArguments().getString("title");
-//        getActivity().setTitle(event.getTitle());
-//        getActivity().getActionBar().setTitle(event.getTitle());
     }
 
     @Override
@@ -78,9 +76,8 @@ public class EventFragment extends Fragment implements View.OnClickListener{
     private void initializeEventDetails(View view) {
         eventMapCard = view.findViewById(R.id.mapEventCard);
         eventMapImageView = view.findViewById(R.id.mapEventImage);
-//        eventGoogleMap.setImageURI(Uri.parse("https://maps.googleapis.com/maps/api/staticmap?center=Berkeley,CA&zoom=14&size=400x400&key=AIzaSyCjLNw6i3sqpHJE1x8ec0K6YG-k3domx3s"));
-//        Glide.with(this).load("https://maps.googleapis.com/maps/api/staticmap?zoom=13&size=400x400&markers=color:blue%7C62.107733,-145.541936&key=AIzaSyAm5W0wff3xBx70JBEDkci4GgfUq0FxdvI").into(eventGoogleMap);
-        Glide.with(this).load("https://maps.googleapis.com/maps/api/staticmap?zoom=16&size=500x400&markers=red:blue%7C"+ event.getLocation().latitude+","+event.getLocation().longitude +"&key=AIzaSyAm5W0wff3xBx70JBEDkci4GgfUq0FxdvI").into(eventMapImageView);
+        String staticMapUrl = "https://maps.googleapis.com/maps/api/staticmap?zoom=16&size=500x400&markers=red:blue%7C"+ event.getLocation().latitude+","+event.getLocation().longitude +"&key=" + R.string.google_maps_api_key;
+        Glide.with(this).load(staticMapUrl).into(eventMapImageView);
         eventMapCard.setOnClickListener(this);
         detailsLayout = view.findViewById(R.id.detailsLayout);
         eventName = view.findViewById(R.id.textEventName);

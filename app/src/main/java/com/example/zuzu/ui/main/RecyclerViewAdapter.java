@@ -77,9 +77,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(context, MainEventActivity.class);
-//                intent.putExtra("id", event.getId());
-//                intent.putExtra("distance", event.getDistance());
-//                intent.putExtra("event", event);
                 intent.putExtra("title",event.getTitle());
                 EventFragment.setEvent(event);
                 context.startActivity(intent);
