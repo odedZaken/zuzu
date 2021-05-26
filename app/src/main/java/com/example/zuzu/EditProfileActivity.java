@@ -63,7 +63,8 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_profile);
-        currUser = LoginActivity.getCurrentUser();
+//        currUser = LoginActivity.getCurrentUser();
+        currUser = MainActivity.getCurrentUser();
         if (currUser != null) {
             userPreferences = currUser.getUserPreferences();
         }
@@ -119,7 +120,8 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
             case R.id.nav_logout:
                 intent = new Intent(this, LoginActivity.class);
                 startActivity(intent);
-                LoginActivity.setCurrentUser(null);
+//                LoginActivity.setCurrentUser(null);
+                MainActivity.setCurrentUser(null);
                 Toast.makeText(this, "User logged out..", Toast.LENGTH_SHORT).show();
                 finish();
                 break;

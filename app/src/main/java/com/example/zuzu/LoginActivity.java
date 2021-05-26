@@ -23,7 +23,7 @@ import com.google.firebase.database.ValueEventListener;
 //This is the default page when opening the app
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
 
-    private static UserModel currentUser;
+//    private static UserModel currentUser;
     private EditText textUsername, textPassword;
     private TextInputLayout usernameLayout, passwordLayout;
     private Button loginButton;
@@ -68,7 +68,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         registerButtonLogin.setOnClickListener(this);
         progressBarLogin = findViewById(R.id.progressBarLogin);
 
-        currentUser = null;
+//        currentUser = null;
     }
 
     public void onLoginButtonClick() {
@@ -164,17 +164,21 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         Boolean isPrefExercise = dataSnapshot.child(userIdFromDB).child("userPreferences").child("prefExercise").getValue(boolean.class);
 
         UserPreferences userPreferences = new UserPreferences(isPrefSoccer, isPrefBasketball, isPrefVolleyball, isPrefRunning, isPrefTennis, isPrefExercise);
-        currentUser = new UserModel(firstNameFromDB,lastNameFromDB,emailFromDB, phoneNoFromDB, passwordFromDB, dobFromDB, genderFromDB, userPreferences);
-        currentUser.setId(userIdFromDB);
+//        currentUser = new UserModel(firstNameFromDB,lastNameFromDB,emailFromDB, phoneNoFromDB, passwordFromDB, dobFromDB, genderFromDB, userPreferences);
+//        currentUser.setId(userIdFromDB);
 
-        Toast.makeText(LoginActivity.this, "Welcome Back " + currentUser.getFullName() + ", Login Successful!", Toast.LENGTH_SHORT).show();
+        UserModel user = new UserModel(firstNameFromDB,lastNameFromDB,emailFromDB, phoneNoFromDB, passwordFromDB, dobFromDB, genderFromDB, userPreferences);
+        user.setId(userIdFromDB);
+        MainActivity.setCurrentUser(user);
+
+//        Toast.makeText(LoginActivity.this, "Welcome Back " + currentUser.getFullName() + ", Login Successful!", Toast.LENGTH_SHORT).show();
     }
 
-    public static UserModel getCurrentUser() {
-        return currentUser;
-    }
-
-    public static void setCurrentUser(UserModel currentUser) {
-        LoginActivity.currentUser = currentUser;
-    }
+//    public static UserModel getCurrentUser() {
+//        return currentUser;
+//    }
+//
+//    public static void setCurrentUser(UserModel currentUser) {
+//        LoginActivity.currentUser = currentUser;
+//    }
 }

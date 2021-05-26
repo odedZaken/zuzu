@@ -53,6 +53,8 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener , NavigationView.OnNavigationItemSelectedListener {
 
+
+
     private FloatingActionButton addEventFab;
     private TabLayout tabLayout;
     private ViewPager viewPager;
@@ -62,7 +64,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private MaterialToolbar toolbar;
     private ImageView navDrawerProfilePic;
     private TextView navDrawerFullName, navDrawerEmail;
-    private UserModel currUser;
+
+    private static UserModel currentUser;
+//    private UserModel currUser;
 //    private ArrayList<EventModel> eventList;
 
     private DatabaseReference databaseReference;
@@ -74,7 +78,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        currUser = LoginActivity.getCurrentUser();
+        Toast.makeText(this, currentUser.getFullName(), Toast.LENGTH_SHORT).show();  //Todo: supposed to crash here
+
+//        currUser = LoginActivity.getCurrentUser();
         storageProfilePicsRef = FirebaseStorage.getInstance().getReference().child("profile_pics");
         databaseReference = FirebaseDatabase.getInstance().getReference().child("events");
         initializeMainActivity();
@@ -116,9 +122,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout,toolbar,R.string.navigation_drawer_open,R.string.navigation_drawer_closed);
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
-        if (currUser != null) {
-            navDrawerFullName.setText(currUser.getFullName());
-            navDrawerEmail.setText(currUser.getEmail());
+        if (currentUser != null) {
+            navDrawerFullName.setText(currentUser.getFullName());
+            navDrawerEmail.setText(currentUser.getEmail());
             getProfilePicFromDB();
         }
     }
@@ -137,7 +143,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.nav_logout:
                 intent = new Intent(this, LoginActivity.class);
                 startActivity(intent);
-                LoginActivity.setCurrentUser(null);
+//                LoginActivity.setCurrentUser(null);
+                setCurrentUser(null);
                 Toast.makeText(this, "User logged out..", Toast.LENGTH_SHORT).show();
                 finish();
                 break;
@@ -162,7 +169,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
     private void getProfilePicFromDB() {
-        final String currUserEmail = currUser.getEmail();
+        final String currUserEmail = currentUser.getEmail();
         storageProfilePicsRef.child(currUserEmail).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override
             public void onSuccess(Uri uri) {
@@ -204,6 +211,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View view) {
         Intent intent = new Intent(this,CreateEventActivity.class);
         startActivity(intent);
-//        finish();
+    }
+
+    public static UserModel getCurrentUser() {
+        return currentUser;
+    }
+
+    public static void setCurrentUser(UserModel currentUser) {
+        MainActivity.currentUser = currentUser;
     }
 }

@@ -26,6 +26,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.zuzu.EventModel;
 import com.example.zuzu.LoginActivity;
+import com.example.zuzu.MainActivity;
 import com.example.zuzu.MainEventActivity;
 import com.example.zuzu.R;
 import com.example.zuzu.UserModel;
@@ -68,7 +69,7 @@ public class DiscoverFragment extends Fragment implements GoogleMap.OnMarkerClic
     private Location lastKnownLocation;
     private boolean locationPermissionGranted;
     private FusedLocationProviderClient fusedLocationProviderClient;
-//    private FloatingActionButton fabAddEvent;
+    //    private FloatingActionButton fabAddEvent;
     private ExtendedFloatingActionButton gotoEventFab;
     private String tabTitle;
     private UserModel currUser;
@@ -89,8 +90,13 @@ public class DiscoverFragment extends Fragment implements GoogleMap.OnMarkerClic
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         databaseReference = FirebaseDatabase.getInstance().getReference().child("events");
-        currUser = LoginActivity.getCurrentUser();
-        currUserPref = currUser.getUserPreferences();
+//        currUser = LoginActivity.getCurrentUser();
+        currUser = MainActivity.getCurrentUser();
+        if (currUser != null) {
+            currUserPref = currUser.getUserPreferences();
+        } else {
+            Toast.makeText(getActivity(), "Fatal Error: user not Found!", Toast.LENGTH_LONG).show();
+        }
 //        fabAddEvent = getActivity().findViewById(R.id.addEventFab);
     }
 
@@ -123,7 +129,7 @@ public class DiscoverFragment extends Fragment implements GoogleMap.OnMarkerClic
         tabTitle = this.getArguments().getString("title");
 
         //Set layout by tab title
-        if(tabTitle.equals("Map")) {
+        if (tabTitle.equals("Map")) {
             return eventMapView;
         } else {
             return eventListView;
@@ -131,10 +137,9 @@ public class DiscoverFragment extends Fragment implements GoogleMap.OnMarkerClic
     }
 
 
-
     private void InitializeMapFragment(View eventMapView) {
 
-        SupportMapFragment supportMapFragment = (SupportMapFragment)getChildFragmentManager().findFragmentById(R.id.googleMapEvents);
+        SupportMapFragment supportMapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.googleMapEvents);
         supportMapFragment.getMapAsync(new OnMapReadyCallback() {
             @Override
             public void onMapReady(@NonNull GoogleMap map) {
@@ -161,7 +166,7 @@ public class DiscoverFragment extends Fragment implements GoogleMap.OnMarkerClic
     private void updateLocationUI() {
         if (googleMap != null) {
             try {
-                if(locationPermissionGranted) {
+                if (locationPermissionGranted) {
                     googleMap.setMyLocationEnabled(true);
                     googleMap.getUiSettings().setMyLocationButtonEnabled(true);
                     googleMap.getUiSettings().setZoomControlsEnabled(true);
@@ -179,7 +184,7 @@ public class DiscoverFragment extends Fragment implements GoogleMap.OnMarkerClic
     @Override
     public boolean onMarkerClick(@NonNull Marker marker) {
         gotoEventFab.setVisibility(View.VISIBLE);
-        markedEventOnMap = (EventModel)marker.getTag();
+        markedEventOnMap = (EventModel) marker.getTag();
         return false;
     }
 
@@ -188,7 +193,7 @@ public class DiscoverFragment extends Fragment implements GoogleMap.OnMarkerClic
         switch (v.getId()) {
             case R.id.gotoEventFab:
                 Intent intent = new Intent(getActivity(), MainEventActivity.class);
-                intent.putExtra("title",markedEventOnMap.getTitle());
+                intent.putExtra("title", markedEventOnMap.getTitle());
                 EventFragment.setEvent(markedEventOnMap);
                 startActivity(intent);
                 break;
@@ -204,14 +209,14 @@ public class DiscoverFragment extends Fragment implements GoogleMap.OnMarkerClic
                     getEventFromDB(event);
                 }
                 progressBarEventList.setVisibility(View.INVISIBLE);
-                if(tabTitle.equals("Discover")) {
+                if (tabTitle.equals("Discover")) {
                     mAdapter = new RecyclerViewAdapter(eventList, getActivity());
-                }
-                else {
+                } else {
                     mAdapter = new RecyclerViewAdapter(myEvents, getActivity());
                 }
                 recyclerView.setAdapter(mAdapter);
             }
+
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
             }
@@ -229,15 +234,15 @@ public class DiscoverFragment extends Fragment implements GoogleMap.OnMarkerClic
         double latitude = event.child("location").child("latitude").getValue(double.class);
         double longitude = event.child("location").child("longitude").getValue(double.class);
         usersIds = getEventIdList(event);
-        LatLng location = new LatLng(latitude,longitude);
+        LatLng location = new LatLng(latitude, longitude);
         String time = event.child("time").getValue(String.class);
         String title = event.child("title").getValue(String.class);
         String type = event.child("type").getValue(String.class);
-        EventModel eventModel = new EventModel(title, description, type, time, date,creatorEmail, maxParticipants, location);
+        EventModel eventModel = new EventModel(title, description, type, time, date, creatorEmail, maxParticipants, location);
         eventModel.setId(id);
         eventModel.setCurrParticipants(currParticipants);
         eventModel.setUsersIDs(usersIds);
-        if(lastKnownLocation != null) {
+        if (lastKnownLocation != null) {
             int result = calculateDistanceMeters(latitude, longitude);
             eventModel.setDistance(result);
         }
@@ -256,7 +261,7 @@ public class DiscoverFragment extends Fragment implements GoogleMap.OnMarkerClic
         markerOptions.title(event.getTitle());
         markerOptions.snippet("Date & Time: " + event.getDate() + " " + event.getTime());
 
-        if(googleMap != null) {
+        if (googleMap != null) {
             googleMap.addMarker(markerOptions).setTag(event);
         }
     }
@@ -264,17 +269,17 @@ public class DiscoverFragment extends Fragment implements GoogleMap.OnMarkerClic
     private Drawable getDrawableByType(String type) {
         switch (type) {
             case "Basketball":
-                return ContextCompat.getDrawable(getActivity(),R.drawable.ic_basketball_clip_art);
+                return ContextCompat.getDrawable(getContext(), R.drawable.ic_basketball_clip_art);
             case "Tennis":
-                return ContextCompat.getDrawable(getActivity(),R.drawable.ic_tennis_clip_art);
+                return ContextCompat.getDrawable(getContext(), R.drawable.ic_tennis_clip_art);
             case "Volleyball":
-                return ContextCompat.getDrawable(getActivity(),R.drawable.ic_volleyball_clip_art);
+                return ContextCompat.getDrawable(getContext(), R.drawable.ic_volleyball_clip_art);
             case "Running":
-                return ContextCompat.getDrawable(getActivity(),R.drawable.ic_running_clip_art);
+                return ContextCompat.getDrawable(getContext(), R.drawable.ic_running_clip_art);
             case "Exercise":
-                return ContextCompat.getDrawable(getActivity(),R.drawable.ic_exercise_clip_art);
+                return ContextCompat.getDrawable(getContext(), R.drawable.ic_exercise_clip_art);
             default:
-                return ContextCompat.getDrawable(getActivity(),R.drawable.ic_soccer_clip_art);
+                return ContextCompat.getDrawable(getContext(), R.drawable.ic_soccer_clip_art);
         }
     }
 
@@ -289,7 +294,7 @@ public class DiscoverFragment extends Fragment implements GoogleMap.OnMarkerClic
 
 
     //Parse the list of users ids into an array
-    private ArrayList<String> getEventIdList (DataSnapshot dataSnapshot) {
+    private ArrayList<String> getEventIdList(DataSnapshot dataSnapshot) {
         ArrayList<String> usersId = new ArrayList<>();
         for (DataSnapshot id : dataSnapshot.child("usersIDs").getChildren()) {
             usersId.add(id.getValue(String.class));
@@ -300,22 +305,22 @@ public class DiscoverFragment extends Fragment implements GoogleMap.OnMarkerClic
     //Add event to 'My Event' tab if user participate in this event
     private void sortEventToList(EventModel event) {
         String currUserId = currUser.getId();
-        for(String id : event.getUsersIDs()) {
-            if(id.equals(currUserId)) {
+        for (String id : event.getUsersIDs()) {
+            if (id.equals(currUserId)) {
                 myEvents.add(event);
             }
         }
         //Add to general event list according to preference
-        if(currUserPref.isPrefByString(event.getType())) {
+        if (currUserPref.isPrefByString(event.getType())) {
             eventList.add(event);
         }
     }
 
     private int calculateDistanceMeters(double latitude, double longitude) {
         float[] result = new float[3];
-        Location.distanceBetween(lastKnownLocation.getLatitude(),lastKnownLocation.getLongitude(),latitude,longitude, result);
-         //  Return result distance in meters
-        return (int)result[0];
+        Location.distanceBetween(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude(), latitude, longitude, result);
+        //  Return result distance in meters
+        return (int) result[0];
     }
 
     private void getDeviceLocation() {
@@ -329,23 +334,21 @@ public class DiscoverFragment extends Fragment implements GoogleMap.OnMarkerClic
                     public void onComplete(@NonNull Task<Location> task) {
                         if (task.isSuccessful()) {
                             lastKnownLocation = task.getResult();
-                            if(lastKnownLocation != null) {
+                            if (lastKnownLocation != null) {
                                 //Set map camera on user location
                                 googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude()), DEFAULT_ZOOM));
                             }
-                        }
-                        else {
+                        } else {
                             Toast.makeText(getActivity(), "Location Error", Toast.LENGTH_SHORT).show();
                         }
                         //After user location is determined, Show event list
                         initializeEventList();
                     }
                 });
-            }
-            else {
+            } else {
                 Toast.makeText(getActivity(), "Location Permission Denied", Toast.LENGTH_SHORT).show();
             }
-        } catch(SecurityException e) {
+        } catch (SecurityException e) {
             Log.e("Exception: %s", e.getMessage(), e);
         }
     }

@@ -225,7 +225,7 @@ public class CreateEventActivity extends AppCompatActivity implements View.OnCli
         String eventTypeStr = eventType.getText().toString();
         String eventDateStr = eventDate.getText().toString();
         String eventTimeStr = eventTime.getText().toString();
-        String currUserId = LoginActivity.getCurrentUser().getId();
+        String currUserId = MainActivity.getCurrentUser().getId();
         EventModel newEvent = new EventModel(eventNameStr, eventDescStr, eventTypeStr, eventTimeStr, eventDateStr, currUserId, numParticipantsInt, eventLocation);
         String newEventId = newEvent.getId();
         eventsReference.child(newEventId).setValue(newEvent);

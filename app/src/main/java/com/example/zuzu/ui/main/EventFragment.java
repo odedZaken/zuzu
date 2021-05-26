@@ -18,6 +18,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.example.zuzu.EventModel;
 import com.example.zuzu.LoginActivity;
+import com.example.zuzu.MainActivity;
 import com.example.zuzu.R;
 import com.example.zuzu.UserModel;
 import com.google.android.material.card.MaterialCardView;
@@ -45,10 +46,10 @@ public class EventFragment extends Fragment implements View.OnClickListener{
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        currUser = LoginActivity.getCurrentUser();
+//        currUser = LoginActivity.getCurrentUser();
+        currUser = MainActivity.getCurrentUser();
         tabTitle = this.getArguments().getString("title");
         isParticipate = false;
-        currUser = LoginActivity.getCurrentUser();
         for(String id : event.getUsersIDs()) {
             if(currUser.getId().equals(id)) {
                 isParticipate = true;
