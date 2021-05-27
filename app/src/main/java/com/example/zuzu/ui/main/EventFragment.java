@@ -52,7 +52,6 @@ public class EventFragment extends Fragment implements View.OnClickListener{
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        currUser = LoginActivity.getCurrentUser();
         currUser = ApplicationGlobal.getCurrentUser();
         tabTitle = this.getArguments().getString("title");
         isUserParticipate = false;
@@ -115,17 +114,10 @@ public class EventFragment extends Fragment implements View.OnClickListener{
 
     private void configureActionButton() {
         //Initialize association variables
-//        if(event == null) {
-//            Toast.makeText(context, "Event is NULL!", Toast.LENGTH_LONG).show();
-//        }
-//        Toast.makeText(context, "", Toast.LENGTH_SHORT).show();
-//        Toast.makeText(context, currUser.getId() + event.getCreatorId(), Toast.LENGTH_LONG).show();
         if(currUser.getId().equals(event.getCreatorId()))
         {
-//            Toast.makeText(context, "User is creator!!", Toast.LENGTH_SHORT).show();
             isUserCreator = true;
             isUserParticipate = true;
-
         } else {
             for (String id : event.getUsersIDs()) {
                 if (currUser.getId().equals(id)) {

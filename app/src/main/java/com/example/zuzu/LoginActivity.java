@@ -67,8 +67,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         registerButtonLogin = findViewById(R.id.registerButtonLogin);
         registerButtonLogin.setOnClickListener(this);
         progressBarLogin = findViewById(R.id.progressBarLogin);
-
-//        currentUser = null;
     }
 
     public void onLoginButtonClick() {
@@ -112,8 +110,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         final String enteredEmail = textUsername.getText().toString().trim().toLowerCase();
         final String enteredPassword = textPassword.getText().toString().trim();
 
-        FirebaseDatabase rootDB = FirebaseDatabase.getInstance();
-        DatabaseReference usersRef = rootDB.getReference("users");
+        DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
         Query checkUserExist = usersRef.orderByChild("email").equalTo(enteredEmail);    //Create new query of the user
 
         checkUserExist.addListenerForSingleValueEvent(new ValueEventListener() {

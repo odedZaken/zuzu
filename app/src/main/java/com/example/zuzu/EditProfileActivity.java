@@ -63,7 +63,6 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_profile);
-//        currUser = LoginActivity.getCurrentUser();
         currUser = ApplicationGlobal.getCurrentUser();
         if (currUser != null) {
             userPreferences = currUser.getUserPreferences();

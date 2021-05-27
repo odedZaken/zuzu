@@ -82,8 +82,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                 context.startActivity(intent);
             }
         });
-        //Create the string for current/max participants
-//        String participants = event.getCurrParticipants() + "/" + event.getMaxParticipants();
         holder.eventNumParticipants.setText(event.getParticipantsStr());
         setDrawableType(holder, event);
     }

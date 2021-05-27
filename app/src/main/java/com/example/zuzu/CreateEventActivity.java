@@ -241,18 +241,5 @@ public class CreateEventActivity extends AppCompatActivity implements View.OnCli
                 Toast.makeText(CreateEventActivity.this, "Something went wrong..", Toast.LENGTH_SHORT).show();
             }
         });
-//        Toast.makeText(CreateEventActivity.this, "Event Created Successfully", Toast.LENGTH_SHORT).show();
     }
-
-//    @Override
-//    public boolean onNavigateUp() {
-//        Toast.makeText(this, "Up button was pressed!", Toast.LENGTH_SHORT).show();
-//        return super.onNavigateUp();
-//    }
-//
-//    @Override
-//    public void onBackPressed() {
-//        Toast.makeText(this, "Back button was pressed!", Toast.LENGTH_SHORT).show();
-//        super.onBackPressed();
-//    }
 }

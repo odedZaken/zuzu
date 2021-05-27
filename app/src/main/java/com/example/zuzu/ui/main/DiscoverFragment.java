@@ -219,6 +219,7 @@ public class DiscoverFragment extends Fragment implements GoogleMap.OnMarkerClic
                     mAdapter = new RecyclerViewAdapter(myEvents, getActivity());
                 }
                 recyclerView.setAdapter(mAdapter);
+                swipeRefreshLayout.clearAnimation();
                 swipeRefreshLayout.setRefreshing(false);
             }
 
@@ -254,6 +255,7 @@ public class DiscoverFragment extends Fragment implements GoogleMap.OnMarkerClic
         eventModel.setId(id);
         eventModel.setCurrParticipants(currParticipants);
         eventModel.setUsersIDs(usersIds);
+
         if (lastKnownLocation != null) {
             int result = calculateDistanceMeters(latitude, longitude);
             eventModel.setDistance(result);
@@ -372,6 +374,7 @@ public class DiscoverFragment extends Fragment implements GoogleMap.OnMarkerClic
                 });
             } else {
                 Toast.makeText(getActivity(), "Location Permission Denied", Toast.LENGTH_SHORT).show();
+                initializeEventList();
             }
         } catch (SecurityException e) {
             Log.e("Exception: %s", e.getMessage(), e);
@@ -379,11 +382,10 @@ public class DiscoverFragment extends Fragment implements GoogleMap.OnMarkerClic
     }
 
     private void getLocationPermission() {
-
         if (getActivity().checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_DENIED) {
             String[] permissions = {Manifest.permission.ACCESS_FINE_LOCATION};
             requestPermissions(permissions, PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
-            locationPermissionGranted = false;
+            locationPermissionGranted = false; //Todo: Fix variable
         } else {
             locationPermissionGranted = true;
         }
@@ -392,8 +394,6 @@ public class DiscoverFragment extends Fragment implements GoogleMap.OnMarkerClic
     @Override
     public void onRefresh() {
         initializeEventList();
-//        swipeRefreshLayout.setRefreshing(false);
-        swipeRefreshLayout.clearAnimation();
     }
 }
 

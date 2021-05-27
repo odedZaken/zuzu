@@ -64,10 +64,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private MaterialToolbar toolbar;
     private ImageView navDrawerProfilePic;
     private TextView navDrawerFullName, navDrawerEmail;
-
-//    private static UserModel currentUser;
     private UserModel currUser;
-//    private ArrayList<EventModel> eventList;
 
     private DatabaseReference databaseReference;
     private StorageReference storageProfilePicsRef;
@@ -77,7 +74,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
 
         currUser = ApplicationGlobal.getCurrentUser();
         storageProfilePicsRef = FirebaseStorage.getInstance().getReference().child("profile_pics");
@@ -110,9 +106,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         toolbar = findViewById(R.id.toolbar);
         navigationView.setNavigationItemSelectedListener(this);
         navigationView.bringToFront();
-        navigationView.setCheckedItem(R.id.nav_home);
+        navigationView.setCheckedItem(R.id.nav_home);  //Mark the home option
         //Get header layout for the navigation drawer and initialize header views
         View navHeaderLayout = navigationView.getHeaderView(0);
+        //Initialize nav header parameters
         navDrawerFullName = navHeaderLayout.findViewById(R.id.navDrawerFullName);
         navDrawerEmail = navHeaderLayout.findViewById(R.id.navDrawerEmail);
         navDrawerProfilePic = navHeaderLayout.findViewById(R.id.navDrawerProfilePic);
@@ -138,6 +135,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 intent = new Intent(this, EditProfileActivity.class);
                 startActivity(intent);
                 drawerLayout.close();
+//                finish();
                 break;
             case R.id.nav_logout:
                 intent = new Intent(this, LoginActivity.class);
