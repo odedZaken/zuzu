@@ -25,12 +25,16 @@ import androidx.fragment.app.Fragment;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -54,6 +58,7 @@ public class CreateEventActivity extends AppCompatActivity implements View.OnCli
     private ExtendedFloatingActionButton createEventFab;
     private static LatLng eventLocation;
     private DatabaseReference eventsReference;
+    private UserModel currUser;
 
 
 
@@ -64,14 +69,11 @@ public class CreateEventActivity extends AppCompatActivity implements View.OnCli
         this.setTitle("New Event");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         initializeCreateEventForm();
-        sports.add("Soccer");
-        sports.add("Basketball");
-        sports.add("Tennis");
-        sports.add("Volleyball");
-        sports.add("Running");
-        sports.add("Exercise");
+        sports.add("Soccer");sports.add("Basketball");sports.add("Tennis");
+        sports.add("Volleyball");sports.add("Running");sports.add("Exercise");
         sportsAdapter = new ArrayAdapter<>(getApplicationContext(), R.layout.list_item_sport_type, sports);
         eventType.setAdapter(sportsAdapter);
+        currUser = ApplicationGlobal.getCurrentUser();
     }
 
     @Override
@@ -101,8 +103,8 @@ public class CreateEventActivity extends AppCompatActivity implements View.OnCli
                 dismissErrors();
                 if (verifyProperties()) {
                     saveEventInDB();
-                    Intent intentMain = new Intent(this, MainActivity.class);
-                    startActivity(intentMain);
+//                    Intent intentMain = new Intent(this, MainActivity.class);
+//                    startActivity(intentMain);
                     finish();
                 }
                 break;
@@ -225,11 +227,21 @@ public class CreateEventActivity extends AppCompatActivity implements View.OnCli
         String eventTypeStr = eventType.getText().toString();
         String eventDateStr = eventDate.getText().toString();
         String eventTimeStr = eventTime.getText().toString();
-        String currUserId = MainActivity.getCurrentUser().getId();
+        String currUserId = currUser.getId();
         EventModel newEvent = new EventModel(eventNameStr, eventDescStr, eventTypeStr, eventTimeStr, eventDateStr, currUserId, numParticipantsInt, eventLocation);
         String newEventId = newEvent.getId();
-        eventsReference.child(newEventId).setValue(newEvent);
-        Toast.makeText(this, "Event Created Successfully", Toast.LENGTH_SHORT).show();
+        eventsReference.child(newEventId).setValue(newEvent).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void unused) {
+                Toast.makeText(CreateEventActivity.this, "Event Created Successfully", Toast.LENGTH_SHORT).show();
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull @NotNull Exception e) {
+                Toast.makeText(CreateEventActivity.this, "Something went wrong..", Toast.LENGTH_SHORT).show();
+            }
+        });
+//        Toast.makeText(CreateEventActivity.this, "Event Created Successfully", Toast.LENGTH_SHORT).show();
     }
 
 //    @Override

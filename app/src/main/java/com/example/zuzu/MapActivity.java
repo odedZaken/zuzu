@@ -148,11 +148,11 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.OnMapCli
         }
     }
 
-    @Override
-    public boolean onNavigateUp() {
-        Toast.makeText(this, "Back button pressed!", Toast.LENGTH_SHORT).show();
-        return super.onNavigateUp();
-    }
+//    @Override
+//    public boolean onNavigateUp() {
+//        Toast.makeText(this, "Back button pressed!", Toast.LENGTH_SHORT).show();
+//        return super.onNavigateUp();
+//    }
 
     private void getDeviceLocation() {
         try {

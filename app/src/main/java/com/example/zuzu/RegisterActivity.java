@@ -299,7 +299,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
             newUser.setProfilePicUri(profileImageUri);
             uploadProfilePic(profileImageUri, email);
         }
-        MainActivity.setCurrentUser(newUser);
+        ApplicationGlobal.setCurrentUser(newUser);
 //        LoginActivity.setCurrentUser(newUser);
     }
 

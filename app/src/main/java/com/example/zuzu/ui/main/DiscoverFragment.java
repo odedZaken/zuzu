@@ -2,6 +2,7 @@ package com.example.zuzu.ui.main;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -15,6 +16,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -23,7 +25,9 @@ import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.example.zuzu.ApplicationGlobal;
 import com.example.zuzu.EventModel;
 import com.example.zuzu.LoginActivity;
 import com.example.zuzu.MainActivity;
@@ -56,7 +60,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 
 
-public class DiscoverFragment extends Fragment implements GoogleMap.OnMarkerClickListener, View.OnClickListener {
+public class DiscoverFragment extends Fragment implements GoogleMap.OnMarkerClickListener, View.OnClickListener, SwipeRefreshLayout.OnRefreshListener {
 
 
     private ArrayList<EventModel> eventList;
@@ -69,16 +73,18 @@ public class DiscoverFragment extends Fragment implements GoogleMap.OnMarkerClic
     private Location lastKnownLocation;
     private boolean locationPermissionGranted;
     private FusedLocationProviderClient fusedLocationProviderClient;
-    //    private FloatingActionButton fabAddEvent;
     private ExtendedFloatingActionButton gotoEventFab;
+    private SwipeRefreshLayout swipeRefreshLayout;
+    private TextView emptyListMsg;
     private String tabTitle;
     private UserModel currUser;
     private UserPreferences currUserPref;
     private ProgressBar progressBarEventList;
     private GoogleMap googleMap;
+    private Context context;
 
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
-    private static final int DEFAULT_ZOOM = 16;
+    private static final int DEFAULT_ZOOM = 14;
 
 
     public DiscoverFragment() {
@@ -90,14 +96,8 @@ public class DiscoverFragment extends Fragment implements GoogleMap.OnMarkerClic
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         databaseReference = FirebaseDatabase.getInstance().getReference().child("events");
-//        currUser = LoginActivity.getCurrentUser();
-        currUser = MainActivity.getCurrentUser();
-        if (currUser != null) {
-            currUserPref = currUser.getUserPreferences();
-        } else {
-            Toast.makeText(getActivity(), "Fatal Error: user not Found!", Toast.LENGTH_LONG).show();
-        }
-//        fabAddEvent = getActivity().findViewById(R.id.addEventFab);
+        currUser = ApplicationGlobal.getCurrentUser();
+        currUserPref = currUser.getUserPreferences();
     }
 
     @Override
@@ -107,18 +107,20 @@ public class DiscoverFragment extends Fragment implements GoogleMap.OnMarkerClic
         View eventListView = inflater.inflate(R.layout.fragment_discover, container, false);
         View eventMapView = inflater.inflate(R.layout.fragment_map_events, container, false);
 
-        //Initialize and assign variable
+        //Initialize and assign variables
         getLocationPermission();
         eventList = new ArrayList<>();
         myEvents = new ArrayList<>();
+        emptyListMsg = eventListView.findViewById(R.id.emptyListMsg);
         progressBarEventList = eventListView.findViewById(R.id.progressBarEventList);
         progressBarEventList.setVisibility(View.VISIBLE);
         recyclerView = eventListView.findViewById(R.id.eventsRecycleView);
         recyclerView.setHasFixedSize(true);
+        swipeRefreshLayout = eventListView.findViewById(R.id.swipeRefresh);
+        swipeRefreshLayout.setOnRefreshListener(this);
         layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
-        gotoEventFab = eventMapView.findViewById(R.id.gotoEventFab);
-        gotoEventFab.setOnClickListener(DiscoverFragment.this);
+        context = getActivity();
         //Get Device location and Initialize events List
         getDeviceLocation();
         //Initialize map fragment
@@ -138,7 +140,8 @@ public class DiscoverFragment extends Fragment implements GoogleMap.OnMarkerClic
 
 
     private void InitializeMapFragment(View eventMapView) {
-
+        gotoEventFab = eventMapView.findViewById(R.id.gotoEventFab);
+        gotoEventFab.setOnClickListener(DiscoverFragment.this);
         SupportMapFragment supportMapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.googleMapEvents);
         supportMapFragment.getMapAsync(new OnMapReadyCallback() {
             @Override
@@ -158,8 +161,6 @@ public class DiscoverFragment extends Fragment implements GoogleMap.OnMarkerClic
                 googleMap.setOnMarkerClickListener(DiscoverFragment.this);
             }
         });
-
-
     }
 
     @SuppressLint("MissingPermission")
@@ -205,9 +206,12 @@ public class DiscoverFragment extends Fragment implements GoogleMap.OnMarkerClic
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                //Clear all fragments from old data
+                clearViews();
                 for (DataSnapshot event : dataSnapshot.getChildren()) {
                     getEventFromDB(event);
                 }
+                checkEmptyLists();
                 progressBarEventList.setVisibility(View.INVISIBLE);
                 if (tabTitle.equals("Discover")) {
                     mAdapter = new RecyclerViewAdapter(eventList, getActivity());
@@ -215,6 +219,7 @@ public class DiscoverFragment extends Fragment implements GoogleMap.OnMarkerClic
                     mAdapter = new RecyclerViewAdapter(myEvents, getActivity());
                 }
                 recyclerView.setAdapter(mAdapter);
+                swipeRefreshLayout.setRefreshing(false);
             }
 
             @Override
@@ -223,9 +228,16 @@ public class DiscoverFragment extends Fragment implements GoogleMap.OnMarkerClic
         });
     }
 
+    private void clearViews() {
+        emptyListMsg.setVisibility(View.GONE);
+        eventList.clear();
+        myEvents.clear();
+        googleMap.clear();
+    }
+
     private void getEventFromDB(DataSnapshot event) {
         ArrayList<String> usersIds = new ArrayList<>();
-        String creatorEmail = event.child("creatorEmail").getValue(String.class);
+        String creatorId = event.child("creatorId").getValue(String.class);
         String date = event.child("date").getValue(String.class);
         String description = event.child("description").getValue(String.class);
         String id = event.child("id").getValue(String.class);
@@ -238,7 +250,7 @@ public class DiscoverFragment extends Fragment implements GoogleMap.OnMarkerClic
         String time = event.child("time").getValue(String.class);
         String title = event.child("title").getValue(String.class);
         String type = event.child("type").getValue(String.class);
-        EventModel eventModel = new EventModel(title, description, type, time, date, creatorEmail, maxParticipants, location);
+        EventModel eventModel = new EventModel(title, description, type, time, date, creatorId, maxParticipants, location);
         eventModel.setId(id);
         eventModel.setCurrParticipants(currParticipants);
         eventModel.setUsersIDs(usersIds);
@@ -246,15 +258,27 @@ public class DiscoverFragment extends Fragment implements GoogleMap.OnMarkerClic
             int result = calculateDistanceMeters(latitude, longitude);
             eventModel.setDistance(result);
         }
-        addEventMarkerOnMap(eventModel);
+//        addEventMarkerOnMap(eventModel);
         //Determine the list the event will be added to, and check by preferences
         sortEventToList(eventModel);
     }
 
+    private void checkEmptyLists() {
+        if(eventList.isEmpty() && tabTitle.equals("Discover")) {
+            emptyListMsg.setText("There are no events that \nmatches your preferences...");
+            emptyListMsg.setVisibility(View.VISIBLE);
+        }
+        if(myEvents.isEmpty() && tabTitle.equals("My Events")) {
+            emptyListMsg.setText("There are no events that \nyou are participating in...");
+            emptyListMsg.setVisibility(View.VISIBLE);
+        }
+    }
+
     private void addEventMarkerOnMap(EventModel event) {
         //Convert vector image type to bitmap for sport type marker
+        BitmapDescriptor iconMarker;
         Drawable sportDrawable = getDrawableByType(event.getType());
-        BitmapDescriptor iconMarker = getMarkerIconFromDrawable(sportDrawable);
+        iconMarker = getMarkerIconFromDrawable(sportDrawable);
         MarkerOptions markerOptions = new MarkerOptions();
         markerOptions.icon(iconMarker);
         markerOptions.position(event.getLocation());
@@ -269,17 +293,17 @@ public class DiscoverFragment extends Fragment implements GoogleMap.OnMarkerClic
     private Drawable getDrawableByType(String type) {
         switch (type) {
             case "Basketball":
-                return ContextCompat.getDrawable(getContext(), R.drawable.ic_basketball_clip_art);
+                return ContextCompat.getDrawable(context, R.drawable.ic_basketball_clip_art);
             case "Tennis":
-                return ContextCompat.getDrawable(getContext(), R.drawable.ic_tennis_clip_art);
+                return ContextCompat.getDrawable(context, R.drawable.ic_tennis_clip_art);
             case "Volleyball":
-                return ContextCompat.getDrawable(getContext(), R.drawable.ic_volleyball_clip_art);
+                return ContextCompat.getDrawable(context, R.drawable.ic_volleyball_clip_art);
             case "Running":
-                return ContextCompat.getDrawable(getContext(), R.drawable.ic_running_clip_art);
+                return ContextCompat.getDrawable(context, R.drawable.ic_running_clip_art);
             case "Exercise":
-                return ContextCompat.getDrawable(getContext(), R.drawable.ic_exercise_clip_art);
+                return ContextCompat.getDrawable(context, R.drawable.ic_exercise_clip_art);
             default:
-                return ContextCompat.getDrawable(getContext(), R.drawable.ic_soccer_clip_art);
+                return ContextCompat.getDrawable(context, R.drawable.ic_soccer_clip_art);
         }
     }
 
@@ -313,6 +337,7 @@ public class DiscoverFragment extends Fragment implements GoogleMap.OnMarkerClic
         //Add to general event list according to preference
         if (currUserPref.isPrefByString(event.getType())) {
             eventList.add(event);
+            addEventMarkerOnMap(event);
         }
     }
 
@@ -364,9 +389,11 @@ public class DiscoverFragment extends Fragment implements GoogleMap.OnMarkerClic
         }
     }
 
-    private void showEventsMap() {
-        //recyclerView.setVisibility(View.GONE);
-        //Show all events on a google map
+    @Override
+    public void onRefresh() {
+        initializeEventList();
+//        swipeRefreshLayout.setRefreshing(false);
+        swipeRefreshLayout.clearAnimation();
     }
 }
 

@@ -65,8 +65,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private ImageView navDrawerProfilePic;
     private TextView navDrawerFullName, navDrawerEmail;
 
-    private static UserModel currentUser;
-//    private UserModel currUser;
+//    private static UserModel currentUser;
+    private UserModel currUser;
 //    private ArrayList<EventModel> eventList;
 
     private DatabaseReference databaseReference;
@@ -78,9 +78,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Toast.makeText(this, currentUser.getFullName(), Toast.LENGTH_SHORT).show();  //Todo: supposed to crash here
 
-//        currUser = LoginActivity.getCurrentUser();
+        currUser = ApplicationGlobal.getCurrentUser();
         storageProfilePicsRef = FirebaseStorage.getInstance().getReference().child("profile_pics");
         databaseReference = FirebaseDatabase.getInstance().getReference().child("events");
         initializeMainActivity();
@@ -122,9 +121,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout,toolbar,R.string.navigation_drawer_open,R.string.navigation_drawer_closed);
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
-        if (currentUser != null) {
-            navDrawerFullName.setText(currentUser.getFullName());
-            navDrawerEmail.setText(currentUser.getEmail());
+        if (currUser != null) {
+            navDrawerFullName.setText(currUser.getFullName());
+            navDrawerEmail.setText(currUser.getEmail());
             getProfilePicFromDB();
         }
     }
@@ -143,8 +142,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.nav_logout:
                 intent = new Intent(this, LoginActivity.class);
                 startActivity(intent);
-//                LoginActivity.setCurrentUser(null);
-                setCurrentUser(null);
+                ApplicationGlobal.setCurrentUser(null);
                 Toast.makeText(this, "User logged out..", Toast.LENGTH_SHORT).show();
                 finish();
                 break;
@@ -169,7 +167,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
     private void getProfilePicFromDB() {
-        final String currUserEmail = currentUser.getEmail();
+        final String currUserEmail = currUser.getEmail();
         storageProfilePicsRef.child(currUserEmail).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override
             public void onSuccess(Uri uri) {
@@ -213,11 +211,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         startActivity(intent);
     }
 
-    public static UserModel getCurrentUser() {
-        return currentUser;
-    }
-
-    public static void setCurrentUser(UserModel currentUser) {
-        MainActivity.currentUser = currentUser;
-    }
+//    public static UserModel getCurrentUser() {
+//        return currentUser;
+//    }
+//
+//    public static void setCurrentUser(UserModel currentUser) {
+//        MainActivity.currentUser = currentUser;
+//    }
 }

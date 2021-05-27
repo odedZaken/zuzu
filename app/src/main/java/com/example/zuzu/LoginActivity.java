@@ -169,7 +169,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         UserModel user = new UserModel(firstNameFromDB,lastNameFromDB,emailFromDB, phoneNoFromDB, passwordFromDB, dobFromDB, genderFromDB, userPreferences);
         user.setId(userIdFromDB);
-        MainActivity.setCurrentUser(user);
+        ApplicationGlobal.setCurrentUser(user);
 
 //        Toast.makeText(LoginActivity.this, "Welcome Back " + currentUser.getFullName() + ", Login Successful!", Toast.LENGTH_SHORT).show();
     }

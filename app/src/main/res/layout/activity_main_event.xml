@@ -48,7 +48,7 @@
             android:text="Join"
             android:layout_gravity="bottom|center_horizontal"
             android:layout_margin="@dimen/fab_margin"
-            app:icon="@drawable/ic_baseline_add_24"
+            app:icon="@drawable/ic_baseline_person_join_24"
             />
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
