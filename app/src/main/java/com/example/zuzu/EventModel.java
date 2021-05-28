@@ -139,4 +139,18 @@ public class EventModel implements Serializable {
         }
         return result;
     }
+
+    public boolean isFull (){
+        return currParticipants == maxParticipants;
+    }
+
+    public void addUser(String id) {
+        usersIDs.add(id);
+        currParticipants++;
+    }
+
+    public void removeUser(String id) {
+        usersIDs.remove(id);
+        currParticipants--;
+    }
 }

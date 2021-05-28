@@ -116,12 +116,11 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
                 finish();
                 break;
             case R.id.nav_preferences:
+                drawerLayout.close();
                 break;
-
             case R.id.nav_logout:
                 intent = new Intent(this, LoginActivity.class);
                 startActivity(intent);
-//                LoginActivity.setCurrentUser(null);
                 ApplicationGlobal.setCurrentUser(null);
                 Toast.makeText(this, "User logged out..", Toast.LENGTH_SHORT).show();
                 finish();

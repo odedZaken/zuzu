@@ -245,7 +245,7 @@ public class DiscoverFragment extends Fragment implements GoogleMap.OnMarkerClic
     }
 
     private void getEventFromDB(DataSnapshot event) {
-        ArrayList<String> usersIds = new ArrayList<>();
+        ArrayList<String> usersIds;
         String creatorId = event.child("creatorId").getValue(String.class);
         String date = event.child("date").getValue(String.class);
         String description = event.child("description").getValue(String.class);
