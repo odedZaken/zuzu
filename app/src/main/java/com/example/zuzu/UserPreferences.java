@@ -5,12 +5,12 @@ public class UserPreferences {
     private Boolean isPrefSoccer, isPrefBasketball, isPrefVolleyball, isPrefRunning, isPrefTennis, isPrefExercise;
 
     public UserPreferences() {
-        this.isPrefSoccer = false;
-        this.isPrefBasketball = false;
-        this.isPrefVolleyball = false;
-        this.isPrefRunning = false;
-        this.isPrefTennis = false;
-        this.isPrefExercise = false;
+        this.isPrefSoccer = true;
+        this.isPrefBasketball = true;
+        this.isPrefVolleyball = true;
+        this.isPrefRunning = true;
+        this.isPrefTennis = true;
+        this.isPrefExercise = true;
     }
 
     public UserPreferences(Boolean isPrefSoccer, Boolean isPrefBasketball, Boolean isPrefVolleyball, Boolean isPrefRunning, Boolean isPrefTennis, Boolean isPrefExercise) {

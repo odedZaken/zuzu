@@ -1,5 +1,6 @@
 package com.example.zuzu;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -112,6 +113,7 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
                 intent = new Intent(this, MainActivity.class);
                 startActivity(intent);
                 drawerLayout.close();
+                finish();
                 break;
             case R.id.nav_preferences:
                 break;

@@ -107,7 +107,13 @@ public class DiscoverFragment extends Fragment implements GoogleMap.OnMarkerClic
         View eventListView = inflater.inflate(R.layout.fragment_discover, container, false);
         View eventMapView = inflater.inflate(R.layout.fragment_map_events, container, false);
 
+
+        //Get tab title
+        tabTitle = this.getArguments().getString("title");
+
         //Initialize and assign variables
+        context = getActivity();
+        locationPermissionGranted = false;
         getLocationPermission();
         eventList = new ArrayList<>();
         myEvents = new ArrayList<>();
@@ -120,18 +126,18 @@ public class DiscoverFragment extends Fragment implements GoogleMap.OnMarkerClic
         swipeRefreshLayout.setOnRefreshListener(this);
         layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
-        context = getActivity();
         //Get Device location and Initialize events List
         getDeviceLocation();
+
         //Initialize map fragment
-        InitializeMapFragment(eventMapView);
+//        if(tabTitle.equals("Map")) {
+//            InitializeMapFragment(eventMapView);
+//        }
 
-
-        //Get tab title
-        tabTitle = this.getArguments().getString("title");
 
         //Set layout by tab title
         if (tabTitle.equals("Map")) {
+            InitializeMapFragment(eventMapView);
             return eventMapView;
         } else {
             return eventListView;
@@ -233,7 +239,9 @@ public class DiscoverFragment extends Fragment implements GoogleMap.OnMarkerClic
         emptyListMsg.setVisibility(View.GONE);
         eventList.clear();
         myEvents.clear();
-        googleMap.clear();
+        if(googleMap != null) {
+            googleMap.clear();
+        }
     }
 
     private void getEventFromDB(DataSnapshot event) {
@@ -260,7 +268,6 @@ public class DiscoverFragment extends Fragment implements GoogleMap.OnMarkerClic
             int result = calculateDistanceMeters(latitude, longitude);
             eventModel.setDistance(result);
         }
-//        addEventMarkerOnMap(eventModel);
         //Determine the list the event will be added to, and check by preferences
         sortEventToList(eventModel);
     }
@@ -339,7 +346,9 @@ public class DiscoverFragment extends Fragment implements GoogleMap.OnMarkerClic
         //Add to general event list according to preference
         if (currUserPref.isPrefByString(event.getType())) {
             eventList.add(event);
-            addEventMarkerOnMap(event);
+            if(tabTitle.equals("Map")) {
+                addEventMarkerOnMap(event);
+            }
         }
     }
 
@@ -361,7 +370,7 @@ public class DiscoverFragment extends Fragment implements GoogleMap.OnMarkerClic
                     public void onComplete(@NonNull Task<Location> task) {
                         if (task.isSuccessful()) {
                             lastKnownLocation = task.getResult();
-                            if (lastKnownLocation != null) {
+                            if (lastKnownLocation != null && googleMap != null) {
                                 //Set map camera on user location
                                 googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude()), DEFAULT_ZOOM));
                             }
@@ -373,7 +382,7 @@ public class DiscoverFragment extends Fragment implements GoogleMap.OnMarkerClic
                     }
                 });
             } else {
-                Toast.makeText(getActivity(), "Location Permission Denied", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(getActivity(), "Location Permission Denied", Toast.LENGTH_SHORT).show();
                 initializeEventList();
             }
         } catch (SecurityException e) {
@@ -385,15 +394,32 @@ public class DiscoverFragment extends Fragment implements GoogleMap.OnMarkerClic
         if (getActivity().checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_DENIED) {
             String[] permissions = {Manifest.permission.ACCESS_FINE_LOCATION};
             requestPermissions(permissions, PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
-            locationPermissionGranted = false; //Todo: Fix variable
+            locationPermissionGranted = false;
         } else {
             locationPermissionGranted = true;
         }
     }
 
     @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    locationPermissionGranted = true;
+                    getDeviceLocation();
+                } else {
+                    locationPermissionGranted = false;
+//                    Toast.makeText(context, "Permission denied", Toast.LENGTH_SHORT).show();
+                }
+                break;
+            default:
+                break;
+        }
+    }
+
+    @Override
     public void onRefresh() {
-        initializeEventList();
+        getDeviceLocation();
     }
 }
 

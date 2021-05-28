@@ -130,18 +130,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Intent intent;
         switch(item.getItemId()) {
             case R.id.nav_home:
+                drawerLayout.close();
                 break;
             case R.id.nav_preferences:
                 intent = new Intent(this, EditProfileActivity.class);
                 startActivity(intent);
                 drawerLayout.close();
-//                finish();
+//                navigationView.setCheckedItem(R.id.nav_home);
+                finish();
                 break;
             case R.id.nav_logout:
-                intent = new Intent(this, LoginActivity.class);
-                startActivity(intent);
+                drawerLayout.close();
                 ApplicationGlobal.setCurrentUser(null);
                 Toast.makeText(this, "User logged out..", Toast.LENGTH_SHORT).show();
+                intent = new Intent(this, LoginActivity.class);
+                startActivity(intent);
                 finish();
                 break;
             case R.id.nav_invite_friends:
@@ -153,6 +156,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         return true;
     }
+
 
     @Override
     public void onBackPressed() {

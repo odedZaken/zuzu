@@ -319,9 +319,9 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     }
 
     private void finishRegistration() {
-        Toast.makeText(RegisterActivity.this, "User created Successfully!", Toast.LENGTH_SHORT).show();
-        Intent intentUserProfile = new Intent(RegisterActivity.this, EditProfileActivity.class);
+        Toast.makeText(RegisterActivity.this, "User created successfully!", Toast.LENGTH_SHORT).show();
+//        Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
         this.finish();
-        startActivity(intentUserProfile);
+//        startActivity(intent);
     }
 }
