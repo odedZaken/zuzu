@@ -23,7 +23,6 @@ import com.google.firebase.database.ValueEventListener;
 //This is the default page when opening the app
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
 
-//    private static UserModel currentUser;
     private EditText textUsername, textPassword;
     private TextInputLayout usernameLayout, passwordLayout;
     private Button loginButton;
@@ -46,7 +45,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     @Override
     public void onClick(View v) {
-        switch(v.getId()) {
+        switch (v.getId()) {
             case R.id.registerButtonLogin:
                 onRegisterButtonClick();
                 break;
@@ -73,8 +72,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         if (isValidLogin()) {
             progressBarLogin.setVisibility(View.VISIBLE);
             isUserExist();
-        }
-        else {
+        } else {
             Toast.makeText(this, "Login Failed", Toast.LENGTH_SHORT).show();
         }
     }
@@ -117,29 +115,28 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 String userIdFromDB = null;
-                if(dataSnapshot.exists()) {
+                if (dataSnapshot.exists()) {
                     for (DataSnapshot user : dataSnapshot.getChildren()) {
                         userIdFromDB = user.child("id").getValue(String.class);
                     }
                     String passwordFromDB = dataSnapshot.child(userIdFromDB).child("password").getValue(String.class);
-                    if(passwordFromDB!= null && passwordFromDB.equals(enteredPassword)) {
+                    if (passwordFromDB != null && passwordFromDB.equals(enteredPassword)) {
                         getUserFromDB(dataSnapshot, userIdFromDB, passwordFromDB);
 
                         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                         startActivity(intent);
                         finish();
-                    }
-                    else {
+                    } else {
                         passwordLayout.setError("Wrong password");
                         textPassword.requestFocus();
                     }
-                }
-                else {
+                } else {
                     usernameLayout.setError("No user found with this address");
                     textUsername.requestFocus();
                 }
                 progressBarLogin.setVisibility(View.INVISIBLE);
             }
+
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
             }
@@ -161,21 +158,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         Boolean isPrefExercise = dataSnapshot.child(userIdFromDB).child("userPreferences").child("prefExercise").getValue(boolean.class);
 
         UserPreferences userPreferences = new UserPreferences(isPrefSoccer, isPrefBasketball, isPrefVolleyball, isPrefRunning, isPrefTennis, isPrefExercise);
-//        currentUser = new UserModel(firstNameFromDB,lastNameFromDB,emailFromDB, phoneNoFromDB, passwordFromDB, dobFromDB, genderFromDB, userPreferences);
-//        currentUser.setId(userIdFromDB);
-
-        UserModel user = new UserModel(firstNameFromDB,lastNameFromDB,emailFromDB, phoneNoFromDB, passwordFromDB, dobFromDB, genderFromDB, userPreferences);
+        UserModel user = new UserModel(firstNameFromDB, lastNameFromDB, emailFromDB, phoneNoFromDB, passwordFromDB, dobFromDB, genderFromDB, userPreferences);
         user.setId(userIdFromDB);
         ApplicationGlobal.setCurrentUser(user);
-
-//        Toast.makeText(LoginActivity.this, "Welcome Back " + currentUser.getFullName() + ", Login Successful!", Toast.LENGTH_SHORT).show();
     }
-
-//    public static UserModel getCurrentUser() {
-//        return currentUser;
-//    }
-//
-//    public static void setCurrentUser(UserModel currentUser) {
-//        LoginActivity.currentUser = currentUser;
-//    }
 }

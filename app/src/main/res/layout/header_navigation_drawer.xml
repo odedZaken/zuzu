@@ -29,15 +29,6 @@
                 android:layout_gravity="center"
                 android:src="@drawable/ic_baseline_account_circle_24" />
 
-
-            <!--    <ImageView-->
-            <!--        android:id="@+id/navDrawerProfilePic"-->
-            <!--        android:layout_width="75dp"-->
-            <!--        android:layout_height="75dp"-->
-            <!--        android:layout_gravity="center"-->
-            <!--        android:layout_marginBottom="10dp"-->
-            <!--        android:src="@drawable/ic_baseline_account_circle_24" />-->
-
         </androidx.cardview.widget.CardView>
 
     </androidx.cardview.widget.CardView>
