@@ -69,6 +69,7 @@ public class CreateEventActivity extends AppCompatActivity implements View.OnCli
         this.setTitle("New Event");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         initializeCreateEventForm();
+
         sports.add("Soccer");sports.add("Basketball");sports.add("Tennis");
         sports.add("Volleyball");sports.add("Running");sports.add("Exercise");
         sportsAdapter = new ArrayAdapter<>(getApplicationContext(), R.layout.list_item_sport_type, sports);

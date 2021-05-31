@@ -149,10 +149,6 @@ public class EventFragment extends Fragment implements View.OnClickListener{
 
     private void leaveEvent() {
         //delete user from event list in database and refresh fab action and list
-//        ArrayList<String> usersId = event.getUsersIDs();
-//        int currParticipants = event.getCurrParticipants() - 1;
-//        event.setCurrParticipants();
-//        usersId.remove(currUser.getId());
         event.removeUser(currUser.getId());
         databaseReferenceEvent.child("usersIDs").setValue(event.getUsersIDs()).addOnSuccessListener(new OnSuccessListener<Void>() {
                 @Override

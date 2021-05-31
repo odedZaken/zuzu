@@ -107,7 +107,6 @@ public class DiscoverFragment extends Fragment implements GoogleMap.OnMarkerClic
         View eventListView = inflater.inflate(R.layout.fragment_discover, container, false);
         View eventMapView = inflater.inflate(R.layout.fragment_map_events, container, false);
 
-
         //Get tab title
         tabTitle = this.getArguments().getString("title");
 
@@ -128,12 +127,6 @@ public class DiscoverFragment extends Fragment implements GoogleMap.OnMarkerClic
         recyclerView.setLayoutManager(layoutManager);
         //Get Device location and Initialize events List
         getDeviceLocation();
-
-        //Initialize map fragment
-//        if(tabTitle.equals("Map")) {
-//            InitializeMapFragment(eventMapView);
-//        }
-
 
         //Set layout by tab title
         if (tabTitle.equals("Map")) {
@@ -180,7 +173,6 @@ public class DiscoverFragment extends Fragment implements GoogleMap.OnMarkerClic
                 } else {
                     googleMap.setMyLocationEnabled(false);
                     googleMap.getUiSettings().setMyLocationButtonEnabled(false);
-                    //lastKnownLocation = null;
                 }
             } catch (SecurityException e) {
                 Log.e("Exception: %s", e.getMessage());
@@ -409,7 +401,6 @@ public class DiscoverFragment extends Fragment implements GoogleMap.OnMarkerClic
                     getDeviceLocation();
                 } else {
                     locationPermissionGranted = false;
-//                    Toast.makeText(context, "Permission denied", Toast.LENGTH_SHORT).show();
                 }
                 break;
             default:
