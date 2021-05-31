@@ -300,7 +300,6 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
             uploadProfilePic(profileImageUri, email);
         }
         ApplicationGlobal.setCurrentUser(newUser);
-//        LoginActivity.setCurrentUser(newUser);
     }
 
     private void uploadProfilePic(Uri imageUri, String email) {
@@ -320,8 +319,6 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
 
     private void finishRegistration() {
         Toast.makeText(RegisterActivity.this, "User created successfully!", Toast.LENGTH_SHORT).show();
-//        Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
         this.finish();
-//        startActivity(intent);
     }
 }

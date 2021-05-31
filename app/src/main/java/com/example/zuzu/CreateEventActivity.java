@@ -45,7 +45,6 @@ public class CreateEventActivity extends AppCompatActivity implements View.OnCli
 
     private ArrayList<String> sports = new ArrayList<>();
     private ArrayAdapter sportsAdapter;
-
     private TextView numParticipantsText;
     private int numParticipantsInt, currHour, currMinute;
     private ImageButton increaseButton, decreaseButton;
@@ -104,8 +103,6 @@ public class CreateEventActivity extends AppCompatActivity implements View.OnCli
                 dismissErrors();
                 if (verifyProperties()) {
                     saveEventInDB();
-//                    Intent intentMain = new Intent(this, MainActivity.class);
-//                    startActivity(intentMain);
                     finish();
                 }
                 break;
