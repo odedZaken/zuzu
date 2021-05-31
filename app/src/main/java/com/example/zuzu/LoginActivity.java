@@ -85,13 +85,19 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     private boolean isValidLogin() {
         boolean isValid = true;
+
         clearWarnings();
+
         if (textUsername.getText().length() < 1) {
-            usernameLayout.setError("You Must Enter an Email");
+            usernameLayout.setError("Oopsi! Your email is missing");
+            isValid = false;
+        }
+        if (!textUsername.getText().toString().toLowerCase().contains("@")) {
+            usernameLayout.setError("Oopsi! Email address is invalid");
             isValid = false;
         }
         if (textPassword.getText().length() < 1) {
-            passwordLayout.setError("You Must Enter a Password");
+            passwordLayout.setError("Oopsi! Your password is missing");
             isValid = false;
         }
 
@@ -115,11 +121,14 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 String userIdFromDB = null;
+
                 if (dataSnapshot.exists()) {
                     for (DataSnapshot user : dataSnapshot.getChildren()) {
                         userIdFromDB = user.child("id").getValue(String.class);
                     }
+
                     String passwordFromDB = dataSnapshot.child(userIdFromDB).child("password").getValue(String.class);
+
                     if (passwordFromDB != null && passwordFromDB.equals(enteredPassword)) {
                         getUserFromDB(dataSnapshot, userIdFromDB, passwordFromDB);
 

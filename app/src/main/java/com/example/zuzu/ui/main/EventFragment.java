@@ -2,9 +2,10 @@ package com.example.zuzu.ui.main;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -12,18 +13,21 @@ import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.zuzu.ApplicationGlobal;
+import com.example.zuzu.EditProfileActivity;
 import com.example.zuzu.EventModel;
+import com.example.zuzu.MainActivity;
+import com.example.zuzu.ParticipantModel;
 import com.example.zuzu.R;
 import com.example.zuzu.UserModel;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -35,14 +39,18 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-
-import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
-public class EventFragment extends Fragment implements View.OnClickListener{
+import org.jetbrains.annotations.NotNull;
+
+
+public class EventFragment extends Fragment implements View.OnClickListener {
 
     private static EventModel event;
     private TextView eventName, eventType, eventDescription, eventDate, eventTime, eventDistance, eventNumParticipants;
@@ -52,12 +60,13 @@ public class EventFragment extends Fragment implements View.OnClickListener{
     private ExtendedFloatingActionButton fabAction;
     private String tabTitle;
     private Activity context;
-//    private Context context;
+    //    private Context context;
     private RelativeLayout detailsLayout;
     private DatabaseReference databaseReferenceEvent;
+    private StorageReference storageProfilePicsRef;
     private boolean isUserParticipate;
     private boolean isUserCreator;
-
+    private ListView lvParticipants;
 
     public EventFragment() {
         // Required empty public constructor
@@ -72,42 +81,91 @@ public class EventFragment extends Fragment implements View.OnClickListener{
         isUserParticipate = false;
         isUserCreator = false;
         databaseReferenceEvent = FirebaseDatabase.getInstance().getReference().child("events").child(event.getId());
-
+        storageProfilePicsRef = FirebaseStorage.getInstance().getReference().child("profile_pics");
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_event, container, false);
-        initializeEventDetails(view);
+        View detailsView = inflater.inflate(R.layout.fragment_event, container, false);
+        View participantsView = inflater.inflate(R.layout.fragment_participants, container, false);
+        initializeEventDetails(detailsView);
         context = getActivity();
-//        initializeParticipantsList();
+        initializeParticipantsList(participantsView);
         configureActionButton();
         getEventDetailsFromDB();
 
-//        if(tabTitle.equals("Participants")) {
-//            detailsLayout.setVisibility(View.GONE);
+        return tabTitle.equals("Participants") ? participantsView : detailsView;
+    }
+
+    private void initializeParticipantsList(final View view) {
+        final ArrayList<String> participantsIDList = event.getUsersIDs();
+        final ArrayList<ParticipantModel> participantsList = new ArrayList<>();
+
+        lvParticipants = view.findViewById(R.id.lvParticipants);
+        DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
+
+        for (int i = 0; i < participantsIDList.size(); i++) {
+            final Query getParticipantFromDB = usersRef.orderByChild("id").equalTo(participantsIDList.get(i));
+            final int finalI = i;
+            getParticipantFromDB.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.exists()) {
+                        participantsList.add(getUserFromDBForParticipantsList(dataSnapshot, participantsIDList.get(finalI)));
+
+                        if (participantsList.size() == participantsIDList.size()) {
+                            ParticipantsAdapter participantsAdapter = new ParticipantsAdapter(getActivity(), participantsList);
+                            lvParticipants.setAdapter(participantsAdapter);
+                        }
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                }
+            });
+        }
+
+//        for (final String userID : participantsIDList) {
+//            final Query getParticipantFromDB = usersRef.orderByChild("id").equalTo(userID);
+//            getParticipantFromDB.addListenerForSingleValueEvent(new ValueEventListener() {
+//                @Override
+//                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                    if (dataSnapshot.exists()) {
+//                        participantsList.add(getUserFromDBForParticipantsList(dataSnapshot, userID));
+//
+//                    }
+//                }
+//
+//                @Override
+//                public void onCancelled(@NonNull DatabaseError databaseError) {
+//                }
+//            });
 //        }
-        return view;
+//
+//        lvParticipants = view.findViewById(R.id.lvParticipants);
+//        ParticipantsAdapter participantsAdapter = new ParticipantsAdapter(getActivity(), participantsList);
+//        lvParticipants.setAdapter(participantsAdapter);
     }
 
     @SuppressLint("NonConstantResourceId")
     @Override
     public void onClick(View v) {
-        switch(v.getId()) {
+        switch (v.getId()) {
             case R.id.mapEventCard:
                 //Redirect to GoogleMaps with event exact location
-                String url = "https://www.google.com/maps/search/?api=1&query="+ event.getLocation().latitude + "," + event.getLocation().longitude;
+                String url = "https://www.google.com/maps/search/?api=1&query=" + event.getLocation().latitude + "," + event.getLocation().longitude;
                 Intent i = new Intent(Intent.ACTION_VIEW);
                 i.setData(Uri.parse(url));
                 startActivity(i);
                 break;
             case R.id.actionEventFab:
                 fabAction.setEnabled(false);
-                if(isUserCreator) {
+                if (isUserCreator) {
                     deleteEvent();
-                } else if(isUserParticipate) {
+                } else if (isUserParticipate) {
                     leaveEvent();
                 } else {
                     joinEvent();
@@ -155,24 +213,24 @@ public class EventFragment extends Fragment implements View.OnClickListener{
 //        usersId.remove(currUser.getId());
         event.removeUser(currUser.getId());
         databaseReferenceEvent.child("usersIDs").setValue(event.getUsersIDs()).addOnSuccessListener(new OnSuccessListener<Void>() {
-                @Override
-                public void onSuccess(Void unused) {
-                    configureActionButton();
-                    fabAction.setEnabled(true);
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull @NotNull Exception e) {
-                    Toast.makeText(context, "Something went wrong..", Toast.LENGTH_SHORT).show();
-                    fabAction.setEnabled(true);
-                }
-            });
+            @Override
+            public void onSuccess(Void unused) {
+                configureActionButton();
+                fabAction.setEnabled(true);
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull @NotNull Exception e) {
+                Toast.makeText(context, "Something went wrong..", Toast.LENGTH_SHORT).show();
+                fabAction.setEnabled(true);
+            }
+        });
         databaseReferenceEvent.child("currParticipants").setValue(event.getCurrParticipants());
     }
 
     private void joinEvent() {
         //add user to event list in database and refresh fab action and list
-        if(!event.isFull()) {
+        if (!event.isFull()) {
             event.addUser(currUser.getId());
             databaseReferenceEvent.child("usersIDs").setValue(event.getUsersIDs()).addOnSuccessListener(new OnSuccessListener<Void>() {
                 @Override
@@ -198,36 +256,36 @@ public class EventFragment extends Fragment implements View.OnClickListener{
         //Initialize association variables
         isUserCreator = false;
         isUserParticipate = false;
-        if(currUser.getId().equals(event.getCreatorId()))
-        {
+        if (currUser.getId().equals(event.getCreatorId())) {
             isUserCreator = true;
             isUserParticipate = true;
         } else {
             for (String id : event.getUsersIDs()) {
                 if (currUser.getId().equals(id)) {
                     isUserParticipate = true;
+//                    Toast.makeText(context, "User is NOT creator!!", Toast.LENGTH_SHORT).show();
                 }
             }
         }
-        if(isUserCreator) {
+        if (isUserCreator) {
             fabAction.setText("Delete");
-            fabAction.setIcon(ContextCompat.getDrawable(context,R.drawable.ic_baseline_delete_24));
-            fabAction.setBackgroundColor(getResources().getColor(R.color.red,null));
-        } else if(isUserParticipate) {
+            fabAction.setIcon(ContextCompat.getDrawable(context, R.drawable.ic_baseline_delete_24));
+            fabAction.setBackgroundColor(getResources().getColor(R.color.red, null));
+        } else if (isUserParticipate) {
             fabAction.setText("Leave");
-            fabAction.setIcon(ContextCompat.getDrawable(context,R.drawable.ic_baseline_person_leave_24));
-            fabAction.setBackgroundColor(getResources().getColor(R.color.orange,null));
+            fabAction.setIcon(ContextCompat.getDrawable(context, R.drawable.ic_baseline_person_leave_24));
+            fabAction.setBackgroundColor(getResources().getColor(R.color.orange, null));
         } else {
             fabAction.setText("Join");
-            fabAction.setIcon(ContextCompat.getDrawable(context,R.drawable.ic_baseline_person_join_24));
-            fabAction.setBackgroundColor(getResources().getColor(R.color.design_default_color_secondary,null));
+            fabAction.setIcon(ContextCompat.getDrawable(context, R.drawable.ic_baseline_person_join_24));
+            fabAction.setBackgroundColor(getResources().getColor(R.color.design_default_color_secondary, null));
         }
     }
 
     private void initializeEventDetails(View view) {
         eventMapCard = view.findViewById(R.id.mapEventCard);
         eventMapImageView = view.findViewById(R.id.mapEventImage);
-        String staticMapUrl = "https://maps.googleapis.com/maps/api/staticmap?zoom=16&size=500x400&markers=color:red%7C"+ event.getLocation().latitude+","+event.getLocation().longitude +"&key=" + getResources().getString(R.string.google_maps_api_key) ;
+        String staticMapUrl = "https://maps.googleapis.com/maps/api/staticmap?zoom=16&size=500x400&markers=color:red%7C" + event.getLocation().latitude + "," + event.getLocation().longitude + "&key=" + getResources().getString(R.string.google_maps_api_key);
         Glide.with(this).load(staticMapUrl).into(eventMapImageView);
         eventMapCard.setOnClickListener(this);
         detailsLayout = view.findViewById(R.id.detailsLayout);
@@ -241,7 +299,7 @@ public class EventFragment extends Fragment implements View.OnClickListener{
         fabAction = getActivity().findViewById(R.id.actionEventFab);
         fabAction.setOnClickListener(this);
         eventName.setText(event.getTitle());
-        if(event.getDescription().isEmpty())
+        if (event.getDescription().isEmpty())
             eventDescription.setVisibility(View.GONE);
 
         eventDescription.setText(event.getDescription());
@@ -256,7 +314,7 @@ public class EventFragment extends Fragment implements View.OnClickListener{
         databaseReferenceEvent.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull @NotNull DataSnapshot dataSnapshot) {
-                if(dataSnapshot.exists()) {
+                if (dataSnapshot.exists()) {
                     ArrayList<String> usersId = new ArrayList<>();
                     //Fetch current users Ids of this event and number of participants from DB
                     //Will be updated on every data change
@@ -285,4 +343,40 @@ public class EventFragment extends Fragment implements View.OnClickListener{
     public static void setEvent(EventModel event) {
         EventFragment.event = event;
     }
+
+    private ParticipantModel getUserFromDBForParticipantsList(DataSnapshot dataSnapshot, String userIdFromDB) {
+        String emailFromDB = dataSnapshot.child(userIdFromDB).child("email").getValue(String.class);
+        String firstNameFromDB = dataSnapshot.child(userIdFromDB).child("firstName").getValue(String.class);
+        String lastNameFromDB = dataSnapshot.child(userIdFromDB).child("lastName").getValue(String.class);
+        String dobFromDB = dataSnapshot.child(userIdFromDB).child("dob").getValue(String.class);
+        String genderFromDB = dataSnapshot.child(userIdFromDB).child("gender").getValue(String.class);
+
+        ParticipantModel participant = new ParticipantModel(firstNameFromDB, lastNameFromDB, dobFromDB, genderFromDB, userIdFromDB, emailFromDB);
+        setProfilePicFromDB(participant);
+
+        return participant;
+    }
+
+    private void setProfilePicFromDB(final ParticipantModel participantModel) {
+        storageProfilePicsRef.child(participantModel.getEmail()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+            @Override
+            public void onSuccess(Uri uri) {
+                StorageReference userProfilePic = storageProfilePicsRef.child(participantModel.getEmail());
+                userProfilePic.getBytes(EditProfileActivity.MAX_SIZE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                    @Override
+                    public void onSuccess(byte[] bytes) {
+                        Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                        participantModel.setProfilePic(bitmap);
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(getActivity(), "Failed to fetch profile picture..", Toast.LENGTH_LONG).show();
+                    }
+                });
+            }
+        });
+
+    }
+
 }
