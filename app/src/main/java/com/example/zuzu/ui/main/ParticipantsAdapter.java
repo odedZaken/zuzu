@@ -9,6 +9,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
+import com.bumptech.glide.Glide;
 import com.example.zuzu.ParticipantModel;
 import com.example.zuzu.R;
 
@@ -19,12 +20,14 @@ public class ParticipantsAdapter extends ArrayAdapter<String> {
     ArrayList<ParticipantModel> participantsList;
 
     public ParticipantsAdapter(@NonNull Context context, ArrayList<ParticipantModel> participantsList) {
-        super(context, R.layout.fragment_participants, R.id.textView1);
+        super(context, R.layout.list_item_event_participant);
+        this.context = context;
         this.participantsList = participantsList;
 
         // Todo: delete!
-        Toast.makeText(context, participantsList.get(0).getFirstName(), Toast.LENGTH_SHORT).show();
-        Toast.makeText(context, participantsList.get(1).getFirstName(), Toast.LENGTH_SHORT).show();
+//        Toast.makeText(context, participantsList.get(0).getFirstName(), Toast.LENGTH_SHORT).show();
+//        Toast.makeText(context, participantsList.get(1).getFirstName(), Toast.LENGTH_SHORT).show();
+//        Toast.makeText(context, participantsList.get(2).getFirstName(), Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -34,18 +37,25 @@ public class ParticipantsAdapter extends ArrayAdapter<String> {
 
         if (singleItem == null) {
             LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            singleItem = layoutInflater.inflate(R.layout.fragment_participants, parent, false);
+            singleItem = layoutInflater.inflate(R.layout.list_item_event_participant, parent, false);
             holder = new ParticipantViewHolder(singleItem);
             singleItem.setTag(holder);
         }
         else {
             holder = (ParticipantViewHolder) singleItem.getTag();
         }
-
-        holder.participantImage.setImageBitmap(participantsList.get(position).getProfilePic());
+        if(participantsList.get(position).getProfilePic() != null) {
+            holder.participantImage.setImageBitmap(participantsList.get(position).getProfilePic());
+        }
+//        Toast.makeText(context, "Holder " + holder.participantImage.getId(), Toast.LENGTH_SHORT).show();
         holder.participantName.setText(participantsList.get(position).getDisplayName());
         holder.participantGenderAge.setText(participantsList.get(position).getGenderAgeString());
 
         return singleItem;
+    }
+
+    @Override
+    public int getCount() {
+        return participantsList.size();
     }
 }

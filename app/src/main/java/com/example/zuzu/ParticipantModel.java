@@ -20,6 +20,7 @@ public class ParticipantModel {
         this.gender = gender;
         this.userID = userID;
         this.email = email;
+        this.profilePic = null;
     }
 
     public String getFirstName() {
@@ -47,7 +48,8 @@ public class ParticipantModel {
     }
 
     public String getGender() {
-        return gender;
+        String editGender = gender.substring(0,1).toUpperCase();
+        return editGender + gender.substring(1).toLowerCase();
     }
 
     public void setGender(String gender) {

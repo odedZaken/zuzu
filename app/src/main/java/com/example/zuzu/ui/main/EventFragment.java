@@ -26,7 +26,6 @@ import com.bumptech.glide.Glide;
 import com.example.zuzu.ApplicationGlobal;
 import com.example.zuzu.EditProfileActivity;
 import com.example.zuzu.EventModel;
-import com.example.zuzu.MainActivity;
 import com.example.zuzu.ParticipantModel;
 import com.example.zuzu.R;
 import com.example.zuzu.UserModel;
@@ -68,6 +67,10 @@ public class EventFragment extends Fragment implements View.OnClickListener {
     private boolean isUserCreator;
     private ListView lvParticipants;
 
+    private int loadProfilePicCounter;
+
+    private ArrayList<ParticipantModel> participantsList;
+
     public EventFragment() {
         // Required empty public constructor
     }
@@ -80,6 +83,7 @@ public class EventFragment extends Fragment implements View.OnClickListener {
         tabTitle = this.getArguments().getString("title");
         isUserParticipate = false;
         isUserCreator = false;
+        participantsList = new ArrayList<>();
         databaseReferenceEvent = FirebaseDatabase.getInstance().getReference().child("events").child(event.getId());
         storageProfilePicsRef = FirebaseStorage.getInstance().getReference().child("profile_pics");
     }
@@ -92,20 +96,23 @@ public class EventFragment extends Fragment implements View.OnClickListener {
         View participantsView = inflater.inflate(R.layout.fragment_participants, container, false);
         initializeEventDetails(detailsView);
         context = getActivity();
-        initializeParticipantsList(participantsView);
         configureActionButton();
         getEventDetailsFromDB();
+        loadProfilePicCounter = 0;
+        lvParticipants = participantsView.findViewById(R.id.lvParticipants);
 
-        return tabTitle.equals("Participants") ? participantsView : detailsView;
+        if(tabTitle.equals("Participants")) {
+            initializeParticipantsList();
+            return participantsView;
+        } else {
+            return detailsView;
+        }
     }
 
-    private void initializeParticipantsList(final View view) {
+    private void initializeParticipantsList() {
         final ArrayList<String> participantsIDList = event.getUsersIDs();
-        final ArrayList<ParticipantModel> participantsList = new ArrayList<>();
-
-        lvParticipants = view.findViewById(R.id.lvParticipants);
+//        participantsList.clear();
         DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
-
         for (int i = 0; i < participantsIDList.size(); i++) {
             final Query getParticipantFromDB = usersRef.orderByChild("id").equalTo(participantsIDList.get(i));
             final int finalI = i;
@@ -114,40 +121,13 @@ public class EventFragment extends Fragment implements View.OnClickListener {
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     if (dataSnapshot.exists()) {
                         participantsList.add(getUserFromDBForParticipantsList(dataSnapshot, participantsIDList.get(finalI)));
-
-                        if (participantsList.size() == participantsIDList.size()) {
-                            ParticipantsAdapter participantsAdapter = new ParticipantsAdapter(getActivity(), participantsList);
-                            lvParticipants.setAdapter(participantsAdapter);
-                        }
                     }
                 }
-
                 @Override
                 public void onCancelled(@NonNull DatabaseError databaseError) {
                 }
             });
         }
-
-//        for (final String userID : participantsIDList) {
-//            final Query getParticipantFromDB = usersRef.orderByChild("id").equalTo(userID);
-//            getParticipantFromDB.addListenerForSingleValueEvent(new ValueEventListener() {
-//                @Override
-//                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                    if (dataSnapshot.exists()) {
-//                        participantsList.add(getUserFromDBForParticipantsList(dataSnapshot, userID));
-//
-//                    }
-//                }
-//
-//                @Override
-//                public void onCancelled(@NonNull DatabaseError databaseError) {
-//                }
-//            });
-//        }
-//
-//        lvParticipants = view.findViewById(R.id.lvParticipants);
-//        ParticipantsAdapter participantsAdapter = new ParticipantsAdapter(getActivity(), participantsList);
-//        lvParticipants.setAdapter(participantsAdapter);
     }
 
     @SuppressLint("NonConstantResourceId")
@@ -259,7 +239,6 @@ public class EventFragment extends Fragment implements View.OnClickListener {
             for (String id : event.getUsersIDs()) {
                 if (currUser.getId().equals(id)) {
                     isUserParticipate = true;
-//                    Toast.makeText(context, "User is NOT creator!!", Toast.LENGTH_SHORT).show();
                 }
             }
         }
@@ -322,6 +301,12 @@ public class EventFragment extends Fragment implements View.OnClickListener {
                     eventNumParticipants.setText(event.getParticipantsStr());
                     event.setUsersIDs(usersId);
                     //Here a call to initialize users list
+//                    if(tabTitle.equals("Participants")) {
+//                        Toast.makeText(context, "Hello!", Toast.LENGTH_SHORT).show();
+//                        participantsList.clear();
+//                        loadProfilePicCounter = 0;
+//                        initializeParticipantsList();
+//                    }
                 }
             }
 
@@ -361,8 +346,13 @@ public class EventFragment extends Fragment implements View.OnClickListener {
                 userProfilePic.getBytes(EditProfileActivity.MAX_SIZE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
                     @Override
                     public void onSuccess(byte[] bytes) {
+                        loadProfilePicCounter++;
                         Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
                         participantModel.setProfilePic(bitmap);
+                        if(loadProfilePicCounter == participantsList.size()) {
+                            ParticipantsAdapter participantsAdapter = new ParticipantsAdapter(context, participantsList);
+                            lvParticipants.setAdapter(participantsAdapter);
+                        }
                     }
                 }).addOnFailureListener(new OnFailureListener() {
                     @Override
@@ -372,7 +362,5 @@ public class EventFragment extends Fragment implements View.OnClickListener {
                 });
             }
         });
-
     }
-
 }

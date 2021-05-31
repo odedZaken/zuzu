@@ -96,8 +96,11 @@ public class DiscoverFragment extends Fragment implements GoogleMap.OnMarkerClic
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         databaseReference = FirebaseDatabase.getInstance().getReference().child("events");
+
         currUser = ApplicationGlobal.getCurrentUser();
-        currUserPref = currUser.getUserPreferences();
+        if(currUser != null) {
+            currUserPref = currUser.getUserPreferences();
+        }
     }
 
     @Override

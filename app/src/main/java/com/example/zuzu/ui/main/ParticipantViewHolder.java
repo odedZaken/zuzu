@@ -13,7 +13,7 @@ public class ParticipantViewHolder {
     TextView participantGenderAge;
 
     ParticipantViewHolder(View v) {
-        participantImage = v.findViewById(R.id.imageView);
+        participantImage = v.findViewById(R.id.imageView1);
         participantName = v.findViewById(R.id.textView1);
         participantGenderAge = v.findViewById(R.id.textView2);
     }
