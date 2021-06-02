@@ -1,33 +1,44 @@
 package com.example.zuzu.ui.main;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
 import com.bumptech.glide.Glide;
+import com.example.zuzu.EditProfileActivity;
 import com.example.zuzu.ParticipantModel;
 import com.example.zuzu.R;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 
 public class ParticipantsAdapter extends ArrayAdapter<String> {
     Context context;
     ArrayList<ParticipantModel> participantsList;
+//    Animation fadeIn;
+
+    private StorageReference storageProfilePicsRef;
 
     public ParticipantsAdapter(@NonNull Context context, ArrayList<ParticipantModel> participantsList) {
         super(context, R.layout.list_item_event_participant);
         this.context = context;
         this.participantsList = participantsList;
-
-        // Todo: delete!
-//        Toast.makeText(context, participantsList.get(0).getFirstName(), Toast.LENGTH_SHORT).show();
-//        Toast.makeText(context, participantsList.get(1).getFirstName(), Toast.LENGTH_SHORT).show();
-//        Toast.makeText(context, participantsList.get(2).getFirstName(), Toast.LENGTH_SHORT).show();
+        storageProfilePicsRef = FirebaseStorage.getInstance().getReference().child("profile_pics");
+//        initializeAnimation();
     }
 
     @Override
@@ -44,18 +55,43 @@ public class ParticipantsAdapter extends ArrayAdapter<String> {
         else {
             holder = (ParticipantViewHolder) singleItem.getTag();
         }
-        if(participantsList.get(position).getProfilePic() != null) {
-            holder.participantImage.setImageBitmap(participantsList.get(position).getProfilePic());
-        }
-//        Toast.makeText(context, "Holder " + holder.participantImage.getId(), Toast.LENGTH_SHORT).show();
+//        holder.participantImage.setAnimation(fadeIn);
         holder.participantName.setText(participantsList.get(position).getDisplayName());
         holder.participantGenderAge.setText(participantsList.get(position).getGenderAgeString());
-
+        getProfilePicFromDB(participantsList.get(position).getEmail(), holder.participantImage);
         return singleItem;
     }
 
     @Override
     public int getCount() {
         return participantsList.size();
+    }
+
+    private void initializeAnimation() {
+//        fadeIn = AnimationUtils.loadAnimation(context, R.anim.fadein);
+    }
+
+
+    private void getProfilePicFromDB(final String email, final ImageView participantImage) {
+        storageProfilePicsRef.child(email).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+            @Override
+            public void onSuccess(Uri uri) {
+                StorageReference userProfilePic = storageProfilePicsRef.child(email);
+                userProfilePic.getBytes(EditProfileActivity.MAX_SIZE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                    @Override
+                    public void onSuccess(byte[] bytes) {
+                        Animation fadeIn = AnimationUtils.loadAnimation(context, R.anim.fadein);
+                        Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                        participantImage.setImageBitmap(bitmap);
+                        participantImage.startAnimation(fadeIn);
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(context, "Failed to fetch profile picture..", Toast.LENGTH_LONG).show();
+                    }
+                });
+            }
+        });
     }
 }

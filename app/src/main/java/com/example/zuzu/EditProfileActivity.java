@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import android.Manifest;
@@ -25,6 +26,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.button.MaterialButtonToggleGroup;
+import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -45,6 +47,7 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
     private ImageButton editPropertiesButton;
     private boolean isEditState;      //configures the state of 'editPropertiesButton'
     private MaterialButtonToggleGroup toggleGroupInterests;
+    private CardView imageCardView;
 
     private DatabaseReference databaseReference;
     private StorageReference storageProfilePicsRef;
@@ -156,8 +159,10 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
         editTextLastName = findViewById(R.id.editTextLastName);
         editTextPhone = findViewById(R.id.editTextPhone);
         imageViewProfileImage = findViewById(R.id.imageViewProfileImage);
-        imageViewProfileImage.setOnClickListener(this);
-        imageViewProfileImage.setVisibility(View.VISIBLE);
+        imageCardView = findViewById(R.id.profileImageCard);
+        imageCardView.setOnClickListener(this);
+//        imageViewProfileImage.setOnClickListener(this);
+//        imageViewProfileImage.setVisibility(View.VISIBLE);
         editPropertiesButton = findViewById(R.id.imageButtonEditProperties);
         editPropertiesButton.setOnClickListener(this);
         isEditState = false;

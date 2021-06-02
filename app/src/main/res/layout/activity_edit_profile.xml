@@ -68,6 +68,7 @@
                             android:id="@+id/imageViewProfileImage"
                             android:layout_width="125dp"
                             android:layout_height="125dp"
+                            android:scaleType="centerCrop"
                             android:src="@drawable/ic_baseline_account_circle_24" />
 
                     </androidx.cardview.widget.CardView>

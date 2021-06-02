@@ -59,15 +59,14 @@ public class EventFragment extends Fragment implements View.OnClickListener {
     private ExtendedFloatingActionButton fabAction;
     private String tabTitle;
     private Activity context;
-    //    private Context context;
-    private RelativeLayout detailsLayout;
+//    private RelativeLayout detailsLayout;
     private DatabaseReference databaseReferenceEvent;
     private StorageReference storageProfilePicsRef;
     private boolean isUserParticipate;
     private boolean isUserCreator;
     private ListView lvParticipants;
 
-    private int loadProfilePicCounter;
+//    private int loadProfilePicCounter;
 
     private ArrayList<ParticipantModel> participantsList;
 
@@ -98,7 +97,7 @@ public class EventFragment extends Fragment implements View.OnClickListener {
         context = getActivity();
         configureActionButton();
         getEventDetailsFromDB();
-        loadProfilePicCounter = 0;
+//        loadProfilePicCounter = 0;
         lvParticipants = participantsView.findViewById(R.id.lvParticipants);
 
         if(tabTitle.equals("Participants")) {
@@ -111,6 +110,7 @@ public class EventFragment extends Fragment implements View.OnClickListener {
 
     private void initializeParticipantsList() {
         final ArrayList<String> participantsIDList = event.getUsersIDs();
+
 //        participantsList.clear();
         DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
         for (int i = 0; i < participantsIDList.size(); i++) {
@@ -121,6 +121,10 @@ public class EventFragment extends Fragment implements View.OnClickListener {
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     if (dataSnapshot.exists()) {
                         participantsList.add(getUserFromDBForParticipantsList(dataSnapshot, participantsIDList.get(finalI)));
+                        if(participantsList.size() == participantsIDList.size()) {
+                            ParticipantsAdapter participantsAdapter = new ParticipantsAdapter(context, participantsList);
+                            lvParticipants.setAdapter(participantsAdapter);
+                        }
                     }
                 }
                 @Override
@@ -263,7 +267,7 @@ public class EventFragment extends Fragment implements View.OnClickListener {
         String staticMapUrl = "https://maps.googleapis.com/maps/api/staticmap?zoom=16&size=500x400&markers=color:red%7C" + event.getLocation().latitude + "," + event.getLocation().longitude + "&key=" + getResources().getString(R.string.google_maps_api_key);
         Glide.with(this).load(staticMapUrl).into(eventMapImageView);
         eventMapCard.setOnClickListener(this);
-        detailsLayout = view.findViewById(R.id.detailsLayout);
+//        detailsLayout = view.findViewById(R.id.detailsLayout);
         eventName = view.findViewById(R.id.textEventName);
         eventDescription = view.findViewById(R.id.textEventDescription);
         eventType = view.findViewById(R.id.textEventType);
@@ -301,12 +305,6 @@ public class EventFragment extends Fragment implements View.OnClickListener {
                     eventNumParticipants.setText(event.getParticipantsStr());
                     event.setUsersIDs(usersId);
                     //Here a call to initialize users list
-//                    if(tabTitle.equals("Participants")) {
-//                        Toast.makeText(context, "Hello!", Toast.LENGTH_SHORT).show();
-//                        participantsList.clear();
-//                        loadProfilePicCounter = 0;
-//                        initializeParticipantsList();
-//                    }
                 }
             }
 
@@ -333,34 +331,34 @@ public class EventFragment extends Fragment implements View.OnClickListener {
         String genderFromDB = dataSnapshot.child(userIdFromDB).child("gender").getValue(String.class);
 
         ParticipantModel participant = new ParticipantModel(firstNameFromDB, lastNameFromDB, dobFromDB, genderFromDB, userIdFromDB, emailFromDB);
-        setProfilePicFromDB(participant);
+//        setProfilePicFromDB(participant);
 
         return participant;
     }
 
-    private void setProfilePicFromDB(final ParticipantModel participantModel) {
-        storageProfilePicsRef.child(participantModel.getEmail()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-            @Override
-            public void onSuccess(Uri uri) {
-                StorageReference userProfilePic = storageProfilePicsRef.child(participantModel.getEmail());
-                userProfilePic.getBytes(EditProfileActivity.MAX_SIZE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
-                    @Override
-                    public void onSuccess(byte[] bytes) {
-                        loadProfilePicCounter++;
-                        Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                        participantModel.setProfilePic(bitmap);
-                        if(loadProfilePicCounter == participantsList.size()) {
-                            ParticipantsAdapter participantsAdapter = new ParticipantsAdapter(context, participantsList);
-                            lvParticipants.setAdapter(participantsAdapter);
-                        }
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(getActivity(), "Failed to fetch profile picture..", Toast.LENGTH_LONG).show();
-                    }
-                });
-            }
-        });
-    }
+//    private void setProfilePicFromDB(final ParticipantModel participantModel) {
+//        storageProfilePicsRef.child(participantModel.getEmail()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+//            @Override
+//            public void onSuccess(Uri uri) {
+//                StorageReference userProfilePic = storageProfilePicsRef.child(participantModel.getEmail());
+//                userProfilePic.getBytes(EditProfileActivity.MAX_SIZE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+//                    @Override
+//                    public void onSuccess(byte[] bytes) {
+//                        loadProfilePicCounter++;
+//                        Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+//                        participantModel.setProfilePic(bitmap);
+//                        if(loadProfilePicCounter == participantsList.size()) {
+//                            ParticipantsAdapter participantsAdapter = new ParticipantsAdapter(context, participantsList);
+//                            lvParticipants.setAdapter(participantsAdapter);
+//                        }
+//                    }
+//                }).addOnFailureListener(new OnFailureListener() {
+//                    @Override
+//                    public void onFailure(@NonNull Exception e) {
+//                        Toast.makeText(getActivity(), "Failed to fetch profile picture..", Toast.LENGTH_LONG).show();
+//                    }
+//                });
+//            }
+//        });
+//    }
 }
