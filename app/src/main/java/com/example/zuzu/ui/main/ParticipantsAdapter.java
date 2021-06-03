@@ -25,20 +25,22 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class ParticipantsAdapter extends ArrayAdapter<String> {
     Context context;
     ArrayList<ParticipantModel> participantsList;
+    HashMap<String,Bitmap> profilePicCache;
 //    Animation fadeIn;
 
     private StorageReference storageProfilePicsRef;
 
-    public ParticipantsAdapter(@NonNull Context context, ArrayList<ParticipantModel> participantsList) {
+    public ParticipantsAdapter(@NonNull Context context, ArrayList<ParticipantModel> participantsList, HashMap<String,Bitmap> profilePicCache) {
         super(context, R.layout.list_item_event_participant);
         this.context = context;
         this.participantsList = participantsList;
         storageProfilePicsRef = FirebaseStorage.getInstance().getReference().child("profile_pics");
-//        initializeAnimation();
+        this.profilePicCache = profilePicCache;
     }
 
     @Override
@@ -58,7 +60,11 @@ public class ParticipantsAdapter extends ArrayAdapter<String> {
 //        holder.participantImage.setAnimation(fadeIn);
         holder.participantName.setText(participantsList.get(position).getDisplayName());
         holder.participantGenderAge.setText(participantsList.get(position).getGenderAgeString());
-        getProfilePicFromDB(participantsList.get(position).getEmail(), holder.participantImage);
+        if(profilePicCache.containsKey(participantsList.get(position).getUserID())) {
+            holder.participantImage.setImageBitmap(profilePicCache.get(participantsList.get(position).getUserID()));
+        } else {
+            getProfilePicFromDB(participantsList.get(position).getEmail(), holder.participantImage, participantsList.get(position).getUserID());
+        }
         return singleItem;
     }
 
@@ -67,12 +73,8 @@ public class ParticipantsAdapter extends ArrayAdapter<String> {
         return participantsList.size();
     }
 
-    private void initializeAnimation() {
-//        fadeIn = AnimationUtils.loadAnimation(context, R.anim.fadein);
-    }
 
-
-    private void getProfilePicFromDB(final String email, final ImageView participantImage) {
+    private void getProfilePicFromDB(final String email, final ImageView participantImage, final String participantId) {
         storageProfilePicsRef.child(email).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override
             public void onSuccess(Uri uri) {
@@ -82,6 +84,7 @@ public class ParticipantsAdapter extends ArrayAdapter<String> {
                     public void onSuccess(byte[] bytes) {
                         Animation fadeIn = AnimationUtils.loadAnimation(context, R.anim.fadein);
                         Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                        profilePicCache.put(participantId,bitmap);
                         participantImage.setImageBitmap(bitmap);
                         participantImage.startAnimation(fadeIn);
                     }

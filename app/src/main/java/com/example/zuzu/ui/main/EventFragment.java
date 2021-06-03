@@ -42,6 +42,7 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -66,9 +67,11 @@ public class EventFragment extends Fragment implements View.OnClickListener {
     private boolean isUserCreator;
     private ListView lvParticipants;
 
+    private HashMap<String,Bitmap> profilePicCache;
+
 //    private int loadProfilePicCounter;
 
-    private ArrayList<ParticipantModel> participantsList;
+//    private ArrayList<ParticipantModel> participantsList;
 
     public EventFragment() {
         // Required empty public constructor
@@ -82,7 +85,8 @@ public class EventFragment extends Fragment implements View.OnClickListener {
         tabTitle = this.getArguments().getString("title");
         isUserParticipate = false;
         isUserCreator = false;
-        participantsList = new ArrayList<>();
+//        participantsList = new ArrayList<>();
+        profilePicCache = new HashMap<>();
         databaseReferenceEvent = FirebaseDatabase.getInstance().getReference().child("events").child(event.getId());
         storageProfilePicsRef = FirebaseStorage.getInstance().getReference().child("profile_pics");
     }
@@ -101,7 +105,7 @@ public class EventFragment extends Fragment implements View.OnClickListener {
         lvParticipants = participantsView.findViewById(R.id.lvParticipants);
 
         if(tabTitle.equals("Participants")) {
-            initializeParticipantsList();
+//            initializeParticipantsList();
             return participantsView;
         } else {
             return detailsView;
@@ -110,7 +114,7 @@ public class EventFragment extends Fragment implements View.OnClickListener {
 
     private void initializeParticipantsList() {
         final ArrayList<String> participantsIDList = event.getUsersIDs();
-
+        final ArrayList<ParticipantModel> participantsList = new ArrayList<>();
 //        participantsList.clear();
         DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
         for (int i = 0; i < participantsIDList.size(); i++) {
@@ -122,7 +126,9 @@ public class EventFragment extends Fragment implements View.OnClickListener {
                     if (dataSnapshot.exists()) {
                         participantsList.add(getUserFromDBForParticipantsList(dataSnapshot, participantsIDList.get(finalI)));
                         if(participantsList.size() == participantsIDList.size()) {
-                            ParticipantsAdapter participantsAdapter = new ParticipantsAdapter(context, participantsList);
+//                            ParticipantsAdapter participantsAdapter = new ParticipantsAdapter(context, participantsList);
+//                            lvParticipants.setAdapter(participantsAdapter);
+                            ParticipantsAdapter participantsAdapter = new ParticipantsAdapter(context, participantsList, profilePicCache);
                             lvParticipants.setAdapter(participantsAdapter);
                         }
                     }
@@ -305,6 +311,9 @@ public class EventFragment extends Fragment implements View.OnClickListener {
                     eventNumParticipants.setText(event.getParticipantsStr());
                     event.setUsersIDs(usersId);
                     //Here a call to initialize users list
+                    if(tabTitle.equals("Participants")) {
+                        initializeParticipantsList();
+                    }
                 }
             }
 
