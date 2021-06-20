@@ -8,14 +8,20 @@ import androidx.cardview.widget.CardView;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.ImageDecoder;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -26,13 +32,17 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.button.MaterialButtonToggleGroup;
-import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.navigation.NavigationView;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+
 
 public class EditProfileActivity extends AppCompatActivity implements View.OnClickListener, MaterialButtonToggleGroup.OnButtonCheckedListener,
         NavigationView.OnNavigationItemSelectedListener {
@@ -41,8 +51,9 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
     private static final int PERMISSION_CODE = 1001;
     public static final long MAX_SIZE = 1024 * 1024 * 10;     //Set to 10 Megabytes
 
-    private TextView textViewFullName, textViewFirstNameWarning, textViewLastNameWarning, textViewPhoneWarning, navDrawerEmail, navDrawerFullName;
+    private TextView textViewFullName, navDrawerEmail, navDrawerFullName;
     private EditText editTextFirstName, editTextLastName, editTextPhone;
+    private TextInputLayout editTextFirstNameLayout, editTextLastNameLayout, editTextPhoneLayout;
     private ImageView imageViewProfileImage, navDrawerProfilePic;
     private ImageButton editPropertiesButton;
     private boolean isEditState;      //configures the state of 'editPropertiesButton'
@@ -51,13 +62,12 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
 
     private DatabaseReference databaseReference;
     private StorageReference storageProfilePicsRef;
-    private Uri imageUri;
+    //    private Uri imageUri;
     private UserModel currUser;
     private UserPreferences userPreferences;
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
     private MaterialToolbar toolbar;
-
 
 
     @Override
@@ -87,7 +97,7 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
         navDrawerFullName = navHeaderLayout.findViewById(R.id.navDrawerFullName);
         navDrawerEmail = navHeaderLayout.findViewById(R.id.navDrawerEmail);
         navDrawerProfilePic = navHeaderLayout.findViewById(R.id.navDrawerProfilePic);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar,R.string.navigation_drawer_open,R.string.navigation_drawer_closed);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_closed);
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
         if (currUser != null) {
@@ -98,7 +108,7 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
 
     @Override
     public void onBackPressed() {
-        if(drawerLayout.isOpen()) {
+        if (drawerLayout.isOpen()) {
             drawerLayout.close();
         } else {
             super.onBackPressed();
@@ -108,7 +118,7 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         Intent intent;
-        switch(item.getItemId()) {
+        switch (item.getItemId()) {
             case R.id.nav_home:
                 intent = new Intent(this, MainActivity.class);
                 startActivity(intent);
@@ -144,6 +154,7 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
                 break;
             case R.id.imageButtonEditProperties:
                 editPropertiesHandler();
+                break;
             default:
                 break;
         }
@@ -161,14 +172,12 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
         imageViewProfileImage = findViewById(R.id.imageViewProfileImage);
         imageCardView = findViewById(R.id.profileImageCard);
         imageCardView.setOnClickListener(this);
-//        imageViewProfileImage.setOnClickListener(this);
-//        imageViewProfileImage.setVisibility(View.VISIBLE);
         editPropertiesButton = findViewById(R.id.imageButtonEditProperties);
         editPropertiesButton.setOnClickListener(this);
         isEditState = false;
-        textViewFirstNameWarning = findViewById(R.id.textViewFirstNameWarning);
-        textViewLastNameWarning = findViewById(R.id.textViewLastNameWarning);
-        textViewPhoneWarning = findViewById(R.id.textViewPhoneWarning);
+        editTextFirstNameLayout = findViewById(R.id.editTextFirstNameLayout);
+        editTextLastNameLayout = findViewById(R.id.editTextLastNameLayout);
+        editTextPhoneLayout = findViewById(R.id.editTextPhoneLayout);
     }
 
     //Retrieve user data from current user (local memory)
@@ -190,17 +199,18 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
     }
 
     private void checkInterestButton(int buttonId, boolean isPref) {
-        if(isPref) {
+        if (isPref) {
             toggleGroupInterests.check(buttonId);
         }
     }
 
     //Retrieve user profile picture from database and show in ImageView and in navigation drawer
     private void retrieveProfilePic() {
+        final Animation fadeIn = AnimationUtils.loadAnimation(this, R.anim.fadein);
         if (currUser.getProfilePicUri() != null) {
             imageViewProfileImage.setImageURI(currUser.getProfilePicUri());
-        }
-        else {    //Get image from database (if available)
+            imageViewProfileImage.startAnimation(fadeIn);
+        } else {    //Get image from database (if available)
             storageProfilePicsRef.child(currUser.getEmail()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                 @Override
                 public void onSuccess(Uri uri) {
@@ -210,6 +220,7 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
                         public void onSuccess(byte[] bytes) {
                             Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
                             imageViewProfileImage.setImageBitmap(bitmap);
+                            imageViewProfileImage.startAnimation(fadeIn);
                             navDrawerProfilePic.setImageBitmap(bitmap);
                         }
                     }).addOnFailureListener(new OnFailureListener() {
@@ -229,16 +240,17 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
         if (!isEditState) {
             editPropertiesToggle(true);
             editPropertiesButton.setImageResource(R.drawable.ic_baseline_check_24);
-        }
-        else if (isValidPropertiesChange()) {
+        } else if (isValidPropertiesChange()) {
             editPropertiesToggle(false);
             dismissAllWarnings();
             uploadNewProperties();
+            textViewFullName.setText(currUser.getFullName());
             editPropertiesButton.setImageResource(R.drawable.ic_action_edit);
             Toast.makeText(this, "Changes saved successfully!", Toast.LENGTH_SHORT).show();
         }
         editPropertiesButton.setEnabled(true);
     }
+
 
     //Upload new properties to database and save in 'currentUser'
     private void uploadNewProperties() {
@@ -253,18 +265,26 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
 
     //Hide all warnings in form
     private void dismissAllWarnings() {
-        textViewFirstNameWarning.setVisibility(View.GONE);
-        textViewLastNameWarning.setVisibility(View.GONE);
-        textViewPhoneWarning.setVisibility(View.GONE);
+        editTextFirstNameLayout.setErrorEnabled(false);
+        editTextLastNameLayout.setErrorEnabled(false);
+        editTextPhoneLayout.setErrorEnabled(false);
     }
 
     //Check if all editTexts are legal
     private boolean isValidPropertiesChange() {
         boolean isError;
-        isError = RegisterActivity.validateEditText(editTextFirstName, textViewFirstNameWarning);
-        isError |= RegisterActivity.validateEditText(editTextLastName, textViewLastNameWarning);
-        isError |= RegisterActivity.validateEditText(editTextPhone, textViewPhoneWarning);
+        isError = validateEditText(editTextFirstName, editTextFirstNameLayout);
+        isError |= validateEditText(editTextLastName, editTextLastNameLayout);
+        isError |= validateEditText(editTextPhone, editTextPhoneLayout);
         return !isError;
+    }
+
+    private boolean validateEditText(EditText editText, TextInputLayout layout) {
+        if (editText.getText().length() < 2) {
+            layout.setError("Field can't be empty");
+            return true;
+        }
+        return false;
     }
 
     //Change the state of the form (editable or not)
@@ -278,11 +298,11 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
 
     private void createImageView() {
         //checks if user already gave permission
-        if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
-            String[] permissions = {Manifest.permission.READ_EXTERNAL_STORAGE};
+        if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED ||
+                checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
+            String[] permissions = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE};
             requestPermissions(permissions, PERMISSION_CODE);
-        }
-        else {
+        } else {
             pickImageFromGallery();
         }
     }
@@ -299,7 +319,8 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         switch (requestCode) {
             case PERMISSION_CODE:
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED
+                                            && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
                     pickImageFromGallery();
                 } else {
                     Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show();
@@ -313,11 +334,11 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
     //handle result of picked image
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode,resultCode, data);
+        super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK && requestCode == IMAGE_PICK_CODE) {
             //set image to image view
             if (data != null) {
-                imageUri = data.getData();
+                Uri imageUri = data.getData();
                 imageViewProfileImage.setImageURI(imageUri);
                 uploadProfilePic(imageUri, currUser.getEmail());
             }
@@ -325,18 +346,55 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
     }
 
     private void uploadProfilePic(Uri imageUri, String email) {
-        UploadTask uploadProfilePicTask = storageProfilePicsRef.child(email).putFile(imageUri);
-        uploadProfilePicTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                Toast.makeText(EditProfileActivity.this, "New picture upload successful!", Toast.LENGTH_SHORT).show();
+        //Show loading progress bar
+        final ProgressDialog progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Uploading...");
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+        byte[] bitmapData = getCompressedBitmapData(imageUri);
+        if(bitmapData != null) {
+            UploadTask uploadProfilePicTask = storageProfilePicsRef.child(email).putBytes(bitmapData);
+            uploadProfilePicTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    Toast.makeText(EditProfileActivity.this, "Picture change successful!", Toast.LENGTH_SHORT).show();
+                    progressDialog.dismiss();
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Toast.makeText(EditProfileActivity.this, "Picture change failed!", Toast.LENGTH_SHORT).show();
+                    progressDialog.dismiss();
+                }
+            });
+        } else {
+            Toast.makeText(this, "Error uploading image", Toast.LENGTH_SHORT).show();
+            progressDialog.dismiss();
+        }
+    }
+
+
+    private byte[] getCompressedBitmapData(Uri imageUri){
+        //Compress image and convert to byte[]
+        Bitmap fullSizeBitmap = null;
+        try {
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                fullSizeBitmap = ImageDecoder.decodeBitmap(ImageDecoder.createSource(this.getContentResolver(),imageUri));
+            } else {
+                fullSizeBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(),imageUri);
             }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Toast.makeText(EditProfileActivity.this, "Picture upload failed!", Toast.LENGTH_SHORT).show();
-            }
-        });
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        if(fullSizeBitmap != null) {
+            Bitmap reducedBitmap = ImageResizer.reduceBitmapSize(fullSizeBitmap, 240000);
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            reducedBitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+            return baos.toByteArray();
+        } else {
+            Toast.makeText(this, "Error compressing image", Toast.LENGTH_SHORT).show();
+            return null;
+        }
     }
 
     @Override

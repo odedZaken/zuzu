@@ -191,7 +191,7 @@ public class EventFragment extends Fragment implements View.OnClickListener {
                         dialog.cancel();
                         fabAction.setEnabled(true);
                     }
-                });
+                }).setCancelable(false);
         dialogBuilder.show();
     }
 

@@ -46,12 +46,21 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:src="@drawable/nav_header_background_light"
+                    />
+
 
                 <androidx.cardview.widget.CardView
                     android:id="@+id/profileImageCard"
                     android:layout_width="130dp"
                     android:layout_height="130dp"
-                    android:layout_marginTop="90dp"
+                    android:layout_marginTop="125dp"
                     app:cardCornerRadius="250dp"
                     app:cardElevation="15dp"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -86,45 +95,93 @@
                     app:layout_constraintStart_toStartOf="@+id/profileImageCard"
                     app:layout_constraintTop_toBottomOf="@+id/profileImageCard" />
 
-                <EditText
-                    android:id="@+id/editTextFirstName"
-                    android:layout_width="wrap_content"
+<!--                <com.google.android.material.textfield.TextInputLayout-->
+<!--                    android:id="@+id/usernameLayout"-->
+<!--                    android:layout_width="260dp"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_marginTop="20dp"-->
+<!--                    android:hint="@string/prompt_email"-->
+<!--                    app:endIconMode="clear_text"-->
+<!--                    app:startIconDrawable="@drawable/ic_baseline_person_24"-->
+<!--                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"-->
+<!--                    app:layout_constraintEnd_toEndOf="parent"-->
+<!--                    app:layout_constraintStart_toStartOf="parent"-->
+<!--                    app:layout_constraintTop_toBottomOf="@+id/textViewLogin">-->
+
+<!--                <com.google.android.material.textfield.TextInputEditText-->
+<!--                    android:id="@+id/username"-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="match_parent"-->
+<!--                    android:inputType="textEmailAddress"/>-->
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/editTextFirstNameLayout"
+                    android:layout_width="260dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="30dp"
-                    android:ems="10"
-                    android:enabled="false"
                     android:hint="First Name"
-                    android:inputType="textPersonName"
+                    app:startIconDrawable="@drawable/ic_baseline_person_24"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     app:layout_constraintEnd_toEndOf="@+id/textViewFullName"
                     app:layout_constraintStart_toStartOf="@+id/textViewFullName"
-                    app:layout_constraintTop_toBottomOf="@+id/textViewFullName" />
+                    app:layout_constraintTop_toBottomOf="@+id/textViewFullName">
+
+
+                <EditText
+                    android:id="@+id/editTextFirstName"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:inputType="textPersonName"
+                    android:enabled="false"
+                    />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/editTextLastNameLayout"
+                    android:layout_width="260dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:hint="Last Name"
+                    app:startIconDrawable="@drawable/ic_baseline_person_24"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    app:layout_constraintEnd_toEndOf="@+id/editTextFirstNameLayout"
+                    app:layout_constraintStart_toStartOf="@+id/editTextFirstNameLayout"
+                    app:layout_constraintTop_toBottomOf="@+id/editTextFirstNameLayout" >
+
 
                 <EditText
                     android:id="@+id/editTextLastName"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="20dp"
-                    android:ems="10"
-                    android:enabled="false"
-                    android:hint="Last Name"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
                     android:inputType="textPersonName"
-                    app:layout_constraintEnd_toEndOf="@+id/editTextFirstName"
-                    app:layout_constraintStart_toStartOf="@+id/editTextFirstName"
-                    app:layout_constraintTop_toBottomOf="@+id/editTextFirstName" />
-
-
-                <EditText
-                    android:id="@+id/editTextPhone"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="20dp"
-                    android:ems="10"
                     android:enabled="false"
-                    android:hint="Phone"
-                    android:inputType="phone"
-                    app:layout_constraintEnd_toEndOf="@+id/editTextLastName"
-                    app:layout_constraintStart_toStartOf="@+id/editTextLastName"
-                    app:layout_constraintTop_toBottomOf="@+id/editTextLastName" />
+                    />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/editTextPhoneLayout"
+                    android:layout_width="260dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:hint="Phone Number"
+                    app:startIconDrawable="@drawable/ic_baseline_phone_24"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    app:layout_constraintEnd_toEndOf="@+id/editTextLastNameLayout"
+                    app:layout_constraintStart_toStartOf="@+id/editTextLastNameLayout"
+                    app:layout_constraintTop_toBottomOf="@+id/editTextLastNameLayout" >
+
+
+                    <EditText
+                        android:id="@+id/editTextPhone"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:inputType="phone"
+                        android:enabled="false"
+                        />
+
+                </com.google.android.material.textfield.TextInputLayout>
 
                 <TextView
                     android:id="@+id/interestsText"
@@ -132,62 +189,63 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="80dp"
                     android:text="Choose Your Interests:"
-                    app:layout_constraintEnd_toEndOf="@+id/editTextPhone"
+                    app:layout_constraintEnd_toEndOf="@+id/editTextPhoneLayout"
                     app:layout_constraintHorizontal_bias="0.485"
-                    app:layout_constraintStart_toStartOf="@+id/editTextPhone"
-                    app:layout_constraintTop_toBottomOf="@+id/editTextPhone" />
+                    app:layout_constraintStart_toStartOf="@+id/editTextPhoneLayout"
+                    app:layout_constraintTop_toBottomOf="@+id/editTextPhoneLayout" />
 
-                <TextView
-                    android:id="@+id/textViewFirstNameWarning"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="This field can't be empty"
-                    android:textColor="@color/red"
-                    android:visibility="gone"
-                    app:layout_constraintEnd_toEndOf="@+id/editTextFirstName"
-                    app:layout_constraintStart_toStartOf="@+id/editTextFirstName"
-                    app:layout_constraintTop_toBottomOf="@+id/editTextFirstName" />
+<!--                <TextView-->
+<!--                    android:id="@+id/textViewFirstNameWarning"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:text="This field can't be empty"-->
+<!--                    android:textColor="@color/red"-->
+<!--                    android:visibility="gone"-->
+<!--                    app:layout_constraintEnd_toEndOf="@+id/editTextFirstNameLayout"-->
+<!--                    app:layout_constraintStart_toStartOf="@+id/editTextFirstNameLayout"-->
+<!--                    app:layout_constraintTop_toBottomOf="@+id/editTextFirstNameLayout" />-->
 
-                <TextView
-                    android:id="@+id/textViewLastNameWarning"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="This field can't be empty"
-                    android:textColor="@color/red"
-                    android:visibility="gone"
-                    app:layout_constraintEnd_toEndOf="@+id/editTextLastName"
-                    app:layout_constraintStart_toStartOf="@+id/editTextLastName"
-                    app:layout_constraintTop_toBottomOf="@+id/editTextLastName" />
+<!--                <TextView-->
+<!--                    android:id="@+id/textViewLastNameWarning"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:text="This field can't be empty"-->
+<!--                    android:textColor="@color/red"-->
+<!--                    android:visibility="gone"-->
+<!--                    app:layout_constraintEnd_toEndOf="@+id/editTextLastNameLayout"-->
+<!--                    app:layout_constraintStart_toStartOf="@+id/editTextLastNameLayout"-->
+<!--                    app:layout_constraintTop_toBottomOf="@+id/editTextLastNameLayout" />-->
 
 
-                <TextView
-                    android:id="@+id/textViewPhoneWarning"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="This field can't be empty"
-                    android:textColor="@color/red"
-                    android:visibility="gone"
-                    app:layout_constraintEnd_toEndOf="@+id/editTextPhone"
-                    app:layout_constraintStart_toStartOf="@+id/editTextPhone"
-                    app:layout_constraintTop_toBottomOf="@+id/editTextPhone" />
+<!--                <TextView-->
+<!--                    android:id="@+id/textViewPhoneWarning"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:text="This field can't be empty"-->
+<!--                    android:textColor="@color/red"-->
+<!--                    android:visibility="gone"-->
+<!--                    app:layout_constraintEnd_toEndOf="@+id/editTextPhoneLayout"-->
+<!--                    app:layout_constraintStart_toStartOf="@+id/editTextPhoneLayout"-->
+<!--                    app:layout_constraintTop_toBottomOf="@+id/editTextPhoneLayout" />-->
 
                 <View
                     android:id="@+id/divider"
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:layout_marginTop="40dp"
+                    android:layout_marginTop="45dp"
                     android:background="?android:attr/listDivider"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/textViewPhoneWarning" />
+                    app:layout_constraintTop_toBottomOf="@id/editTextPhoneLayout" />
 
                 <ImageButton
                     android:id="@+id/imageButtonEditProperties"
-                    android:layout_width="46dp"
-                    android:layout_height="43dp"
-                    app:layout_constraintBottom_toTopOf="@+id/textViewFirstNameWarning"
-                    app:layout_constraintStart_toEndOf="@+id/editTextFirstName"
-                    app:layout_constraintTop_toTopOf="@+id/editTextFirstName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="50dp"
+                    android:layout_marginTop="5dp"
+                    app:layout_constraintBottom_toBottomOf="@+id/editTextFirstNameLayout"
+                    app:layout_constraintStart_toEndOf="@+id/editTextFirstNameLayout"
+                    app:layout_constraintTop_toTopOf="@+id/editTextFirstNameLayout"
                     app:srcCompat="@drawable/ic_action_edit" />
 
 

@@ -31,9 +31,7 @@ public class ParticipantsAdapter extends ArrayAdapter<String> {
     Context context;
     ArrayList<ParticipantModel> participantsList;
     HashMap<String,Bitmap> profilePicCache;
-//    Animation fadeIn;
-
-    private StorageReference storageProfilePicsRef;
+    private final StorageReference storageProfilePicsRef;
 
     public ParticipantsAdapter(@NonNull Context context, ArrayList<ParticipantModel> participantsList, HashMap<String,Bitmap> profilePicCache) {
         super(context, R.layout.list_item_event_participant);
@@ -57,7 +55,7 @@ public class ParticipantsAdapter extends ArrayAdapter<String> {
         else {
             holder = (ParticipantViewHolder) singleItem.getTag();
         }
-//        holder.participantImage.setAnimation(fadeIn);
+
         holder.participantName.setText(participantsList.get(position).getDisplayName());
         holder.participantGenderAge.setText(participantsList.get(position).getGenderAgeString());
         if(profilePicCache.containsKey(participantsList.get(position).getUserID())) {

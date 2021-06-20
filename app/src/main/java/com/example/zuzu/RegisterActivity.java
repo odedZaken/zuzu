@@ -8,12 +8,17 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.Manifest;
 import android.app.Activity;
 import android.app.DatePickerDialog;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.ImageDecoder;
 import android.media.Image;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.text.InputType;
 import android.view.Gravity;
 import android.view.View;
@@ -36,13 +41,11 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.StorageTask;
 import com.google.firebase.storage.UploadTask;
 
-import java.time.LocalDate;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+
 
 public class RegisterActivity extends AppCompatActivity implements View.OnClickListener, DatePickerDialog.OnDateSetListener {
 
@@ -182,7 +185,6 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     public static boolean validateEditText(EditText editText, TextView warning) {
         if (editText.getText().length() < 2) {
             warning.setVisibility(View.VISIBLE);
-            editText.requestFocus();
             return true;
         }
         return false;
@@ -303,18 +305,58 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     }
 
     private void uploadProfilePic(Uri imageUri, String email) {
-        UploadTask uploadProfilePicTask = storageProfilePics.child(email).putFile(imageUri);
-        uploadProfilePicTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                Toast.makeText(RegisterActivity.this, "Picture change successful!", Toast.LENGTH_SHORT).show();
+        //Show loading progress bar
+        final ProgressDialog progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Uploading...");
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+        byte[] bitmapData = getCompressedBitmapData(imageUri);
+
+        if(bitmapData != null) {
+            UploadTask uploadProfilePicTask = storageProfilePics.child(email).putBytes(bitmapData);
+            uploadProfilePicTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    Toast.makeText(RegisterActivity.this, "New picture upload successful!", Toast.LENGTH_SHORT).show();
+                    progressDialog.dismiss();
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Toast.makeText(RegisterActivity.this, "Picture upload failed!", Toast.LENGTH_SHORT).show();
+                    progressDialog.dismiss();
+                }
+            });
+        } else {
+            Toast.makeText(this, "Error uploading image", Toast.LENGTH_SHORT).show();
+            progressDialog.dismiss();
+        }
+    }
+
+    private byte[] getCompressedBitmapData(Uri imageUri){
+        //Compress image and convert to byte[]
+//        String imagePath = FileUtils.getPath(this,imageUri); //todo: this causes crash (maybe)!
+//        Bitmap fullSizeBitmap = BitmapFactory.decodeFile(imagePath);
+
+        Bitmap fullSizeBitmap = null;
+        try {
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                fullSizeBitmap = ImageDecoder.decodeBitmap(ImageDecoder.createSource(this.getContentResolver(),imageUri));
+            } else {
+                fullSizeBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(),imageUri);
             }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Toast.makeText(RegisterActivity.this, "Picture change failed!", Toast.LENGTH_SHORT).show();
-            }
-        });
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        if(fullSizeBitmap != null) {
+            Bitmap reducedBitmap = ImageResizer.reduceBitmapSize(fullSizeBitmap, 240000);
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            reducedBitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+            return baos.toByteArray();
+        } else {
+            Toast.makeText(this, "Error compressing image", Toast.LENGTH_SHORT).show();
+            return null;
+        }
     }
 
     private void finishRegistration() {
