@@ -5,7 +5,7 @@
     android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="30dp"
+    android:padding="10dp"
     tools:context="com.example.zuzu.LoginActivity">
 
     <Button
@@ -13,7 +13,7 @@
         android:layout_width="wrap_content"
         android:layout_height="60dp"
         android:layout_gravity="start"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="5dp"
         android:text="@string/registerButton"
         app:layout_constraintEnd_toEndOf="@+id/loginButton"
         app:layout_constraintHorizontal_bias="0.497"
@@ -24,14 +24,13 @@
         android:id="@+id/usernameLayout"
         android:layout_width="260dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
         android:hint="@string/prompt_email"
         app:endIconMode="clear_text"
         app:startIconDrawable="@drawable/ic_baseline_person_24"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textViewLogin">
+        app:layout_constraintTop_toBottomOf="@+id/zuzuLogoGif">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/username"
@@ -47,7 +46,7 @@
         android:layout_width="260dp"
         android:layout_height="wrap_content"
         android:hint="@string/prompt_password"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="15dp"
         app:passwordToggleEnabled="true"
         app:startIconDrawable="@drawable/ic_baseline_key_24"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
@@ -84,16 +83,16 @@
 
     <TextView
         android:id="@+id/textViewLogin"
-        android:layout_width="209dp"
-        android:layout_height="63dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:gravity="center"
-        android:text="Welcome to ZuZu"
+        android:text="Log in to your account"
         android:textSize="20sp"
-        app:layout_constraintBottom_toTopOf="@+id/usernameLayout"
+        android:elevation="10dp"
+        android:layout_marginTop="215dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.504"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView" />
+        app:layout_constraintTop_toTopOf="parent" />
 
 
     <ProgressBar
@@ -107,14 +106,17 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/registerButtonLogin" />
 
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="330dp"
-        android:layout_height="144dp"
+
+    <pl.droidsonroids.gif.GifImageView
+        android:id="@+id/zuzuLogoGif"
+        android:layout_width="250dp"
+        android:layout_height="250dp"
+        android:src="@drawable/zuzu_logo_animate"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_banner_foreground" />
+
+        />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

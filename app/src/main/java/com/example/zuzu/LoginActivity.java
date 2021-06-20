@@ -1,6 +1,7 @@
 package com.example.zuzu;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -8,6 +9,7 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.VideoView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -38,9 +40,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         initializeLoginForm();
 
 
-        //Todo: Delete after testing!
-        textUsername.setText("odedza@gmail.com");
-        textPassword.setText("123");
+//        //Todo: Delete after testing!
+//        textUsername.setText("odedza@gmail.com");
+//        textPassword.setText("123");
     }
 
     @Override
@@ -66,6 +68,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         registerButtonLogin = findViewById(R.id.registerButtonLogin);
         registerButtonLogin.setOnClickListener(this);
         progressBarLogin = findViewById(R.id.progressBarLogin);
+//        VideoView logoAnimation = findViewById(R.id.zuzuLogo);
+//        logoAnimation.setVideoURI(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.zuzu_logo_animate));
+//        logoAnimation.start();
     }
 
     public void onLoginButtonClick() {
