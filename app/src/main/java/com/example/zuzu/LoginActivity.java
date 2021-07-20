@@ -68,9 +68,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         registerButtonLogin = findViewById(R.id.registerButtonLogin);
         registerButtonLogin.setOnClickListener(this);
         progressBarLogin = findViewById(R.id.progressBarLogin);
-//        VideoView logoAnimation = findViewById(R.id.zuzuLogo);
-//        logoAnimation.setVideoURI(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.zuzu_logo_animate));
-//        logoAnimation.start();
     }
 
     public void onLoginButtonClick() {

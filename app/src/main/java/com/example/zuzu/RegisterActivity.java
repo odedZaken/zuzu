@@ -64,6 +64,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     private TextView editTextFirstNameWarning, editTextLastNameWarning, editTextEmailWarning, editTextPasswordWarning;
     private TextView editDateWarning, genderWarning, editTextConfirmPasswordWarning, editTextPhoneWarning;
     private RadioGroup genderRadioGroup;
+    private ProgressDialog progressDialog;
 
     private Uri profileImageUri;
     private FirebaseDatabase rootNode;
@@ -81,18 +82,18 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        overridePendingTransition(R.anim.fadein, R.anim.fadeout);
+//        overridePendingTransition(R.anim.fadein, R.anim.fadeout);
         setContentView(R.layout.activity_register);
         rootNode = FirebaseDatabase.getInstance();
         storageProfilePics = FirebaseStorage.getInstance().getReference("profile_pics");
         initializeRegistrationForm();
     }
 
-    @Override
-    public void finish() {
-        super.finish();
-        overridePendingTransition(R.anim.fadein, R.anim.fadeout);
-    }
+//    @Override
+//    public void finish() {
+//        super.finish();
+//        overridePendingTransition(R.anim.fadein, R.anim.fadeout);
+//    }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
@@ -263,6 +264,10 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     }
 
     private void isUserExist() {
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Creating User...");
+        progressDialog.setCancelable(false);
+        progressDialog.show();
         final String enteredEmail = editTextEmail.getText().toString().trim();
         DatabaseReference newReference = rootNode.getReference("users");
         Query checkUser = newReference.orderByChild("email").equalTo(enteredEmail);
@@ -272,12 +277,12 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
                     //Check if user already exist in system
-                    Toast.makeText(RegisterActivity.this, "This Email is Already Registered", Toast.LENGTH_LONG).show();
+                    Toast.makeText(RegisterActivity.this, "Registration failed: This email is already registered", Toast.LENGTH_LONG).show();
                 }
                 else {
                     //Create a new User and continue:
                     createNewUser();
-                    finishRegistration();
+//                    finishRegistration();
                 }
             }
             @Override
@@ -300,16 +305,15 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         if(profileImageUri != null) {
             newUser.setProfilePicUri(profileImageUri);
             uploadProfilePic(profileImageUri, email);
+        } else {
+            finishRegistration();
         }
         ApplicationGlobal.setCurrentUser(newUser);
     }
 
     private void uploadProfilePic(Uri imageUri, String email) {
         //Show loading progress bar
-        final ProgressDialog progressDialog = new ProgressDialog(this);
-        progressDialog.setMessage("Uploading...");
-        progressDialog.setCancelable(false);
-        progressDialog.show();
+
         byte[] bitmapData = getCompressedBitmapData(imageUri);
 
         if(bitmapData != null) {
@@ -317,8 +321,8 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
             uploadProfilePicTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                    Toast.makeText(RegisterActivity.this, "New picture upload successful!", Toast.LENGTH_SHORT).show();
-                    progressDialog.dismiss();
+//                    progressDialog.dismiss();
+                    finishRegistration();
                 }
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
@@ -360,7 +364,10 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     }
 
     private void finishRegistration() {
-        Toast.makeText(RegisterActivity.this, "User created successfully!", Toast.LENGTH_SHORT).show();
+        progressDialog.dismiss();
+        Toast.makeText(this, "User created successfully", Toast.LENGTH_SHORT).show();
+//        Intent intent = new Intent(RegisterActivity.this,LoginActivity.class);
+//        startActivity(intent);
         this.finish();
     }
 }
