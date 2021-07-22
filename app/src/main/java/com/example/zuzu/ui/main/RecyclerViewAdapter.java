@@ -18,6 +18,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.zuzu.ApplicationGlobal;
 import com.example.zuzu.EventModel;
 import com.example.zuzu.MainEventActivity;
 import com.example.zuzu.R;
@@ -37,7 +38,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     public class MyViewHolder extends RecyclerView.ViewHolder{
         ImageView eventTypeIcon;
-        TextView eventName , eventDate, eventTime, eventDistance, eventNumParticipants;
+        TextView eventName, eventDate, eventTime, eventDistance, eventNumParticipants;
         MaterialCardView eventCardView;
 
         public MyViewHolder(@NonNull View itemView) {
@@ -82,6 +83,14 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                 context.startActivity(intent);
             }
         });
+        holder.eventNumParticipants.setTextColor(context.getResources().getColor(R.color.textDefault, null));
+        holder.eventCardView.setBackgroundColor(context.getResources().getColor(android.R.color.white, null));
+        if(event.isFull()) {
+            holder.eventNumParticipants.setTextColor(context.getResources().getColor(R.color.lightOrange, null));
+        }
+        if(event.getCreatorId().equals(ApplicationGlobal.getCurrentUser().getId())) {
+            holder.eventCardView.setBackgroundColor(context.getResources().getColor(R.color.backgroundCreator, null));
+        }
         holder.eventNumParticipants.setText(event.getParticipantsStr());
         setDrawableType(holder, event);
     }

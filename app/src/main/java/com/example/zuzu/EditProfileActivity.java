@@ -112,7 +112,7 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
             drawerLayout.close();
         } else {
             super.onBackPressed();
-            Intent intent = new Intent(EditProfileActivity.this, MainActivity.class);
+            Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
         }
     }

@@ -40,7 +40,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         initializeLoginForm();
 
 
-//        //Todo: Delete after testing!
+        //Todo: Delete after testing!
 //        textUsername.setText("odedza@gmail.com");
 //        textPassword.setText("123");
     }

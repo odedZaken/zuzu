@@ -159,10 +159,22 @@ public class DiscoverFragment extends Fragment implements GoogleMap.OnMarkerClic
                 googleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
                     @Override
                     public void onMapClick(@NonNull LatLng latLng) {
-                        gotoEventFab.setVisibility(View.GONE);
+                        gotoEventFab.hide();
                     }
                 });
                 googleMap.setOnMarkerClickListener(DiscoverFragment.this);
+                googleMap.setOnCameraMoveStartedListener(new GoogleMap.OnCameraMoveStartedListener() {
+                    @Override
+                    public void onCameraMoveStarted(int i) {
+                        gotoEventFab.shrink();
+                    }
+                });
+                googleMap.setOnCameraIdleListener(new GoogleMap.OnCameraIdleListener() {
+                    @Override
+                    public void onCameraIdle() {
+                        gotoEventFab.extend();
+                    }
+                });
             }
         });
     }
@@ -171,6 +183,7 @@ public class DiscoverFragment extends Fragment implements GoogleMap.OnMarkerClic
     private void updateLocationUI() {
         if (googleMap != null) {
             try {
+                googleMap.getUiSettings().setMapToolbarEnabled(false);
                 if (locationPermissionGranted) {
                     googleMap.setMyLocationEnabled(true);
                     googleMap.getUiSettings().setMyLocationButtonEnabled(true);
@@ -187,7 +200,7 @@ public class DiscoverFragment extends Fragment implements GoogleMap.OnMarkerClic
 
     @Override
     public boolean onMarkerClick(@NonNull Marker marker) {
-        gotoEventFab.setVisibility(View.VISIBLE);
+        gotoEventFab.show();
         markedEventOnMap = (EventModel) marker.getTag();
         return false;
     }

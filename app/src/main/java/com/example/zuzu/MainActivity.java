@@ -1,6 +1,7 @@
 package com.example.zuzu;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -54,7 +55,6 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity implements View.OnClickListener , NavigationView.OnNavigationItemSelectedListener {
 
 
-
     private FloatingActionButton addEventFab;
     private TabLayout tabLayout;
     private ViewPager viewPager;
@@ -80,6 +80,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         databaseReference = FirebaseDatabase.getInstance().getReference().child("events");
         initializeMainActivity();
         initializeNavDrawer();
+        viewPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+            @Override
+            public void onPageSelected(int position) {
+                super.onPageSelected(position);
+                if(position == 2) {
+                    addEventFab.hide();
+                } else {
+                    addEventFab.show();
+                }
+            }
+        });
     }
 
 
@@ -125,6 +136,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+    @SuppressLint("NonConstantResourceId")
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         Intent intent;
@@ -148,8 +160,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 finish();
                 break;
             case R.id.nav_invite_friends:
-                Toast.makeText(this, "Coming soon..", Toast.LENGTH_SHORT).show();
-                break;
             case R.id.nav_about:
                 Toast.makeText(this, "Coming soon..", Toast.LENGTH_SHORT).show();
                 break;
@@ -212,12 +222,4 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Intent intent = new Intent(this,CreateEventActivity.class);
         startActivity(intent);
     }
-
-//    public static UserModel getCurrentUser() {
-//        return currentUser;
-//    }
-//
-//    public static void setCurrentUser(UserModel currentUser) {
-//        MainActivity.currentUser = currentUser;
-//    }
 }

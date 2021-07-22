@@ -4,7 +4,10 @@
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#0089A1</color>
     <color name="orange">#FF9A00</color>
+    <color name="lightOrange">#FFBA51</color>
     <color name="greenLight">#E8F5E9</color>
     <color name="red">#D60202</color>
+    <color name="textDefault">#808080</color>
+    <color name="backgroundCreator">#FFF9EF</color>
 
 </resources>
