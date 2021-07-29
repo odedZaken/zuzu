@@ -26,4 +26,9 @@ A step by step series on how to get project Zuzu running on your android device:
 4. Install and run
 5. Start exploring new experiences🚀
 
-### ©️Developed by Oded Zaken, Nessi Laros and Sapir Ben Baz
+### Screenshots
+![Presentation13](https://user-images.githubusercontent.com/61590495/127488080-d9da5c72-aec5-4113-8d5c-c4b7c99c55ac.png)
+
+
+
+### ©️Developed by Oded Zaken and Nessi Laros
