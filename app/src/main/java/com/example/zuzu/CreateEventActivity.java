@@ -138,7 +138,9 @@ public class CreateEventActivity extends AppCompatActivity implements View.OnCli
         eventTypeLayout = findViewById(R.id.eventTypeLayout);
         initializeTimeDateListeners();
         eventDate = findViewById(R.id.textInputEventDate);
+        eventDate.setKeyListener(null);
         eventTime = findViewById(R.id.textInputEventTime);
+        eventTime.setKeyListener(null);
         eventType = findViewById(R.id.textInputEventType);
     }
 

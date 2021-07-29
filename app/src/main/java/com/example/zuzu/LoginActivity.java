@@ -57,7 +57,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         }
     }
 
-
     private void initializeLoginForm() {
         usernameLayout = findViewById(R.id.usernameLayout);
         passwordLayout = findViewById(R.id.passwordLayout);
@@ -128,9 +127,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     for (DataSnapshot user : dataSnapshot.getChildren()) {
                         userIdFromDB = user.child("id").getValue(String.class);
                     }
-
                     String passwordFromDB = dataSnapshot.child(userIdFromDB).child("password").getValue(String.class);
-
                     if (passwordFromDB != null && passwordFromDB.equals(enteredPassword)) {
                         getUserFromDB(dataSnapshot, userIdFromDB, passwordFromDB);
 
@@ -147,7 +144,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 }
                 progressBarLogin.setVisibility(View.INVISIBLE);
             }
-
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
             }

@@ -1,10 +1,15 @@
 package com.example.zuzu;
 
+import android.widget.Toast;
+
 import com.google.android.gms.maps.model.LatLng;
 
 import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.UUID;
 
 public class EventModel implements Serializable {
@@ -109,11 +114,17 @@ public class EventModel implements Serializable {
         this.maxParticipants = maxParticipants;
     }
 
-    public void setId(String id) { this.id = id; }
+    public void setId(String id) {
+        this.id = id;
+    }
 
-    public String getDate() { return date; }
+    public String getDate() {
+        return date;
+    }
 
-    public void setDate(String date) { this.date = date; }
+    public void setDate(String date) {
+        this.date = date;
+    }
 
     public int getCurrParticipants() {
         return currParticipants;
@@ -140,7 +151,7 @@ public class EventModel implements Serializable {
         return result;
     }
 
-    public boolean isFull (){
+    public boolean isFull() {
         return currParticipants == maxParticipants;
     }
 
@@ -153,4 +164,30 @@ public class EventModel implements Serializable {
         usersIDs.remove(id);
         currParticipants--;
     }
+
+    public static Comparator<EventModel> DistanceComparator = new Comparator<EventModel>() {
+        @Override
+        public int compare(EventModel o1, EventModel o2) {
+            return o1.distance - o2.distance;
+        }
+    };
+
+    public Calendar getDateInCalendar() {
+        String[] splitDate = this.date.split("/");
+        String[] splitTime = this.time.split(":");
+
+        Calendar eventDate = Calendar.getInstance();
+        eventDate.set(Integer.parseInt(splitDate[2]) + 2000, Integer.parseInt(splitDate[1]) - 1, Integer.parseInt(splitDate[0])
+                , Integer.parseInt(splitTime[0]), Integer.parseInt(splitTime[1]));
+        return eventDate;
+    }
+
+    public static Comparator<EventModel> DateComparator = new Comparator<EventModel>() {
+        @Override
+        public int compare(EventModel o1, EventModel o2) {
+            if (o1.getDateInCalendar().before(o2.getDateInCalendar())) {
+                return -1;
+            } else return 1;
+        }
+    };
 }

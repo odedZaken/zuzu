@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:style="http://schemas.android.com/tools">
+
+    <item android:title="Sort By Distance"
+        android:visible="true"
+        android:id="@+id/menuItemSortDistance"
+        app:showAsAction="never"
+        />
+    <item android:title="Sort By Time"
+        android:id="@+id/menuItemSortTime"
+        app:showAsAction="never"
+        />
+</menu>
+

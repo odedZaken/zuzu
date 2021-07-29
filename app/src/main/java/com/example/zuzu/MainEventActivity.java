@@ -19,13 +19,11 @@ import java.util.Objects;
 
 public class MainEventActivity extends AppCompatActivity {
 
-//    private String eventId;
-    //private EventModel event;
+
     private MaterialToolbar toolbar;
     private ViewPager viewPager;
     private TabLayout tabLayout;
     private SectionsPagerAdapter sectionsPagerAdapter;
-//    private static EventModel event;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,12 +74,4 @@ public class MainEventActivity extends AppCompatActivity {
         finish();
         return true;
     }
-
-//    public static EventModel getEvent() {
-//        return event;
-//    }
-//
-//    public static void setEvent(EventModel event) {
-//        MainEventActivity.event = event;
-//    }
 }

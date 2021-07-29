@@ -64,7 +64,6 @@ public class UserModel {
         this.gender = gender;
     }
 
-
     public String getFirstName() {
         return firstName;
     }

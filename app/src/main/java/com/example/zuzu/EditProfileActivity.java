@@ -80,7 +80,7 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
         }
         initializeEditProfileForm();
         retrieveUserData();
-        retrieveProfilePic();
+//        retrieveProfilePic();
         retrieveUserPreferences();
         initializeNavDrawer();
     }
@@ -103,6 +103,11 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
         if (currUser != null) {
             navDrawerFullName.setText(currUser.getFullName());
             navDrawerEmail.setText(currUser.getEmail());
+            Bitmap profilePic = ApplicationGlobal.getUserProfilePic();
+            if(profilePic != null) {
+                imageViewProfileImage.setImageBitmap(profilePic);
+                navDrawerProfilePic.setImageBitmap(profilePic);
+            }
         }
     }
 
@@ -134,12 +139,11 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
                 intent = new Intent(this, LoginActivity.class);
                 startActivity(intent);
                 ApplicationGlobal.setCurrentUser(null);
+                ApplicationGlobal.setUserProfilePic(null);
                 Toast.makeText(this, "User logged out..", Toast.LENGTH_SHORT).show();
                 finish();
                 break;
             case R.id.nav_invite_friends:
-                Toast.makeText(this, "Coming soon..", Toast.LENGTH_SHORT).show();
-                break;
             case R.id.nav_about:
                 Toast.makeText(this, "Coming soon..", Toast.LENGTH_SHORT).show();
                 break;
@@ -203,36 +207,6 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
     private void checkInterestButton(int buttonId, boolean isPref) {
         if (isPref) {
             toggleGroupInterests.check(buttonId);
-        }
-    }
-
-    //Retrieve user profile picture from database and show in ImageView and in navigation drawer
-    private void retrieveProfilePic() {
-        final Animation fadeIn = AnimationUtils.loadAnimation(this, R.anim.fadein);
-        if (currUser.getProfilePicUri() != null) {
-            imageViewProfileImage.setImageURI(currUser.getProfilePicUri());
-            imageViewProfileImage.startAnimation(fadeIn);
-        } else {    //Get image from database (if available)
-            storageProfilePicsRef.child(currUser.getEmail()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                @Override
-                public void onSuccess(Uri uri) {
-                    StorageReference userProfilePic = storageProfilePicsRef.child(currUser.getEmail());
-                    userProfilePic.getBytes(MAX_SIZE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
-                        @Override
-                        public void onSuccess(byte[] bytes) {
-                            Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                            imageViewProfileImage.setImageBitmap(bitmap);
-                            imageViewProfileImage.startAnimation(fadeIn);
-                            navDrawerProfilePic.setImageBitmap(bitmap);
-                        }
-                    }).addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Toast.makeText(EditProfileActivity.this, "Failed to fetch profile picture..", Toast.LENGTH_LONG).show();
-                        }
-                    });
-                }
-            });
         }
     }
 
@@ -342,6 +316,7 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
             if (data != null) {
                 Uri imageUri = data.getData();
                 imageViewProfileImage.setImageURI(imageUri);
+                navDrawerProfilePic.setImageURI(imageUri);
                 uploadProfilePic(imageUri, currUser.getEmail());
             }
         }

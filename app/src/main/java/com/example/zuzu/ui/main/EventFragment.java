@@ -60,7 +60,6 @@ public class EventFragment extends Fragment implements View.OnClickListener {
     private ExtendedFloatingActionButton fabAction;
     private String tabTitle;
     private Activity context;
-//    private RelativeLayout detailsLayout;
     private DatabaseReference databaseReferenceEvent;
     private StorageReference storageProfilePicsRef;
     private boolean isUserParticipate;
@@ -69,9 +68,7 @@ public class EventFragment extends Fragment implements View.OnClickListener {
 
     private HashMap<String,Bitmap> profilePicCache;
 
-//    private int loadProfilePicCounter;
 
-//    private ArrayList<ParticipantModel> participantsList;
 
     public EventFragment() {
         // Required empty public constructor
@@ -87,13 +84,15 @@ public class EventFragment extends Fragment implements View.OnClickListener {
         isUserCreator = false;
 //        participantsList = new ArrayList<>();
         profilePicCache = new HashMap<>();
+        if(ApplicationGlobal.getUserProfilePic() != null) {
+            profilePicCache.put(currUser.getId(),ApplicationGlobal.getUserProfilePic());
+        }
         databaseReferenceEvent = FirebaseDatabase.getInstance().getReference().child("events").child(event.getId());
         storageProfilePicsRef = FirebaseStorage.getInstance().getReference().child("profile_pics");
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View detailsView = inflater.inflate(R.layout.fragment_event, container, false);
         View participantsView = inflater.inflate(R.layout.fragment_participants, container, false);
@@ -169,22 +168,19 @@ public class EventFragment extends Fragment implements View.OnClickListener {
         MaterialAlertDialogBuilder dialogBuilder = new MaterialAlertDialogBuilder(context)
                 .setTitle("Are you sure?")
                 .setMessage("Event wil be deleted for all users")
-                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        databaseReferenceEvent.removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
-                            @Override
-                            public void onSuccess(Void unused) {
-                                Toast.makeText(context, "Event deleted successfully", Toast.LENGTH_SHORT).show();
-                            }
-                        }).addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull @NotNull Exception e) {
-                                Toast.makeText(context, "Something went wrong..", Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                        context.finish();
-                    }
+                .setPositiveButton("Yes", (dialog, which) -> {
+                    databaseReferenceEvent.removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void unused) {
+                            Toast.makeText(context, "Event deleted successfully", Toast.LENGTH_SHORT).show();
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull @NotNull Exception e) {
+                            Toast.makeText(context, "Something went wrong..", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                    context.finish();
                 }).setNegativeButton("No", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -273,7 +269,6 @@ public class EventFragment extends Fragment implements View.OnClickListener {
         String staticMapUrl = "https://maps.googleapis.com/maps/api/staticmap?zoom=16&size=500x400&markers=color:red%7C" + event.getLocation().latitude + "," + event.getLocation().longitude + "&key=" + getResources().getString(R.string.google_maps_api_key);
         Glide.with(this).load(staticMapUrl).into(eventMapImageView);
         eventMapCard.setOnClickListener(this);
-//        detailsLayout = view.findViewById(R.id.detailsLayout);
         eventName = view.findViewById(R.id.textEventName);
         eventDescription = view.findViewById(R.id.textEventDescription);
         eventType = view.findViewById(R.id.textEventType);
@@ -316,7 +311,6 @@ public class EventFragment extends Fragment implements View.OnClickListener {
                     }
                 }
             }
-
             @Override
             public void onCancelled(@NonNull @NotNull DatabaseError databaseError) {
                 Toast.makeText(context, "Operation canceled", Toast.LENGTH_SHORT).show();
@@ -340,34 +334,7 @@ public class EventFragment extends Fragment implements View.OnClickListener {
         String genderFromDB = dataSnapshot.child(userIdFromDB).child("gender").getValue(String.class);
 
         ParticipantModel participant = new ParticipantModel(firstNameFromDB, lastNameFromDB, dobFromDB, genderFromDB, userIdFromDB, emailFromDB);
-//        setProfilePicFromDB(participant);
 
         return participant;
     }
-
-//    private void setProfilePicFromDB(final ParticipantModel participantModel) {
-//        storageProfilePicsRef.child(participantModel.getEmail()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-//            @Override
-//            public void onSuccess(Uri uri) {
-//                StorageReference userProfilePic = storageProfilePicsRef.child(participantModel.getEmail());
-//                userProfilePic.getBytes(EditProfileActivity.MAX_SIZE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
-//                    @Override
-//                    public void onSuccess(byte[] bytes) {
-//                        loadProfilePicCounter++;
-//                        Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-//                        participantModel.setProfilePic(bitmap);
-//                        if(loadProfilePicCounter == participantsList.size()) {
-//                            ParticipantsAdapter participantsAdapter = new ParticipantsAdapter(context, participantsList);
-//                            lvParticipants.setAdapter(participantsAdapter);
-//                        }
-//                    }
-//                }).addOnFailureListener(new OnFailureListener() {
-//                    @Override
-//                    public void onFailure(@NonNull Exception e) {
-//                        Toast.makeText(getActivity(), "Failed to fetch profile picture..", Toast.LENGTH_LONG).show();
-//                    }
-//                });
-//            }
-//        });
-//    }
 }

@@ -87,14 +87,12 @@ public class ParticipantModel {
             age--;
         }
 
-        Integer ageInt = new Integer(age);
-        String ageS = ageInt.toString();
+        int ageInt = age;
 
-        return ageS;
+        return Integer.toString(ageInt);
     }
 
     public String getGenderAgeString() {
         return getGender() + ", " + getAge();
     }
-
 }

@@ -25,6 +25,8 @@ import com.example.zuzu.R;
 import com.google.android.material.card.MaterialCardView;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Locale;
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.MyViewHolder> {
 
@@ -36,7 +38,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         this.context = context;
     }
 
-    public class MyViewHolder extends RecyclerView.ViewHolder{
+    public class MyViewHolder extends RecyclerView.ViewHolder {
         ImageView eventTypeIcon;
         TextView eventName, eventDate, eventTime, eventDistance, eventNumParticipants;
         MaterialCardView eventCardView;
@@ -70,7 +72,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         //Bind the data from the array list into the event card parameters
         final EventModel event = eventList.get(position);
         holder.eventName.setText(event.getTitle());
-        holder.eventDate.setText(event.getDate());
+        holder.eventDate.setText(getUniqueDateString(event.getDateInCalendar()));
         holder.eventTime.setText(event.getTime());
         holder.eventDistance.setText(event.getDistanceStr());
         //Set a click listener for the event card, launching a new event activity
@@ -79,28 +81,41 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             public void onClick(View v) {
                 EventFragment.setEvent(event);
                 Intent intent = new Intent(context, MainEventActivity.class);
-                intent.putExtra("title",event.getTitle());
+                intent.putExtra("title", event.getTitle());
                 context.startActivity(intent);
             }
         });
         holder.eventNumParticipants.setTextColor(context.getResources().getColor(R.color.textDefault, null));
         holder.eventCardView.setBackgroundColor(context.getResources().getColor(android.R.color.white, null));
-        if(event.isFull()) {
+        if (event.isFull()) {
             holder.eventNumParticipants.setTextColor(context.getResources().getColor(R.color.lightOrange, null));
         }
-        if(event.getCreatorId().equals(ApplicationGlobal.getCurrentUser().getId())) {
+        if (event.getCreatorId().equals(ApplicationGlobal.getCurrentUser().getId())) {
             holder.eventCardView.setBackgroundColor(context.getResources().getColor(R.color.backgroundCreator, null));
         }
         holder.eventNumParticipants.setText(event.getParticipantsStr());
         setDrawableType(holder, event);
     }
 
+    private String getUniqueDateString(Calendar eventDate) {
+        Calendar now = Calendar.getInstance();
+        String result;
+        if (eventDate.get(Calendar.DATE) == now.get(Calendar.DATE) && eventDate.get(Calendar.MONTH) == now.get(Calendar.MONTH)) {
+            result = "Today";
+        } else if (eventDate.get(Calendar.DATE) == now.get(Calendar.DATE) + 1 && eventDate.get(Calendar.MONTH) == now.get(Calendar.MONTH)) {
+            result = "Tomorrow";
+        } else {
+            result = eventDate.getDisplayName(Calendar.DAY_OF_WEEK,Calendar.SHORT, Locale.getDefault()) + ", " + eventDate.getDisplayName(Calendar.MONTH,Calendar.LONG,Locale.getDefault())
+            + " " + eventDate.get(Calendar.DATE);
+        }
+        return result;
+    }
 
 
     @SuppressLint("UseCompatLoadingForDrawables")
     // -------- Set Drawable for sport type -------------------
-    private void setDrawableType (MyViewHolder holder ,EventModel event) {
-        switch(event.getType()) {
+    private void setDrawableType(MyViewHolder holder, EventModel event) {
+        switch (event.getType()) {
             case "Soccer":
                 holder.eventTypeIcon.setImageDrawable(this.context.getDrawable(R.drawable.ic_baseline_sports_soccer_24));
                 break;

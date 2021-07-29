@@ -82,18 +82,12 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        overridePendingTransition(R.anim.fadein, R.anim.fadeout);
         setContentView(R.layout.activity_register);
         rootNode = FirebaseDatabase.getInstance();
         storageProfilePics = FirebaseStorage.getInstance().getReference("profile_pics");
         initializeRegistrationForm();
     }
 
-//    @Override
-//    public void finish() {
-//        super.finish();
-//        overridePendingTransition(R.anim.fadein, R.anim.fadeout);
-//    }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
@@ -282,7 +276,6 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                 else {
                     //Create a new User and continue:
                     createNewUser();
-//                    finishRegistration();
                 }
             }
             @Override
@@ -321,7 +314,6 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
             uploadProfilePicTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-//                    progressDialog.dismiss();
                     finishRegistration();
                 }
             }).addOnFailureListener(new OnFailureListener() {
@@ -338,9 +330,6 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     }
 
     private byte[] getCompressedBitmapData(Uri imageUri){
-        //Compress image and convert to byte[]
-//        String imagePath = FileUtils.getPath(this,imageUri); //todo: this causes crash (maybe)!
-//        Bitmap fullSizeBitmap = BitmapFactory.decodeFile(imagePath);
 
         Bitmap fullSizeBitmap = null;
         try {
@@ -366,8 +355,6 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     private void finishRegistration() {
         progressDialog.dismiss();
         Toast.makeText(this, "User created successfully", Toast.LENGTH_SHORT).show();
-//        Intent intent = new Intent(RegisterActivity.this,LoginActivity.class);
-//        startActivity(intent);
         this.finish();
     }
 }

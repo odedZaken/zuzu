@@ -38,7 +38,9 @@
                 android:id="@+id/eventCardName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Event Long Name" />
+                android:text="Event Long Name"
+                android:textStyle="bold"
+/>
 
             <TextView
                 android:id="@+id/eventCardDate"

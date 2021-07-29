@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.ColorFilter;
 import android.graphics.drawable.Drawable;
@@ -40,6 +41,7 @@ import com.example.zuzu.UserPreferences;
 import com.google.android.gms.internal.maps.zzx;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -60,6 +62,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 
 
 public class DiscoverFragment extends Fragment implements GoogleMap.OnMarkerClickListener, View.OnClickListener, SwipeRefreshLayout.OnRefreshListener {
@@ -84,6 +89,7 @@ public class DiscoverFragment extends Fragment implements GoogleMap.OnMarkerClic
     private ProgressBar progressBarEventList;
     private GoogleMap googleMap;
     private Context context;
+    private HashMap<String, Bitmap> iconMarkers;
 
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
     private static final int DEFAULT_ZOOM = 14;
@@ -100,7 +106,7 @@ public class DiscoverFragment extends Fragment implements GoogleMap.OnMarkerClic
         databaseReference = FirebaseDatabase.getInstance().getReference().child("events");
 
         currUser = ApplicationGlobal.getCurrentUser();
-        if(currUser != null) {
+        if (currUser != null) {
             currUserPref = currUser.getUserPreferences();
         }
     }
@@ -135,6 +141,7 @@ public class DiscoverFragment extends Fragment implements GoogleMap.OnMarkerClic
 
         //Set layout by tab title
         if (tabTitle.equals("Map")) {
+            buildMarkersList();
             InitializeMapFragment(eventMapView);
             return eventMapView;
         } else {
@@ -151,30 +158,16 @@ public class DiscoverFragment extends Fragment implements GoogleMap.OnMarkerClic
             @Override
             public void onMapReady(@NonNull GoogleMap map) {
                 //When map is loaded
-//                googleMap.setOnMarkerClickListener(DiscoverFragment.this);
                 DiscoverFragment.this.googleMap = map;
                 // Turn on the My Location layer and the related control on the map.
                 updateLocationUI();
-
-                googleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
-                    @Override
-                    public void onMapClick(@NonNull LatLng latLng) {
-                        gotoEventFab.hide();
-                    }
-                });
+                googleMap.setOnMapClickListener(latLng -> gotoEventFab.hide());
                 googleMap.setOnMarkerClickListener(DiscoverFragment.this);
-                googleMap.setOnCameraMoveStartedListener(new GoogleMap.OnCameraMoveStartedListener() {
-                    @Override
-                    public void onCameraMoveStarted(int i) {
-                        gotoEventFab.shrink();
-                    }
-                });
-                googleMap.setOnCameraIdleListener(new GoogleMap.OnCameraIdleListener() {
-                    @Override
-                    public void onCameraIdle() {
-                        gotoEventFab.extend();
-                    }
-                });
+                googleMap.setOnCameraMoveStartedListener(i -> gotoEventFab.shrink());
+                googleMap.setOnCameraIdleListener(() -> gotoEventFab.extend());
+                if(lastKnownLocation != null) {
+                    googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude()), DEFAULT_ZOOM));
+                }
             }
         });
     }
@@ -231,7 +224,7 @@ public class DiscoverFragment extends Fragment implements GoogleMap.OnMarkerClic
                 progressBarEventList.setVisibility(View.INVISIBLE);
                 if (tabTitle.equals("Discover")) {
                     mAdapter = new RecyclerViewAdapter(eventList, getActivity());
-                } else {
+                } else if (tabTitle.equals("My Events")) {
                     mAdapter = new RecyclerViewAdapter(myEvents, getActivity());
                 }
                 recyclerView.setAdapter(mAdapter);
@@ -245,11 +238,12 @@ public class DiscoverFragment extends Fragment implements GoogleMap.OnMarkerClic
         });
     }
 
+
     private void clearViews() {
         emptyListMsg.setVisibility(View.GONE);
         eventList.clear();
         myEvents.clear();
-        if(googleMap != null) {
+        if (googleMap != null) {
             googleMap.clear();
         }
     }
@@ -275,31 +269,28 @@ public class DiscoverFragment extends Fragment implements GoogleMap.OnMarkerClic
         eventModel.setUsersIDs(usersIds);
 
         if (lastKnownLocation != null) {
-            int result = calculateDistanceMeters(latitude, longitude);
-            eventModel.setDistance(result);
+            eventModel.setDistance(calculateDistanceMeters(latitude, longitude));
         }
         //Determine the list the event will be added to, and check by preferences
         sortEventToList(eventModel);
     }
 
     private void checkEmptyLists() {
-        if(eventList.isEmpty() && tabTitle.equals("Discover")) {
+        if (eventList.isEmpty() && tabTitle.equals("Discover")) {
             emptyListMsg.setText("There are no events that \nmatches your preferences...");
             emptyListMsg.setVisibility(View.VISIBLE);
         }
-        if(myEvents.isEmpty() && tabTitle.equals("My Events")) {
+        if (myEvents.isEmpty() && tabTitle.equals("My Events")) {
             emptyListMsg.setText("There are no events that \nyou are participating in...");
             emptyListMsg.setVisibility(View.VISIBLE);
         }
     }
 
+
     private void addEventMarkerOnMap(EventModel event) {
         //Convert vector image type to bitmap for sport type marker
-        BitmapDescriptor iconMarker;
-        Drawable sportDrawable = getDrawableByType(event.getType());
-        iconMarker = getMarkerIconFromDrawable(sportDrawable);
         MarkerOptions markerOptions = new MarkerOptions();
-        markerOptions.icon(iconMarker);
+        markerOptions.icon(BitmapDescriptorFactory.fromBitmap(iconMarkers.get(event.getType())));
         markerOptions.position(event.getLocation());
         markerOptions.title(event.getTitle());
         markerOptions.snippet("Date & Time: " + event.getDate() + " " + event.getTime());
@@ -309,22 +300,22 @@ public class DiscoverFragment extends Fragment implements GoogleMap.OnMarkerClic
         }
     }
 
-    private Drawable getDrawableByType(String type) {
-        switch (type) {
-            case "Basketball":
-                return ContextCompat.getDrawable(context, R.drawable.ic_basketball_clip_art);
-            case "Tennis":
-                return ContextCompat.getDrawable(context, R.drawable.ic_tennis_clip_art);
-            case "Volleyball":
-                return ContextCompat.getDrawable(context, R.drawable.ic_volleyball_clip_art);
-            case "Running":
-                return ContextCompat.getDrawable(context, R.drawable.ic_running_clip_art);
-            case "Exercise":
-                return ContextCompat.getDrawable(context, R.drawable.ic_exercise_clip_art);
-            default:
-                return ContextCompat.getDrawable(context, R.drawable.ic_soccer_clip_art);
-        }
+    private void buildMarkersList() {
+        iconMarkers = new HashMap<>();
+        iconMarkers.put("Basketball", Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(),
+                R.drawable.basketball_marker_cropped_small), 90, 122, false));
+        iconMarkers.put("Tennis", Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(),
+                R.drawable.tennis_marker_cropped_small), 90, 122, false));
+        iconMarkers.put("Volleyball", Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(),
+                R.drawable.volleyball_marker_cropped_small), 90, 122, false));
+        iconMarkers.put("Running", Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(),
+                R.drawable.running_marker_cropped_small), 90, 122, false));
+        iconMarkers.put("Exercise", Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(),
+                R.drawable.exercise_marker_cropped_small), 90, 122, false));
+        iconMarkers.put("Soccer", Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(),
+                R.drawable.soccer_marker_cropped_small), 90, 122, false));
     }
+
 
     private BitmapDescriptor getMarkerIconFromDrawable(Drawable drawable) {
         Canvas canvas = new Canvas();
@@ -356,7 +347,7 @@ public class DiscoverFragment extends Fragment implements GoogleMap.OnMarkerClic
         //Add to general event list according to preference
         if (currUserPref.isPrefByString(event.getType())) {
             eventList.add(event);
-            if(tabTitle.equals("Map")) {
+            if (tabTitle.equals("Map")) {
                 addEventMarkerOnMap(event);
             }
         }
@@ -392,7 +383,6 @@ public class DiscoverFragment extends Fragment implements GoogleMap.OnMarkerClic
                     }
                 });
             } else {
-//                Toast.makeText(getActivity(), "Location Permission Denied", Toast.LENGTH_SHORT).show();
                 initializeEventList();
             }
         } catch (SecurityException e) {
@@ -429,6 +419,17 @@ public class DiscoverFragment extends Fragment implements GoogleMap.OnMarkerClic
     @Override
     public void onRefresh() {
         getDeviceLocation();
+    }
+
+    public void sortLists(MainActivity.SortOption sortOption) {
+        if (sortOption == MainActivity.SortOption.sortByDistance) {
+            eventList.sort(EventModel.DistanceComparator);
+            myEvents.sort(EventModel.DistanceComparator);
+        } else if (sortOption == MainActivity.SortOption.sortByDate) {
+            eventList.sort(EventModel.DateComparator);
+            myEvents.sort(EventModel.DateComparator);
+        }
+        mAdapter.notifyDataSetChanged();
     }
 }
 
