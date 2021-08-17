@@ -84,7 +84,6 @@ public class EventFragment extends Fragment implements View.OnClickListener {
         tabTitle = this.getArguments().getString("title");
         isUserParticipate = false;
         isUserCreator = false;
-//        participantsList = new ArrayList<>();
         profilePicCache = new HashMap<>();
         if(ApplicationGlobal.getUserProfilePic() != null) {
             profilePicCache.put(currUser.getId(),ApplicationGlobal.getUserProfilePic());

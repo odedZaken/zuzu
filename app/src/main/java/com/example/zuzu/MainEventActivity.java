@@ -9,9 +9,11 @@ import android.widget.Toast;
 import android.widget.Toolbar;
 
 import com.example.zuzu.ui.main.DiscoverFragment;
+import com.example.zuzu.ui.main.EventChatFragment;
 import com.example.zuzu.ui.main.EventFragment;
 import com.example.zuzu.ui.main.SectionsPagerAdapter;
 import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
 
 import java.util.ArrayList;
@@ -24,6 +26,7 @@ public class MainEventActivity extends AppCompatActivity {
     private ViewPager viewPager;
     private TabLayout tabLayout;
     private SectionsPagerAdapter sectionsPagerAdapter;
+    private ExtendedFloatingActionButton fabAction;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,30 +46,59 @@ public class MainEventActivity extends AppCompatActivity {
         toolbar = findViewById(R.id.toolbar);
         viewPager = findViewById(R.id.viewPager);
         tabLayout = findViewById(R.id.tabLayout);
+        fabAction = findViewById(R.id.actionEventFab);
         ArrayList<String> tabText = new ArrayList<>();
         //Add tab names to array
         tabText.add("Details");
         tabText.add("Participants");
-//        tabText.add("Chat");
+        tabText.add("Chat");
 
         prepareViewPager(tabText);
         viewPager.setAdapter(sectionsPagerAdapter);       //Supply the viewpager with fragments added to the adapter
         tabLayout.setupWithViewPager(viewPager);      //Links the tab layout with viewpager
+        viewPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+            @Override
+            public void onPageSelected(int position) {
+                super.onPageSelected(position);
+                if(position == 2) {
+                    fabAction.hide();
+                } else {
+                    fabAction.show();
+                }
+            }
+        });
+//        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+//            @Override
+//            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+//
+//            }
+//
+//            @Override
+//            public void onPageSelected(int position) {
+//
+//            }
+//
+//            @Override
+//            public void onPageScrollStateChanged(int state) {
+//
+//            }
+//        });
     }
 
     private void prepareViewPager(ArrayList<String> tabText) {
         //Initialize main adapter
         sectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
         //Initialize discover events fragment
-        EventFragment fragment = new EventFragment();
 
-        for (int i=0; i < tabText.size(); i++) {
+        for (int i=0; i < tabText.size() - 1; i++) {
+            EventFragment fragment = new EventFragment();
             Bundle bundle = new Bundle();       //This bundle contains parameters for the fragment
             bundle.putString("title",tabText.get(i));
             fragment.setArguments(bundle);
             sectionsPagerAdapter.addFragment(fragment, tabText.get(i));
-            fragment = new EventFragment();      //Create a new fragment for 'Participants'
         }
+        EventChatFragment chatFragment = new EventChatFragment();
+        sectionsPagerAdapter.addFragment(chatFragment, tabText.get(2));
     }
 
     @Override
