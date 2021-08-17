@@ -27,6 +27,7 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputEditText;
@@ -47,7 +48,7 @@ public class CreateEventActivity extends AppCompatActivity implements View.OnCli
     private ArrayAdapter sportsAdapter;
     private TextView numParticipantsText;
     private int numParticipantsInt, currHour, currMinute;
-    private ImageButton increaseButton, decreaseButton;
+    private MaterialButton increaseButton, decreaseButton;
     private Button chooseLocationBtn;
     private TextInputEditText eventName, eventDescription, eventDate, eventTime;
     private TextInputLayout eventDateLayout, eventTimeLayout, eventTypeLayout, eventNameLayout, eventDescriptionLayout;
@@ -81,19 +82,19 @@ public class CreateEventActivity extends AppCompatActivity implements View.OnCli
         switch (v.getId()) {
             case R.id.increaseButton:
                 if (numParticipantsInt < 20) {
+                    decreaseButton.setEnabled(true);
                     numParticipantsInt++;
                     numParticipantsText.setText(Integer.toString(numParticipantsInt));
-                } else {
-                    Toast.makeText(this, "Maximum participants reached", Toast.LENGTH_SHORT).show();
                 }
+                if (numParticipantsInt == 20) increaseButton.setEnabled(false);
                 break;
             case R.id.decreaseButton:
                 if (numParticipantsInt > 2) {
+                    increaseButton.setEnabled(true);
                     numParticipantsInt--;
                     numParticipantsText.setText(Integer.toString(numParticipantsInt));
-                } else {
-                    Toast.makeText(this, "Minimum participants reached", Toast.LENGTH_SHORT).show();
                 }
+                if ( numParticipantsInt == 2) decreaseButton.setEnabled(false);
                 break;
             case R.id.chooseLocationBtn:
                 Intent intent = new Intent(this, MapActivity.class);

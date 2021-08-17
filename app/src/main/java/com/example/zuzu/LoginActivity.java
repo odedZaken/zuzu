@@ -41,8 +41,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
 
         //Todo: Delete after testing!
-//        textUsername.setText("odedza@gmail.com");
-//        textPassword.setText("123");
+        textUsername.setText("odedza@gmail.com");
+        textPassword.setText("123");
     }
 
     @Override

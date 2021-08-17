@@ -16,9 +16,11 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 
 import com.bumptech.glide.Glide;
+import com.example.zuzu.ApplicationGlobal;
 import com.example.zuzu.EditProfileActivity;
 import com.example.zuzu.ParticipantModel;
 import com.example.zuzu.R;
+import com.example.zuzu.UserModel;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.storage.FirebaseStorage;
@@ -32,13 +34,15 @@ public class ParticipantsAdapter extends ArrayAdapter<String> {
     ArrayList<ParticipantModel> participantsList;
     HashMap<String,Bitmap> profilePicCache;
     private final StorageReference storageProfilePicsRef;
+    String eventCreatorId;
 
-    public ParticipantsAdapter(@NonNull Context context, ArrayList<ParticipantModel> participantsList, HashMap<String,Bitmap> profilePicCache) {
+    public ParticipantsAdapter(@NonNull Context context, ArrayList<ParticipantModel> participantsList, HashMap<String,Bitmap> profilePicCache, String eventCreatorId) {
         super(context, R.layout.list_item_event_participant);
         this.context = context;
         this.participantsList = participantsList;
         storageProfilePicsRef = FirebaseStorage.getInstance().getReference().child("profile_pics");
         this.profilePicCache = profilePicCache;
+        this.eventCreatorId = eventCreatorId;
     }
 
     @Override
@@ -56,6 +60,10 @@ public class ParticipantsAdapter extends ArrayAdapter<String> {
             holder = (ParticipantViewHolder) singleItem.getTag();
         }
 
+        holder.adminCardViewLayout.setVisibility(View.GONE);
+        if(eventCreatorId.equals(participantsList.get(position).getUserID())) {
+            holder.adminCardViewLayout.setVisibility(View.VISIBLE);
+        }
         holder.participantName.setText(participantsList.get(position).getDisplayName());
         holder.participantGenderAge.setText(participantsList.get(position).getGenderAgeString());
         if(profilePicCache.containsKey(participantsList.get(position).getUserID())) {

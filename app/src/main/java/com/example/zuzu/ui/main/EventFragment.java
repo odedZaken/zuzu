@@ -18,6 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -65,6 +66,7 @@ public class EventFragment extends Fragment implements View.OnClickListener {
     private boolean isUserParticipate;
     private boolean isUserCreator;
     private ListView lvParticipants;
+    private ProgressBar progressBarParticipants;
 
     private HashMap<String,Bitmap> profilePicCache;
 
@@ -97,14 +99,13 @@ public class EventFragment extends Fragment implements View.OnClickListener {
         View detailsView = inflater.inflate(R.layout.fragment_event, container, false);
         View participantsView = inflater.inflate(R.layout.fragment_participants, container, false);
         initializeEventDetails(detailsView);
+        progressBarParticipants = participantsView.findViewById(R.id.progressBarParticipants);
         context = getActivity();
         configureActionButton();
         getEventDetailsFromDB();
-//        loadProfilePicCounter = 0;
         lvParticipants = participantsView.findViewById(R.id.lvParticipants);
 
         if(tabTitle.equals("Participants")) {
-//            initializeParticipantsList();
             return participantsView;
         } else {
             return detailsView;
@@ -114,7 +115,6 @@ public class EventFragment extends Fragment implements View.OnClickListener {
     private void initializeParticipantsList() {
         final ArrayList<String> participantsIDList = event.getUsersIDs();
         final ArrayList<ParticipantModel> participantsList = new ArrayList<>();
-//        participantsList.clear();
         DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
         for (int i = 0; i < participantsIDList.size(); i++) {
             final Query getParticipantFromDB = usersRef.orderByChild("id").equalTo(participantsIDList.get(i));
@@ -125,9 +125,8 @@ public class EventFragment extends Fragment implements View.OnClickListener {
                     if (dataSnapshot.exists()) {
                         participantsList.add(getUserFromDBForParticipantsList(dataSnapshot, participantsIDList.get(finalI)));
                         if(participantsList.size() == participantsIDList.size()) {
-//                            ParticipantsAdapter participantsAdapter = new ParticipantsAdapter(context, participantsList);
-//                            lvParticipants.setAdapter(participantsAdapter);
-                            ParticipantsAdapter participantsAdapter = new ParticipantsAdapter(context, participantsList, profilePicCache);
+                            ParticipantsAdapter participantsAdapter = new ParticipantsAdapter(context, participantsList, profilePicCache, event.getCreatorId());
+                            progressBarParticipants.setVisibility(View.GONE);
                             lvParticipants.setAdapter(participantsAdapter);
                         }
                     }
