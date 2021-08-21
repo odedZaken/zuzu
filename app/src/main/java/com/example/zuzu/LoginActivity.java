@@ -1,6 +1,8 @@
 package com.example.zuzu;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
@@ -14,6 +16,8 @@ import android.widget.VideoView;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -21,6 +25,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.StorageReference;
 
 //This is the default page when opening the app
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
@@ -168,5 +173,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         UserModel user = new UserModel(firstNameFromDB, lastNameFromDB, emailFromDB, phoneNoFromDB, passwordFromDB, dobFromDB, genderFromDB, userPreferences);
         user.setId(userIdFromDB);
         ApplicationGlobal.setCurrentUser(user);
+        ApplicationGlobal.setUserProfilePic(null);
     }
 }

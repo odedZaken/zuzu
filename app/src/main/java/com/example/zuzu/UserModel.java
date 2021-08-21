@@ -106,4 +106,5 @@ public class UserModel {
 
     public String getFullName() { return firstName + " " + lastName; }
 
+    public String getDisplayName() { return firstName + " " + lastName.charAt(0) + "."; }
 }

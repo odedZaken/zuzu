@@ -205,6 +205,7 @@ public class DiscoverFragment extends Fragment implements GoogleMap.OnMarkerClic
                 Intent intent = new Intent(getActivity(), MainEventActivity.class);
                 intent.putExtra("title", markedEventOnMap.getTitle());
                 EventFragment.setEvent(markedEventOnMap);
+                EventChatFragment.setEvent(markedEventOnMap);
                 startActivity(intent);
                 break;
         }

@@ -85,6 +85,7 @@ public class EventFragment extends Fragment implements View.OnClickListener {
         isUserParticipate = false;
         isUserCreator = false;
         profilePicCache = new HashMap<>();
+        EventChatFragment.setProfilePicCache(profilePicCache);
         if(ApplicationGlobal.getUserProfilePic() != null) {
             profilePicCache.put(currUser.getId(),ApplicationGlobal.getUserProfilePic());
         }

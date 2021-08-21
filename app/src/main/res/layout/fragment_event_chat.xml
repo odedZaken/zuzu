@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.main.EventChatFragment">
+    tools:context=".ui.main.EventChatFragment"
+    android:background="#E8F5E9">
 
     <ProgressBar
         android:id="@+id/progressBarChat"
@@ -12,8 +13,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:visibility="invisible" />
+        android:layout_centerVertical="true" />
 
 <!--    <TextView-->
 <!--        android:id="@+id/emptyListMsg"-->
@@ -32,7 +32,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@+id/inputLayout"
-        android:scrollbarStyle="outsideOverlay" />
+        android:scrollbarStyle="outsideOverlay"/>
 
 
     <LinearLayout
@@ -41,8 +41,7 @@
         android:layout_height="70dp"
         android:layout_alignParentBottom="true"
         android:orientation="horizontal"
-        android:gravity="center_vertical"
->
+        android:gravity="center_vertical">
 
 
         <com.google.android.material.card.MaterialCardView
@@ -70,9 +69,9 @@
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/editTextMessage"
-                        android:layout_width="match_parent"
+                        android:layout_width="250dp"
                         android:layout_height="wrap_content"
-                        android:text="Hello Everyone"
+                        android:hint="Type here"
                         android:background="@android:color/transparent"
                         />
 
@@ -85,7 +84,8 @@
             android:layout_width="50dp"
             android:layout_height="60dp"
             app:cornerRadius="50dp"
-            style="@style/Widget.MaterialComponents.Button"
+            app:iconGravity="textEnd"
+            style="@style/Widget.MaterialComponents.Button.Icon"
             app:icon="@drawable/ic_baseline_send_24"
             android:layout_marginStart="7dp"
             />

@@ -79,6 +79,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         holder.eventCardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                EventChatFragment.setEvent(event);
                 EventFragment.setEvent(event);
                 Intent intent = new Intent(context, MainEventActivity.class);
                 intent.putExtra("title", event.getTitle());
