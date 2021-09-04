@@ -51,7 +51,7 @@ public class ChatRecViewAdapter extends RecyclerView.Adapter<ChatRecViewAdapter.
     HashMap<String, Bitmap> profilePicCache;
     HashSet<String> requestedPics;
     HashSet<Integer> positionsSet;
-    private final StorageReference storageProfilePicsRef;
+    private final StorageReference storageProfilePicsRef, storageChatPicsRef;
 
 
     public ChatRecViewAdapter(ArrayList<MessageModel> eventList, Context context, HashMap<String, Bitmap> profilePicCache) {
@@ -59,12 +59,13 @@ public class ChatRecViewAdapter extends RecyclerView.Adapter<ChatRecViewAdapter.
         this.context = context;
         this.profilePicCache = profilePicCache;
         storageProfilePicsRef = FirebaseStorage.getInstance().getReference().child("profile_pics");
+        storageChatPicsRef = FirebaseStorage.getInstance().getReference().child("chat_pics");
         requestedPics = new HashSet<>();
         positionsSet = new HashSet<>();
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
-        ImageView authorProfilePic;
+        ImageView authorProfilePic, messageImage;
         TextView authorFullName, messageContent;
 
         public MyViewHolder(@NonNull View itemView) {
@@ -73,6 +74,7 @@ public class ChatRecViewAdapter extends RecyclerView.Adapter<ChatRecViewAdapter.
             authorProfilePic = itemView.findViewById(R.id.authorImage);
             authorFullName = itemView.findViewById(R.id.authorFullName);
             messageContent = itemView.findViewById(R.id.messageContent);
+            messageImage = itemView.findViewById(R.id.messageImage);
         }
     }
 
@@ -93,7 +95,7 @@ public class ChatRecViewAdapter extends RecyclerView.Adapter<ChatRecViewAdapter.
         //Bind the data from the array list into the message card parameters
         MessageModel message = messageList.get(position);
         holder.authorFullName.setText(message.getAuthorName());
-        
+
         if(!positionsSet.contains(position)) {
             holder.authorProfilePic.setImageDrawable(context.getDrawable(R.drawable.ic_baseline_person_24));
         }
@@ -110,10 +112,45 @@ public class ChatRecViewAdapter extends RecyclerView.Adapter<ChatRecViewAdapter.
             getProfilePicFromDB(message.getAuthorEmail(), holder.authorProfilePic, message.getAuthorID());
         }
         if (message.getType() == MessageModel.MessageType.TEXT) {
+            holder.messageContent.setVisibility(View.VISIBLE);
+            holder.messageImage.setVisibility(View.GONE);
             holder.messageContent.setText(message.getMessageContent());
         } else {
-            //TODO: Handle Picture Message
+            holder.messageContent.setVisibility(View.GONE);
+            holder.messageImage.setVisibility(View.VISIBLE);
+            if(profilePicCache.containsKey(message.getMessageContent())) {
+                holder.messageImage.setImageBitmap(profilePicCache.get(message.getMessageContent()));
+            } else {
+                getMessageImageFromDB(message.getMessageContent(), holder.messageImage);
+                holder.messageImage.setImageDrawable(context.getDrawable(R.drawable.ic_baseline_image_24));
+//                Toast.makeText(context, "Getting image from db!", Toast.LENGTH_SHORT).show();
+            }
         }
+    }
+
+    private void getMessageImageFromDB(String imageID, ImageView messageImage) {
+        storageChatPicsRef.child(imageID).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+            @Override
+            public void onSuccess(Uri uri) {
+                StorageReference chatPicRef = storageChatPicsRef.child(imageID);
+                chatPicRef.getBytes(EditProfileActivity.MAX_SIZE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                    @Override
+                    public void onSuccess(byte[] bytes) {
+                        Animation fadeIn = AnimationUtils.loadAnimation(context, R.anim.fadein);
+                        Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                        profilePicCache.put(imageID, bitmap);
+                        messageImage.setImageBitmap(bitmap);
+                        messageImage.startAnimation(fadeIn);
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(context, "Failed to fetch chat picture..", Toast.LENGTH_LONG).show();
+                    }
+                });
+            }
+        });
+
     }
 
     private void getProfilePicFromDB(final String email, final ImageView authorImage, final String authorID) {
@@ -140,6 +177,7 @@ public class ChatRecViewAdapter extends RecyclerView.Adapter<ChatRecViewAdapter.
             }
         });
     }
+
 
 
     @Override

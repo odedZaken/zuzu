@@ -139,6 +139,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         navDrawerProfilePic = navHeaderLayout.findViewById(R.id.navDrawerProfilePic);
 
         setSupportActionBar(toolbar);
+        toolbar.setOverflowIcon(this.getDrawable(R.drawable.ic_baseline_sort_24));
+
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout,toolbar,R.string.navigation_drawer_open,R.string.navigation_drawer_closed);
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();

@@ -1,7 +1,9 @@
 package com.example.zuzu.ui.main;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -24,6 +26,7 @@ import android.widget.Toast;
 import com.example.zuzu.ApplicationGlobal;
 import com.example.zuzu.EditProfileActivity;
 import com.example.zuzu.EventModel;
+import com.example.zuzu.MainEventActivity;
 import com.example.zuzu.MessageModel;
 import com.example.zuzu.R;
 import com.example.zuzu.UserModel;
@@ -49,6 +52,9 @@ import java.util.HashSet;
 
 public class EventChatFragment extends Fragment implements View.OnClickListener {
 
+    private static final int IMAGE_PICK_CODE = 1000;
+
+
     private ArrayList<MessageModel> messageList;
     private static HashMap<String, Bitmap> profilePicCache;
     private HashSet<String> messageKeyPool;
@@ -61,9 +67,8 @@ public class EventChatFragment extends Fragment implements View.OnClickListener 
     private ProgressBar chatProgressBar;
     private static EventModel event;
     private DatabaseReference databaseRefEventMessages;
-    private StorageReference storageProfilePicsRef;
-
-
+    private StorageReference storageRef;
+    private MediaPlayer messageSentSE;
 
 
     public EventChatFragment() {
@@ -77,9 +82,11 @@ public class EventChatFragment extends Fragment implements View.OnClickListener 
         super.onCreate(savedInstanceState);
         currUser = ApplicationGlobal.getCurrentUser();
         databaseRefEventMessages = FirebaseDatabase.getInstance().getReference().child("events").child(event.getId()).child("messages");
-        storageProfilePicsRef = FirebaseStorage.getInstance().getReference().child("profile_pics");
+        storageRef = FirebaseStorage.getInstance().getReference();
         messageList = new ArrayList<>();
         messageKeyPool = new HashSet<>();
+        //Create sound effect for message sending
+        messageSentSE = MediaPlayer.create(getContext(),R.raw.messagelongpop);
     }
 
     private void initializeChatFragment(View chatView) {
@@ -192,7 +199,9 @@ public class EventChatFragment extends Fragment implements View.OnClickListener 
         String authorID = message.child("authorID").getValue(String.class);
         String authorName = message.child("authorName").getValue(String.class);
         String messageContent = message.child("messageContent").getValue(String.class);
-        MessageModel newMessage = new MessageModel(authorID, authorEmail,authorName,messageContent, MessageModel.MessageType.TEXT);
+        MessageModel.MessageType messageType = message.child("type").getValue(MessageModel.MessageType.class);
+//        MessageModel newMessage = new MessageModel(authorID, authorEmail,authorName,messageContent, MessageModel.MessageType.TEXT);
+        MessageModel newMessage = new MessageModel(authorID, authorEmail,authorName,messageContent, messageType);
 
         messageList.add(newMessage);
     }
@@ -201,6 +210,8 @@ public class EventChatFragment extends Fragment implements View.OnClickListener 
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.addPhotoButton:
+                //TODO: Post message in chat!
+                pickImageFromGallery();
                 break;
             case R.id.sendMessageButton:
                 if(editTextMessage.getText().length() < 1) {
@@ -211,13 +222,30 @@ public class EventChatFragment extends Fragment implements View.OnClickListener 
                             editTextMessage.getText().toString(), MessageModel.MessageType.TEXT);
                     editTextMessage.setText("");
                     addMessageToDB(message);
+//                    messageSentSE.start();
                 }
                 break;
         }
     }
 
+    private void pickImageFromGallery() {
+        //intent to pick an image
+        Intent intent = new Intent(Intent.ACTION_PICK);
+        intent.setType("image/*");
+        startActivityForResult(intent, IMAGE_PICK_CODE);
+    }
+
+    public static EventModel getCurrentEvent() {
+        return event;
+    }
+
 
     private void addMessageToDB(MessageModel message) {
         databaseRefEventMessages.push().setValue(message);
+        messageSentSE.start();
+    }
+
+    public static HashMap<String, Bitmap> getProfilePicCache() {
+        return profilePicCache;
     }
 }
