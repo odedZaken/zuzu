@@ -136,12 +136,12 @@ public class MainEventActivity extends AppCompatActivity {
         if (data != null) {
             Uri imageUri = data.getData();
             String imageID = UUID.randomUUID().toString();
-//            try {
-//                Bitmap imageBitmap = ImageDecoder.decodeBitmap(ImageDecoder.createSource(this.getContentResolver(), imageUri));
-//                EventChatFragment.getProfilePicCache().put(imageID,imageBitmap);
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
+            try {
+                Bitmap imageBitmap = ImageDecoder.decodeBitmap(ImageDecoder.createSource(this.getContentResolver(), imageUri));
+                EventChatFragment.getProfilePicCache().put(imageID,imageBitmap);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
 
             //Adding the posted message to list
             MessageModel message = new MessageModel(currUser.getId(), currUser.getEmail(), currUser.getDisplayName(),
